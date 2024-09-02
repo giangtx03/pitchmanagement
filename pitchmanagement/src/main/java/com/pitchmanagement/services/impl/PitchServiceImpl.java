@@ -1,15 +1,14 @@
 package com.pitchmanagement.services.impl;
 
 import com.pitchmanagement.constants.AuthConstant;
-import com.pitchmanagement.controllers.publics.AppController;
 import com.pitchmanagement.daos.*;
 import com.pitchmanagement.dtos.*;
-import com.pitchmanagement.models.requests.CreatePitchRequest;
-import com.pitchmanagement.models.requests.PitchTimeRequest;
-import com.pitchmanagement.models.requests.SubPitchRequest;
-import com.pitchmanagement.models.responses.PitchResponse;
-import com.pitchmanagement.models.responses.PitchTimeResponse;
-import com.pitchmanagement.models.responses.SubPitchResponse;
+import com.pitchmanagement.models.requests.createPitch.CreatePitchRequest;
+import com.pitchmanagement.models.requests.createPitch.PitchTimeRequest;
+import com.pitchmanagement.models.requests.createPitch.SubPitchRequest;
+import com.pitchmanagement.models.responses.pitch.PitchResponse;
+import com.pitchmanagement.models.responses.pitch.PitchTimeResponse;
+import com.pitchmanagement.models.responses.pitch.SubPitchResponse;
 import com.pitchmanagement.models.responses.UserResponse;
 import com.pitchmanagement.services.ImageService;
 import com.pitchmanagement.services.PitchService;

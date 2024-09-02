@@ -1,8 +1,8 @@
 package com.pitchmanagement.controllers;
 
-import com.pitchmanagement.models.requests.CreatePitchRequest;
+import com.pitchmanagement.models.requests.createPitch.CreatePitchRequest;
 import com.pitchmanagement.models.responses.BaseResponse;
-import com.pitchmanagement.models.responses.PitchResponse;
+import com.pitchmanagement.models.responses.pitch.PitchResponse;
 import com.pitchmanagement.services.PitchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,7 @@
-package com.pitchmanagement.models.responses;
+package com.pitchmanagement.models.responses.pitch;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pitchmanagement.models.responses.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
