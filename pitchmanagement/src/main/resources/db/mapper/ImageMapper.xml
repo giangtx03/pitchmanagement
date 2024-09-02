@@ -18,7 +18,7 @@
     </select>
 
     <delete id="deleteImage" parameterType="String">
-        DELETE images
+        DELETE FROM images
         WHERE name = #{imageName}
     </delete>
 

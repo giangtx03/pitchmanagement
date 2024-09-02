@@ -12,4 +12,14 @@
         FROM pitch_types
     </select>
 
+    <select id="getPitchTypeById" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchTypeDto" >
+        SELECT
+            id,
+            name,
+            create_at AS createAt,
+            update_at AS updateAt
+        FROM pitch_types
+        WHERE id = #{id}
+    </select>
+
 </mapper>

@@ -45,17 +45,8 @@
             <column name="is_active" type="tinyint(3)" />
             <column name="create_at" type="timestamp"/>
             <column name="update_at" type="timestamp"/>
-            <column name="pitch_type_id" type="bigint"/>
             <column name="manager_id" type="bigint"/>
         </createTable>
-        <addForeignKeyConstraint
-                baseTableName="pitches"
-                baseColumnNames="pitch_type_id"
-                constraintName="fk_pitch_types_pitches"
-                referencedTableName="pitch_types"
-                referencedColumnNames="id"
-                onDelete="CASCADE"
-        />
         <addForeignKeyConstraint
                 baseTableName="pitches"
                 baseColumnNames="manager_id"
@@ -73,12 +64,25 @@
             <column name="create_at" type="timestamp"/>
             <column name="update_at" type="timestamp"/>
             <column name="pitch_id" type="bigint"/>
+            <column name="pitch_type_id" type="bigint"/>
         </createTable>
+        <addUniqueConstraint
+                tableName="sub_pitches"
+                columnNames="name, pitch_id"
+                constraintName="uc_name_pitch_id"/>
         <addForeignKeyConstraint
                 baseTableName="sub_pitches"
                 baseColumnNames="pitch_id"
                 constraintName="fk_pitches_sub_pitches"
                 referencedTableName="pitches"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableName="sub_pitches"
+                baseColumnNames="pitch_type_id"
+                constraintName="fk_pitch_types_sub_pitches"
+                referencedTableName="pitch_types"
                 referencedColumnNames="id"
                 onDelete="CASCADE"
         />
@@ -202,11 +206,5 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="2" author="Truong Xuan Giang">
-        <addUniqueConstraint
-                tableName="sub_pitches"
-                columnNames="name, pitch_id"
-                constraintName="uc_name_pitch_id"/>
-    </changeSet>
 
 </databaseChangeLog>

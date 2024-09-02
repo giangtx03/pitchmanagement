@@ -5,8 +5,8 @@
 
     <insert id="insertSubPitch" parameterType="com.pitchmanagement.dtos.SubPitchDto" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO
-            sub_pitches(name, is_active, pitch_id, create_at, update_at)
-        VALUES (#{name},#{isActive}, #{pitchId},#{createAt}, #{updateAt})
+            sub_pitches(name, is_active, pitch_id, create_at, update_at, pitch_type_id)
+        VALUES (#{name},#{isActive}, #{pitchId},#{createAt}, #{updateAt}, #{pitchTypeId})
     </insert>
 
     <select id="getAllByPitchId" parameterType="Long" resultType="com.pitchmanagement.dtos.SubPitchDto" >
@@ -15,6 +15,7 @@
             name,
             create_at AS createAt,
             update_at AS updateAt,
+            pitch_type_id AS pitchTypeId,
             is_active AS isActive
         FROM sub_pitches
         WHERE pitch_id = #{pitchId}
@@ -22,10 +23,11 @@
 
     <update id="updateSubPitch" parameterType="com.pitchmanagement.dtos.SubPitchDto" >
         SELECT
-            name,
-            create_at AS createAt,
-            update_at AS updateAt,
-            is_active AS isActive
+            name = #{name},
+            create_at = #{createAt},
+            update_at = #{updateAt},
+            is_active = #{isActive},
+            pitch_type_id = #{pitchTypeId}
         FROM pitch_types WHERE id = #{id}
     </update>
 

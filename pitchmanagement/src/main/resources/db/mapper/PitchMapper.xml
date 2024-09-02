@@ -5,8 +5,8 @@
 
     <insert id="insertPitch" parameterType="com.pitchmanagement.dtos.PitchDto" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO
-            pitches(name, location, is_active, create_at, update_at, manager_id, pitch_type_id)
-        VALUES( #{name},#{location},#{isActive},#{createAt}, #{updateAt}, #{managerId}, #{pitchTypeId})
+            pitches(name, location, is_active, create_at, update_at, manager_id)
+        VALUES( #{name},#{location},#{isActive},#{createAt}, #{updateAt}, #{managerId})
     </insert>
 
     <select id="getAll" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchDto">
@@ -16,7 +16,6 @@
             location,
             is_active AS isActive,
             manager_id AS managerId,
-            pitch_type_id AS pitchTypeId,
             create_at AS createAt,
             update_at AS updateAt
         FROM pitches
@@ -24,14 +23,13 @@
 
     <select id="getPitchById" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchDto">
         SELECT
-        id,
-        name,
-        location,
-        is_active AS isActive,
-        manager_id AS managerId,
-        pitch_type_id AS pitchTypeId,
-        create_at AS createAt,
-        update_at AS updateAt
+            id,
+            name,
+            location,
+            is_active AS isActive,
+            manager_id AS managerId,
+            create_at AS createAt,
+            update_at AS updateAt
         FROM pitches WHERE id = #{id}
     </select>
 
@@ -40,7 +38,6 @@
             name = #{name},
             location = #{location},
             is_active = #{isActive},
-            pitch_type_id = #{pitchTypeId},
             update_at = #{updateAt}
         WHERE id = #{id}
     </update>

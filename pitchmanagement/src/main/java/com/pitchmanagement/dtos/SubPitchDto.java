@@ -17,4 +17,6 @@ public class SubPitchDto {
     private LocalDateTime updateAt;
     private boolean isActive;
     private Long pitchId;
+    private Long pitchTypeId;
+
 }

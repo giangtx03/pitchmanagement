@@ -17,4 +17,13 @@
         FROM time_slots
     </select>
 
+    <select id="getTimeSlotById" parameterType="Long" resultType="com.pitchmanagement.dtos.TimeSlotDto" >
+        SELECT
+            id,
+            start_time AS startTime,
+            end_time AS endTime
+        FROM time_slots
+        WHERE id = #{id}
+    </select>
+
 </mapper>

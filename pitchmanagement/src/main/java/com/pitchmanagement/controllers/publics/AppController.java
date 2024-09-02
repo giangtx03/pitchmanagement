@@ -24,7 +24,7 @@ public class AppController {
 
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
 
-    @GetMapping("/image/{image_name}")
+    @GetMapping("/images/{image_name}")
     public ResponseEntity<?> getImage(
             @PathVariable("image_name") String imageName) {
         try {

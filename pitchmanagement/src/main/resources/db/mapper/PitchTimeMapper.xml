@@ -27,7 +27,7 @@
     </update>
 
     <delete id="deletePitchTime" parameterType="com.pitchmanagement.dtos.PitchTimeDto">
-        DELETE pitch_times
+        DELETE FROM pitch_times
         WHERE time_slot_id = #{timeSlotId} AND sub_pitch_id = #{subPitchId}
     </delete>
 

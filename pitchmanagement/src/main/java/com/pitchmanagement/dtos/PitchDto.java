@@ -18,6 +18,5 @@ public class PitchDto {
     private LocalDateTime updateAt;
     private boolean isActive;
     private Long managerId;
-    private Long pitchTypeId;
 
 }
