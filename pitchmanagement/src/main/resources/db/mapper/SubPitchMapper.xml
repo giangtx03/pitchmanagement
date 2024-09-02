@@ -1,0 +1,32 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pitchmanagement.daos.SubPitchDao">
+
+    <insert id="insertSubPitch" parameterType="com.pitchmanagement.dtos.SubPitchDto" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+            sub_pitches(name, is_active, pitch_id, create_at, update_at)
+        VALUES (#{name},#{isActive}, #{pitchId},#{createAt}, #{updateAt})
+    </insert>
+
+    <select id="getAllByPitchId" parameterType="Long" resultType="com.pitchmanagement.dtos.SubPitchDto" >
+        SELECT
+            id,
+            name,
+            create_at AS createAt,
+            update_at AS updateAt,
+            is_active AS isActive
+        FROM sub_pitches
+        WHERE pitch_id = #{pitchId}
+    </select>
+
+    <update id="updateSubPitch" parameterType="com.pitchmanagement.dtos.SubPitchDto" >
+        SELECT
+            name,
+            create_at AS createAt,
+            update_at AS updateAt,
+            is_active AS isActive
+        FROM pitch_types WHERE id = #{id}
+    </update>
+
+</mapper>

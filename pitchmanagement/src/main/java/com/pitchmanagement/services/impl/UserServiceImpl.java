@@ -1,5 +1,6 @@
 package com.pitchmanagement.services.impl;
 
+import com.pitchmanagement.constants.AuthConstant;
 import com.pitchmanagement.daos.UserDao;
 import com.pitchmanagement.dtos.UserDto;
 import com.pitchmanagement.models.User;
@@ -100,7 +101,7 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
-                .role("USER")
+                .role(AuthConstant.ROLE_USER)
                 .isActive(true)
                 .build();
         userDao.insert(userDto);

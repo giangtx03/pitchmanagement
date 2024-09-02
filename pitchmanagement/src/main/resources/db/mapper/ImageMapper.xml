@@ -1,0 +1,25 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pitchmanagement.daos.ImageDao">
+
+    <insert id="insertImage" parameterType="com.pitchmanagement.dtos.ImageDto" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+            images(name, pitch_id)
+        VALUES (#{name}, #{pitchId});
+    </insert>
+
+    <select id="getAllByPitchId" parameterType="Long" resultType="com.pitchmanagement.dtos.ImageDto" >
+        SELECT
+            id,
+            name,
+        FROM images
+        WHERE pitch_id = #{pitchId}
+    </select>
+
+    <delete id="deleteImage" parameterType="String">
+        DELETE images
+        WHERE name = #{imageName}
+    </delete>
+
+</mapper>

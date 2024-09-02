@@ -202,4 +202,11 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet id="2" author="Truong Xuan Giang">
+        <addUniqueConstraint
+                tableName="sub_pitches"
+                columnNames="name, pitch_id"
+                constraintName="uc_name_pitch_id"/>
+    </changeSet>
+
 </databaseChangeLog>

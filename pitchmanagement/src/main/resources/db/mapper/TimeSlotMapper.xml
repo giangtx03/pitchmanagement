@@ -1,0 +1,20 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pitchmanagement.daos.TimeSlotDao">
+
+    <insert id="insertTimeSlot" parameterType="com.pitchmanagement.dtos.TimeSlotDto" keyProperty="id" useGeneratedKeys="true" >
+        INSERT INTO
+            time_slots(start_time, end_time)
+        VALUES (#{startTime}, #{endTime})
+    </insert>
+
+    <select id="getAll" resultType="com.pitchmanagement.dtos.TimeSlotDto" >
+        SELECT
+            id,
+            start_time AS startTime,
+            end_time AS endTime
+        FROM time_slots
+    </select>
+
+</mapper>

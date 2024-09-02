@@ -1,0 +1,15 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pitchmanagement.daos.PitchTypeDao">
+
+    <select id="getAll" resultType="com.pitchmanagement.dtos.PitchTypeDto" >
+        SELECT
+            id,
+            name,
+            create_at AS createAt,
+            update_at AS updateAt
+        FROM pitch_types
+    </select>
+
+</mapper>

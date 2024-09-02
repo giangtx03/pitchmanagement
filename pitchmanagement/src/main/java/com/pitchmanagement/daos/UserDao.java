@@ -10,7 +10,6 @@ import java.util.Map;
 public interface UserDao {
 
     UserDto getUserByEmail(String email);
-
     void insert(UserDto userDto);
     void update(UserDto userDto);
     void changePassword(UserDto userDto);
