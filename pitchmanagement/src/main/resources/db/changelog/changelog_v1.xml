@@ -7,11 +7,11 @@
 
 
     <changeSet id="1"  author="Truong Xuan Giang">
-        <createTable tableName="user">
+        <createTable tableName="users">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="fullname" type="varchar(125)"/>
+            <column name="full_name" type="varchar(125)"/>
             <column name="email" type="varchar(125)">
                 <constraints nullable="false" unique="true"/>
             </column>
@@ -22,53 +22,84 @@
             <column name="role" type="varchar(45)">
                 <constraints nullable="false"/>
             </column>
+            <column name="is_active" type="tinyint(3)" />
             <column name="create_at" type="timestamp"/>
             <column name="update_at" type="timestamp"/>
         </createTable>
 
-        <createTable tableName="pitch_type">
+        <createTable tableName="pitch_types">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(125)"/>
+            <column name="create_at" type="timestamp"/>
+            <column name="update_at" type="timestamp"/>
         </createTable>
-        <createTable tableName="pitch">
+
+        <createTable tableName="pitches">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(125)"/>
-            <column name="address" type="varchar(255)"/>
+            <column name="location" type="varchar(255)"/>
+            <column name="is_active" type="tinyint(3)" />
             <column name="create_at" type="timestamp"/>
             <column name="update_at" type="timestamp"/>
             <column name="pitch_type_id" type="bigint"/>
+            <column name="manager_id" type="bigint"/>
         </createTable>
         <addForeignKeyConstraint
-                baseTableName="pitch"
+                baseTableName="pitches"
                 baseColumnNames="pitch_type_id"
-                constraintName="fk_pitch_type_pitch"
-                referencedTableName="pitch_type"
+                constraintName="fk_pitch_types_pitches"
+                referencedTableName="pitch_types"
+                referencedColumnNames="id"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableName="pitches"
+                baseColumnNames="manager_id"
+                constraintName="fk_users_pitches"
+                referencedTableName="users"
+                referencedColumnNames="id"
+        />
+
+        <createTable tableName="sub_pitches">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(125)"/>
+            <column name="is_active" type="tinyint(3)" />
+            <column name="create_at" type="timestamp"/>
+            <column name="update_at" type="timestamp"/>
+            <column name="pitch_id" type="bigint"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="sub_pitches"
+                baseColumnNames="pitch_id"
+                constraintName="fk_pitches_sub_pitches"
+                referencedTableName="pitches"
                 referencedColumnNames="id"
                 onDelete="CASCADE"
         />
 
-        <createTable tableName="image">
+        <createTable tableName="images">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(125)"/>
             <column name="pitch_id" type="bigint" />
         </createTable>
-
         <addForeignKeyConstraint
-                baseTableName="image"
+                baseTableName="images"
                 baseColumnNames="pitch_id"
-                constraintName="fk_pitch_image"
-                referencedTableName="pitch"
+                constraintName="fk_pitches_images"
+                referencedTableName="pitches"
                 referencedColumnNames="id"
                 onDelete="CASCADE"
         />
 
-        <createTable tableName="time_slot">
+        <createTable tableName="time_slots">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -76,94 +107,98 @@
             <column name="end_time" type="time"/>
         </createTable>
 
-        <createTable tableName="pitch_time">
+        <createTable tableName="pitch_times">
             <column name="price" type="int"/>
-            <column name="status" type="varchar(255)"/>
-            <column name="pitch_id" type="bigint"/>
+            <column name="sub_pitch_id" type="bigint"/>
             <column name="time_slot_id" type="bigint"/>
         </createTable>
+        <addPrimaryKey tableName="pitch_times"
+                       columnNames="sub_pitch_id, time_slot_id"
+                       constraintName="pk_pitch_times"/>
 
-        <addPrimaryKey tableName="pitch_time" columnNames="pitch_id, time_slot_id" constraintName="pk_pitch_time_slot"/>
-
-        <addForeignKeyConstraint baseTableName="pitch_time"
-                                 baseColumnNames="pitch_id"
-                                 constraintName="fk_pitch_time_slot_pitch"
-                                 referencedTableName="pitch"
+        <addForeignKeyConstraint baseTableName="pitch_times"
+                                 baseColumnNames="sub_pitch_id"
+                                 constraintName="fk_pitch_times_sub_pitches"
+                                 referencedTableName="sub_pitches"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="pitch_time"
+        <addForeignKeyConstraint baseTableName="pitch_times"
                                  baseColumnNames="time_slot_id"
-                                 constraintName="fk_pitch_time_slot_time_slot"
-                                 referencedTableName="time_slot"
+                                 constraintName="fk_pitch_times_time_slots"
+                                 referencedTableName="time_slots"
                                  referencedColumnNames="id"/>
 
-        <createTable tableName="pitch_booking">
+        <createTable tableName="bookings">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="create_at" type="timestamp"/>
             <column name="update_at" type="timestamp"/>
             <column name="status" type="varchar(45)"/>
+            <column name="note" type="varchar(255)" />
+            <column name="deposit" type="float" />
+            <column name="booking_date" type="date"/>
             <column name="user_id" type="bigint"/>
-            <column name="pitch_time_pitch_id" type="bigint"/>
-            <column name="pitch_time_time_slot_id" type="bigint"/>
+            <column name="sub_pitch_id" type="bigint"/>
+            <column name="time_slot_id" type="bigint"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="pitch_booking"
+        <addForeignKeyConstraint baseTableName="bookings"
                                  baseColumnNames="user_id"
-                                 constraintName="fk_user_pitch_booking"
-                                 referencedTableName="user"
+                                 constraintName="fk_users_bookings"
+                                 referencedTableName="users"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="pitch_booking"
-                                 baseColumnNames="pitch_time_pitch_id"
-                                 constraintName="fk_pitch_pitch_booking"
-                                 referencedTableName="pitch"
+        <addForeignKeyConstraint baseTableName="bookings"
+                                 baseColumnNames="sub_pitch_id"
+                                 constraintName="fk_sub_pitches_bookings"
+                                 referencedTableName="sub_pitches"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="pitch_booking"
-                                 baseColumnNames="pitch_time_time_slot_id"
-                                 constraintName="fk_time_slot_pitch_booking"
-                                 referencedTableName="time_slot"
+        <addForeignKeyConstraint baseTableName="bookings"
+                                 baseColumnNames="time_slot_id"
+                                 constraintName="fk_time_slots_bookings"
+                                 referencedTableName="time_slots"
                                  referencedColumnNames="id"/>
 
-        <createTable tableName="bill">
+        <createTable tableName="payments">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="create_at" type="date"/>
+            <column name="create_at" type="timestamp"/>
+            <column name="payment_method" type="varchar(255)"/>
+            <column name="amount" type="float"/>
             <column name="note" type="varchar(255)"/>
-            <column name="pitch_booking_id" type="bigint"/>
+            <column name="booking_id" type="bigint"/>
         </createTable>
-
-        <addForeignKeyConstraint baseTableName="bill"
-                                 baseColumnNames="pitch_booking_id"
-                                 constraintName="fk_bill_pitch_booking"
-                                 referencedTableName="pitch_booking"
+        <addForeignKeyConstraint baseTableName="payments"
+                                 baseColumnNames="booking_id"
+                                 constraintName="fk_payments_bookings"
+                                 referencedTableName="bookings"
                                  referencedColumnNames="id"/>
 
-        <createTable tableName="comment">
+        <createTable tableName="reviews">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="create_at" type="timestamp"/>
             <column name="update_at" type="timestamp"/>
-            <column name="content" type="varchar(255)"/>
-            <column name="star" type="float"/>
+            <column name="comment" type="varchar(255)"/>
+            <column name="star" type="int"/>
             <column name="user_id" type="bigint"/>
             <column name="pitch_id" type="bigint"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="comment"
+        <addForeignKeyConstraint baseTableName="reviews"
                                  baseColumnNames="user_id"
-                                 constraintName="fk_user_comment"
-                                 referencedTableName="user"
+                                 constraintName="fk_users_reviews"
+                                 referencedTableName="users"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="comment"
+        <addForeignKeyConstraint baseTableName="reviews"
                                  baseColumnNames="pitch_id"
-                                 constraintName="fk_pitch_comment"
-                                 referencedTableName="pitch"
+                                 constraintName="fk_pitches_reviews"
+                                 referencedTableName="pitches"
                                  referencedColumnNames="id"/>
     </changeSet>
 

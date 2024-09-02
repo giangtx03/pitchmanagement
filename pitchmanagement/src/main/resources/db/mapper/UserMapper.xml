@@ -1,0 +1,64 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pitchmanagement.daos.UserDao">
+    <insert id="insert" parameterType="com.pitchmanagement.dtos.UserDto" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO users(email, full_name, phone_number, password,role, create_at, update_at, is_active)
+        VALUES( #{email},#{fullname},#{phoneNumber},#{password},#{role} ,#{createAt}, #{updateAt}, #{isActive});
+    </insert>
+
+    <select id="getUserByEmail" parameterType="String" resultType="com.pitchmanagement.dtos.UserDto">
+        SELECT
+            id,
+            email,
+            password,
+            full_name AS fullname,
+            address,
+            avatar,
+            phone_number AS phoneNumber,
+            create_at AS createAt,
+            update_at AS updateAt,
+            is_active AS isActive,
+            role
+        FROM users WHERE email = #{email}
+    </select>
+
+    <select id="getUserById" parameterType="Long" resultType="com.pitchmanagement.dtos.UserDto">
+        SELECT
+        id,
+        email,
+        full_name AS fullname,
+        password,
+        address,
+        avatar,
+        phone_number AS phoneNumber,
+        create_at AS createAt,
+        update_at AS updateAt,
+        is_active AS isActive,
+        role
+        FROM users WHERE id = #{id}
+    </select>
+
+    <select id="existingByEmail" parameterType="String" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <update id="update" parameterType="com.pitchmanagement.dtos.UserDto">
+        UPDATE users SET
+            full_name = #{fullname},
+            address = #{address},
+            avatar = #{avatar},
+            phone_number = #{phoneNumber},
+            update_at = #{updateAt}
+        WHERE id = #{id}
+    </update>
+
+    <update id="changePassword" parameterType="com.pitchmanagement.dtos.UserDto">
+        UPDATE users SET
+            password = #{password},
+            update_at = #{updateAt}
+        WHERE id = #{id}
+    </update>
+</mapper>
