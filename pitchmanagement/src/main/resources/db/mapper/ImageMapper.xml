@@ -12,7 +12,7 @@
     <select id="getAllByPitchId" parameterType="Long" resultType="com.pitchmanagement.dtos.ImageDto" >
         SELECT
             id,
-            name,
+            name
         FROM images
         WHERE pitch_id = #{pitchId}
     </select>

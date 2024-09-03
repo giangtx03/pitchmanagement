@@ -1,11 +1,14 @@
 package com.pitchmanagement.services.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pitchmanagement.constants.AuthConstant;
 import com.pitchmanagement.daos.*;
 import com.pitchmanagement.dtos.*;
 import com.pitchmanagement.models.requests.createPitch.CreatePitchRequest;
 import com.pitchmanagement.models.requests.createPitch.PitchTimeRequest;
 import com.pitchmanagement.models.requests.createPitch.SubPitchRequest;
+import com.pitchmanagement.models.responses.PageResponse;
 import com.pitchmanagement.models.responses.pitch.PitchResponse;
 import com.pitchmanagement.models.responses.pitch.PitchTimeResponse;
 import com.pitchmanagement.models.responses.pitch.SubPitchResponse;
@@ -22,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -133,5 +137,39 @@ public class PitchServiceImpl implements PitchService {
                 .updateAt(pitchDto.getUpdateAt())
                 .build();
         return pitchResponse;
+    }
+
+    @Override
+    public PageResponse getAll(String keyword, Long managerId, int pageNumber, int limit, String orderBy, String orderSort) {
+        PageHelper.startPage(pageNumber, limit);
+        PageHelper.orderBy(orderBy + " " + orderSort);
+        List<PitchDto> pitchDtoList = pitchDao.getAll(keyword, managerId);
+        PageInfo<PitchDto> pageInfo = new PageInfo<>(pitchDtoList);
+
+        List<PitchResponse> pitchResponseList = pitchDtoList.stream()
+                .filter(PitchDto::isActive)
+                .map(pitchDto -> {
+                        List<String> imagesResponse = imageDao.getAllByPitchId(pitchDto.getId())
+                                .stream().map(ImageDto::getName)
+                                .toList();
+                        return PitchResponse.builder()
+                            .id(pitchDto.getId())
+                            .name(pitchDto.getName())
+                            .location(pitchDto.getLocation())
+                            .manager(UserResponse.fromUserDto(pitchDto.getManagerDto()))
+                            .createAt(pitchDto.getCreateAt())
+                            .updateAt(pitchDto.getUpdateAt())
+                            .images(imagesResponse)
+                        .build();
+
+                })
+                .toList();
+
+        PageResponse pageResponse = PageResponse.builder()
+                .items(pitchResponseList)
+                .totalItems(pageInfo.getTotal())
+                .totalPages(pageInfo.getPages())
+                .build();
+        return pageResponse;
     }
 }

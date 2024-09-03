@@ -3,6 +3,7 @@ package com.pitchmanagement.dtos;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,5 +19,6 @@ public class PitchDto {
     private LocalDateTime updateAt;
     private boolean isActive;
     private Long managerId;
+    private UserDto managerDto;
 
 }

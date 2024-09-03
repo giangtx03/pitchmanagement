@@ -9,16 +9,24 @@
         VALUES( #{name},#{location},#{isActive},#{createAt}, #{updateAt}, #{managerId})
     </insert>
 
-    <select id="getAll" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchDto">
+    <select id="getAll" parameterType="map" resultMap="PitchResultMap">
         SELECT
-            id,
-            name,
-            location,
-            is_active AS isActive,
-            manager_id AS managerId,
-            create_at AS createAt,
-            update_at AS updateAt
-        FROM pitches
+        p.id,
+        p.name,
+        p.location,
+        p.is_active AS isActive,
+        p.create_at AS createAt,
+        p.update_at AS updateAt,
+        mg.id AS managerId,
+        mg.full_name AS managerFullname,
+        mg.avatar AS managerAvatar
+        FROM pitches p
+        LEFT JOIN sub_pitches sp ON sp.pitch_id = p.id
+        LEFT JOIN users mg ON mg.id = p.manager_id
+        WHERE (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.location, ''), IFNULL(mg.full_name, ''))
+        LIKE CONCAT('%', #{keyword}, '%'))
+        AND (#{managerId} IS NULL OR #{managerId} = 0 OR #{managerId} = p.manager_id)
+        GROUP BY p.id, p.name, p.location, p.is_active, p.create_at, p.update_at, mg.id, mg.full_name, mg.avatar
     </select>
 
     <select id="getPitchById" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchDto">
@@ -41,5 +49,21 @@
             update_at = #{updateAt}
         WHERE id = #{id}
     </update>
+
+    <resultMap id="PitchResultMap" type="com.pitchmanagement.dtos.PitchDto">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="location" property="location" />
+        <result column="createAt" property="createAt" />
+        <result column="updateAt" property="updateAt" />
+        <result column="isActive" property="isActive" />
+        <result column="managerId" property="managerId" />
+
+        <association property="managerDto" javaType="com.pitchmanagement.dtos.UserDto">
+            <id column="managerId" property="id" />
+            <result column="managerFullname" property="fullname" />
+            <result column="managerAvatar" property="avatar" />
+        </association>
+    </resultMap>
 
 </mapper>
