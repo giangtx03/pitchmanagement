@@ -11,21 +11,21 @@
 
     <select id="getAll" parameterType="map" resultMap="PitchResultMap">
         SELECT
-        p.id,
-        p.name,
-        p.location,
-        p.is_active AS isActive,
-        p.create_at AS createAt,
-        p.update_at AS updateAt,
-        mg.id AS managerId,
-        mg.full_name AS managerFullname,
-        mg.avatar AS managerAvatar
+            p.id,
+            p.name,
+            p.location,
+            p.is_active AS isActive,
+            p.create_at AS createAt,
+            p.update_at AS updateAt,
+            mg.id AS managerId,
+            mg.full_name AS managerFullname,
+            mg.avatar AS managerAvatar
         FROM pitches p
         LEFT JOIN sub_pitches sp ON sp.pitch_id = p.id
         LEFT JOIN users mg ON mg.id = p.manager_id
         WHERE (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.location, ''), IFNULL(mg.full_name, ''))
-        LIKE CONCAT('%', #{keyword}, '%'))
-        AND (#{managerId} IS NULL OR #{managerId} = 0 OR #{managerId} = p.manager_id)
+            LIKE CONCAT('%', #{keyword}, '%'))
+            AND (#{managerId} IS NULL OR #{managerId} = 0 OR #{managerId} = p.manager_id)
         GROUP BY p.id, p.name, p.location, p.is_active, p.create_at, p.update_at, mg.id, mg.full_name, mg.avatar
     </select>
 

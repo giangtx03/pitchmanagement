@@ -18,5 +18,6 @@ public class SubPitchDto {
     private boolean isActive;
     private Long pitchId;
     private Long pitchTypeId;
+    private String pitchType;
 
 }

@@ -11,13 +11,15 @@
 
     <select id="getAllByPitchId" parameterType="Long" resultType="com.pitchmanagement.dtos.SubPitchDto" >
         SELECT
-            id,
-            name,
-            create_at AS createAt,
-            update_at AS updateAt,
-            pitch_type_id AS pitchTypeId,
-            is_active AS isActive
-        FROM sub_pitches
+            sp.id,
+            sp.name,
+            sp.create_at AS createAt,
+            sp.update_at AS updateAt,
+            sp.pitch_type_id AS pitchTypeId,
+            sp.is_active AS isActive,
+            pt.name AS pitchType
+        FROM sub_pitches sp
+        LEFT JOIN pitch_types pt ON pt.id = sp.pitch_type_id
         WHERE pitch_id = #{pitchId}
     </select>
 

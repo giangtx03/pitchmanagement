@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -93,6 +94,7 @@ public class PitchServiceImpl implements PitchService {
                         .price(pitchTimeRequest.getPrice())
                         .subPitchId(subPitchDto.getId())
                         .timeSlotId(timeSlotDto.getId())
+                        .isActive(true)
                         .build();
                 pitchTimeDao.insertPitchTime(pitchTimeDto);
                 PitchTimeResponse pitchTimeResponse = PitchTimeResponse.builder()
@@ -171,5 +173,57 @@ public class PitchServiceImpl implements PitchService {
                 .totalPages(pageInfo.getPages())
                 .build();
         return pageResponse;
+    }
+
+    @Override
+    public PitchResponse getPitchById(Long id) throws Exception {
+        PitchDto pitchDto = pitchDao.getPitchById(id);
+
+        if(pitchDto == null || !pitchDto.isActive()){
+            throw new NotFoundException("Không tìm thấy sân bóng!");
+        }
+
+        UserDto managerDto = userDao.getUserById(pitchDto.getManagerId());
+        UserResponse managerResponse = UserResponse.fromUserDto(managerDto);
+        List<SubPitchDto> subPitchDtos = subPitchDao.getAllByPitchId(pitchDto.getId());
+        List<SubPitchResponse> subPitchResponses = subPitchDtos.stream()
+                .filter(SubPitchDto::isActive)
+                .map(
+                subPitchDto -> {
+                    List<PitchTimeResponse> pitchTimeResponses = pitchTimeDao.getPitchTimeBySubPitchId(subPitchDto.getId())
+                            .stream()
+                            .filter(PitchTimeDto::isActive)
+                            .map(pitchTimeDto ->
+                                PitchTimeResponse.builder()
+                                        .startTime(pitchTimeDto.getStartTime())
+                                        .endTime(pitchTimeDto.getEndTime())
+                                        .price(pitchTimeDto.getPrice())
+                                        .build()
+                            ).toList();
+                    return SubPitchResponse.builder()
+                            .id(subPitchDto.getId())
+                            .name(subPitchDto.getName())
+                            .pitchType(subPitchDto.getPitchType())
+                            .pitchTimes(pitchTimeResponses)
+                            .createAt(subPitchDto.getCreateAt())
+                            .updateAt(subPitchDto.getUpdateAt())
+                            .build();
+                }
+        ).toList();
+
+        List<String> imageResponses = imageDao.getAllByPitchId(pitchDto.getId())
+                .stream().map(ImageDto::getName).toList();
+
+        PitchResponse pitchResponse = PitchResponse.builder()
+                .id(pitchDto.getId())
+                .name(pitchDto.getName())
+                .location(pitchDto.getLocation())
+                .subPitches(subPitchResponses)
+                .manager(managerResponse)
+                .images(imageResponses)
+                .createAt(pitchDto.getCreateAt())
+                .updateAt(pitchDto.getUpdateAt())
+                .build();
+        return pitchResponse;
     }
 }

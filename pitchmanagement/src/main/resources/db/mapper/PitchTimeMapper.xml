@@ -5,13 +5,14 @@
 
     <insert id="insertPitchTime" parameterType="com.pitchmanagement.dtos.PitchTimeDto">
         INSERT INTO
-            pitch_times(sub_pitch_id, time_slot_id, price)
-        VALUES (#{subPitchId}, #{timeSlotId}, #{price})
+            pitch_times(sub_pitch_id, time_slot_id, price, is_active)
+        VALUES (#{subPitchId}, #{timeSlotId}, #{price}, #{isActive})
     </insert>
 
     <select id="getPitchTimeBySubPitchId" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchTimeDto">
         SELECT
             pt.price,
+            pt.is_active AS isActive,
             ts.start_time AS startTime,
             ts.end_time AS endTime
         FROM pitch_times pt
@@ -22,13 +23,9 @@
     <update id="updatePitchTime" parameterType="com.pitchmanagement.dtos.PitchTimeDto">
         UPDATE pitch_times SET
             price = #{price},
+            is_active = #{isActive},
             time_slot_id = #{timeSlotId}
         WHERE sub_pitch_id = #{subPitchId}
     </update>
-
-    <delete id="deletePitchTime" parameterType="com.pitchmanagement.dtos.PitchTimeDto">
-        DELETE FROM pitch_times
-        WHERE time_slot_id = #{timeSlotId} AND sub_pitch_id = #{subPitchId}
-    </delete>
 
 </mapper>

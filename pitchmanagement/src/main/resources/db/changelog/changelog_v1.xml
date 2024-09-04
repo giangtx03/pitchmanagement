@@ -206,5 +206,10 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet id="2" author="Truong Xuan Giang">
+        <addColumn tableName="pitch_times">
+            <column name="is_active" type="tinyint" />
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
