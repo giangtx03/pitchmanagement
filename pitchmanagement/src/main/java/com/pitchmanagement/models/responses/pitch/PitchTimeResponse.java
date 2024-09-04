@@ -19,5 +19,6 @@ public class PitchTimeResponse {
     private LocalTime startTime;
     @JsonProperty("end_time")
     private LocalTime endTime;
-
+    @JsonProperty("is_active")
+    private boolean isActive;
 }

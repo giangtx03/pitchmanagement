@@ -26,4 +26,6 @@ public class SubPitchResponse {
     private List<PitchTimeResponse> pitchTimes;
     @JsonProperty("pitch_type")
     private String pitchType;
+    @JsonProperty("is_active")
+    private boolean isActive;
 }

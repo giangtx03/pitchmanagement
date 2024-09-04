@@ -23,10 +23,27 @@
         WHERE pitch_id = #{pitchId}
     </select>
 
+    <select id="isExisting" parameterType="map" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM sub_pitches
+        WHERE name = #{name} AND pitch_id = #{pitchId}
+    </select>
+
+    <select id="getSubPitchById" parameterType="Long" resultType="com.pitchmanagement.dtos.SubPitchDto" >
+        SELECT
+            id,
+            name,
+            create_at AS createAt,
+            update_at AS updateAt,
+            pitch_type_id AS pitchTypeId,
+            is_active AS isActive
+        FROM sub_pitches
+        WHERE id = #{id}
+    </select>
+
     <update id="updateSubPitch" parameterType="com.pitchmanagement.dtos.SubPitchDto" >
         SELECT
             name = #{name},
-            create_at = #{createAt},
             update_at = #{updateAt},
             is_active = #{isActive},
             pitch_type_id = #{pitchTypeId}

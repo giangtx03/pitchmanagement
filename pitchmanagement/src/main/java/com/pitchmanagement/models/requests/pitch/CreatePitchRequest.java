@@ -1,4 +1,4 @@
-package com.pitchmanagement.models.requests.createPitch;
+package com.pitchmanagement.models.requests.pitch;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

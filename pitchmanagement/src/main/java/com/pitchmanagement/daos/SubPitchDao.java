@@ -12,5 +12,6 @@ public interface SubPitchDao {
     void insertSubPitch(SubPitchDto subPitchDto);
     List<SubPitchDto> getAllByPitchId(@Param("pitchId") Long pitchId);
     void updateSubPitch(SubPitchDto subPitchDto);
-
+    boolean isExisting(@Param("name") String name, @Param("pitchId") Long pitchId);
+    SubPitchDto getSubPitchById(@Param("id") Long id);
 }

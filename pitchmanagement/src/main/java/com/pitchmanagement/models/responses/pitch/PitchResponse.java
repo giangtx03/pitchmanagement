@@ -31,4 +31,6 @@ public class PitchResponse {
     private List<SubPitchResponse> subPitches;
     @JsonProperty("images")
     private List<String> images;
+    @JsonProperty("is_active")
+    private boolean isActive;
 }
