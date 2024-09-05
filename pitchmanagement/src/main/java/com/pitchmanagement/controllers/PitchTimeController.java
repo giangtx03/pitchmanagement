@@ -1,9 +1,11 @@
 package com.pitchmanagement.controllers;
 
+import com.pitchmanagement.models.requests.pitch_time.CreatePitchTimeRequest;
+import com.pitchmanagement.models.requests.pitch_time.UpdatePitchTimeRequest;
 import com.pitchmanagement.models.requests.sub_pitch.CreateSubPitchRequest;
 import com.pitchmanagement.models.requests.sub_pitch.UpdateSubPitchRequest;
 import com.pitchmanagement.models.responses.BaseResponse;
-import com.pitchmanagement.services.SubPitchService;
+import com.pitchmanagement.services.PitchTimeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,14 +18,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("public/${api.prefix}/sub-pitches")
-public class SubPitchController {
+@RequestMapping("public/${api.prefix}/pitch-times")
+public class PitchTimeController {
 
-    private final SubPitchService subPitchService;
+    private final PitchTimeService pitchTimeService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse> createSubPitch(
-            @RequestBody @Valid CreateSubPitchRequest request,
+    public ResponseEntity<BaseResponse> createPitchTime(
+            @RequestBody @Valid CreatePitchTimeRequest request,
             BindingResult result
     ){
         if (result.hasErrors()) {
@@ -42,11 +44,11 @@ public class SubPitchController {
         }
 
         try{
-            subPitchService.createSubPitch(request);
+            pitchTimeService.createPitchTime(request);
 
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.CREATED.value())
-                    .message("Tạo sân con thành công!")
+                    .message("Thêm khung thời gian thành công!")
                     .build();
             return ResponseEntity.ok().body(response);
         }
@@ -60,8 +62,8 @@ public class SubPitchController {
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponse> updeateSubPitch(
-            @RequestBody @Valid UpdateSubPitchRequest updateSubPitchRequest,
+    public ResponseEntity<BaseResponse> updeatePitchTime(
+            @RequestBody @Valid UpdatePitchTimeRequest updatePitchTimeRequest,
             BindingResult result
     ){
         if (result.hasErrors()) {
@@ -80,11 +82,11 @@ public class SubPitchController {
         }
 
         try{
-            subPitchService.updateSubPitch(updateSubPitchRequest);
+            pitchTimeService.updatePitchTime(updatePitchTimeRequest);
 
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())
-                    .message("Cập nhật sân nhỏ thành công!")
+                    .message("Cập nhật khung thời gian thành công!")
                     .build();
             return ResponseEntity.ok().body(response);
         }
@@ -96,4 +98,5 @@ public class SubPitchController {
                             .build());
         }
     }
+
 }

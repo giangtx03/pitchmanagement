@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.pitchmanagement.constants.AuthConstant;
 import com.pitchmanagement.daos.*;
 import com.pitchmanagement.dtos.*;
+import com.pitchmanagement.exceptions.InvalidDataException;
+import com.pitchmanagement.models.requests.image.CreateImageRequest;
 import com.pitchmanagement.models.requests.pitch.CreatePitchRequest;
 import com.pitchmanagement.models.requests.pitch.PitchTimeRequest;
 import com.pitchmanagement.models.requests.pitch.SubPitchRequest;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -253,5 +256,42 @@ public class PitchServiceImpl implements PitchService {
         pitchDao.updatePitch(pitchDto);
         logger.info("Cập nhật sân bóng thành công : {}", updatePitchRequest.getName());
         return getPitchById(updatePitchRequest.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addImages(CreateImageRequest imageRequest) throws Exception {
+        PitchDto pitchDto = pitchDao.getPitchById(imageRequest.getPitchId());
+
+        if(pitchDto == null) {
+            logger.warn("Không tìm thấy sân bóng với id : {}", imageRequest.getPitchId());
+            throw new NotFoundException("Không tìm thấy sân bóng!");
+        }
+
+        List<ImageDto> imageDtos = imageDao.getAllByPitchId(imageRequest.getPitchId());
+
+        if(imageDtos.size() + imageRequest.getImages().size() > 5){
+            throw new InvalidDataException("Tổng số ảnh cho sân bóng này vượt quá 5!");
+        }
+
+        for(MultipartFile image : imageRequest.getImages()){
+            String imageName = imageService.upload(image);
+            ImageDto imageDto = ImageDto.builder()
+                    .pitchId(pitchDto.getId())
+                    .name(imageName)
+                    .build();
+            imageDao.insertImage(imageDto);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteImage(String name) {
+        try {
+            imageService.delete(name);
+            imageDao.deleteImage(name);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -20,12 +20,27 @@
         WHERE pt.sub_pitch_id = #{subPitchId}
     </select>
 
+    <select id="isExisting" parameterType="map" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM pitch_times
+        WHERE sub_pitch_id = #{subPitchId} AND time_slot_id = #{timeSlotId}
+    </select>
+
+    <select id="getBySubPitchIdAndTimeSlotId" parameterType="map" resultType="com.pitchmanagement.dtos.PitchTimeDto">
+        SELECT
+            price,
+            time_slot_id AS timeSlotId,
+            sub_pitch_id AS subPitchId,
+            is_active AS isActive
+        FROM pitch_times
+        WHERE sub_pitch_id = #{subPitchId} AND time_slot_id = #{timeSlotId}
+    </select>
+
     <update id="updatePitchTime" parameterType="com.pitchmanagement.dtos.PitchTimeDto">
         UPDATE pitch_times SET
             price = #{price},
-            is_active = #{isActive},
-            time_slot_id = #{timeSlotId}
-        WHERE sub_pitch_id = #{subPitchId}
+            is_active = #{isActive}
+        WHERE sub_pitch_id = #{subPitchId} AND time_slot_id = #{timeSlotId}
     </update>
 
 </mapper>

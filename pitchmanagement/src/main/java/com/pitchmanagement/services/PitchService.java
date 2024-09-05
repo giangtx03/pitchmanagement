@@ -1,5 +1,6 @@
 package com.pitchmanagement.services;
 
+import com.pitchmanagement.models.requests.image.CreateImageRequest;
 import com.pitchmanagement.models.requests.pitch.CreatePitchRequest;
 import com.pitchmanagement.models.requests.pitch.UpdatePitchRequest;
 import com.pitchmanagement.models.responses.PageResponse;
@@ -10,4 +11,6 @@ public interface PitchService {
     PageResponse getAll(String keyword, Long managerId, int pageNumber, int limit, String orderBy, String orderSort);
     PitchResponse getPitchById(Long id) throws Exception;
     PitchResponse updatePitch(UpdatePitchRequest updatePitchRequest) throws Exception;
+    void addImages(CreateImageRequest imageRequest) throws Exception;
+    void deleteImage(String name);
 }

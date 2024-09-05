@@ -45,7 +45,9 @@ public class WebSecurityConfig {
         whiteList = new String[] {
                 String.format("public/%s/users/**", apiPrefix),
                 String.format("public/%s/images/**", apiPrefix),
-                String.format("public/%s/pitches/**", apiPrefix)
+                String.format("public/%s/pitches/**", apiPrefix),
+                String.format("public/%s/sub-pitches/**", apiPrefix),
+                String.format("public/%s/pitch-times/**", apiPrefix)
         };
     }
 

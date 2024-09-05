@@ -36,18 +36,19 @@
             create_at AS createAt,
             update_at AS updateAt,
             pitch_type_id AS pitchTypeId,
+            pitch_id AS pitchId,
             is_active AS isActive
         FROM sub_pitches
         WHERE id = #{id}
     </select>
 
     <update id="updateSubPitch" parameterType="com.pitchmanagement.dtos.SubPitchDto" >
-        SELECT
+        UPDATE sub_pitches SET
             name = #{name},
             update_at = #{updateAt},
             is_active = #{isActive},
             pitch_type_id = #{pitchTypeId}
-        FROM pitch_types WHERE id = #{id}
+        WHERE id = #{id}
     </update>
 
 </mapper>
