@@ -18,5 +18,6 @@ public interface UserService {
     UserResponse updateUser(UpdateUserRequest updateUserRequest) throws Exception;
 
     void changePassword(ChangePasswordRequest request) throws Exception;
-
+    void confirmEmail(String token) throws Exception;
+    void resendConfirmEmail(String email) throws Exception;
 }

@@ -51,6 +51,7 @@
             address = #{address},
             avatar = #{avatar},
             phone_number = #{phoneNumber},
+            is_active = #{isActive},
             update_at = #{updateAt}
         WHERE id = #{id}
     </update>

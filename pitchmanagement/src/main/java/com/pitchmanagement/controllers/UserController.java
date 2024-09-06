@@ -54,21 +54,21 @@ public class UserController {
             @ModelAttribute @Valid UpdateUserRequest updateUserRequest,
             BindingResult result
     ){
+        if (result.hasErrors()) {
+            // lấy ra danh sách lỗi
+            List<String> errorMessages = result.getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+            // trả về danh sách lỗi
+            BaseResponse response = BaseResponse.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message("Lỗi thông tin đầu vào!!!")
+                    .data(errorMessages)
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
         try {
-            if (result.hasErrors()) {
-                // lấy ra danh sách lỗi
-                List<String> errorMessages = result.getFieldErrors()
-                        .stream()
-                        .map(FieldError::getDefaultMessage)
-                        .toList();
-                // trả về danh sách lỗi
-                BaseResponse response = BaseResponse.builder()
-                        .status(HttpStatus.BAD_REQUEST.value())
-                        .message("Lỗi thông tin đầu vào!!!")
-                        .data(errorMessages)
-                        .build();
-                return ResponseEntity.badRequest().body(response);
-            }
             UserResponse userResponse = userService.updateUser(updateUserRequest);
 
             BaseResponse response = BaseResponse.builder()
@@ -92,21 +92,21 @@ public class UserController {
             @RequestBody @Valid ChangePasswordRequest changePasswordRequest,
             BindingResult result
     ){
+        if (result.hasErrors()) {
+            // lấy ra danh sách lỗi
+            List<String> errorMessages = result.getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+            // trả về danh sách lỗi
+            BaseResponse response = BaseResponse.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message("Lỗi thông tin đầu vào!!!")
+                    .data(errorMessages)
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
         try {
-            if (result.hasErrors()) {
-                // lấy ra danh sách lỗi
-                List<String> errorMessages = result.getFieldErrors()
-                        .stream()
-                        .map(FieldError::getDefaultMessage)
-                        .toList();
-                // trả về danh sách lỗi
-                BaseResponse response = BaseResponse.builder()
-                        .status(HttpStatus.BAD_REQUEST.value())
-                        .message("Lỗi thông tin đầu vào!!!")
-                        .data(errorMessages)
-                        .build();
-                return ResponseEntity.badRequest().body(response);
-            }
             userService.changePassword(changePasswordRequest);
 
             BaseResponse response = BaseResponse.builder()

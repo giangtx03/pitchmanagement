@@ -1,0 +1,31 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pitchmanagement.daos.TokenDao">
+
+    <insert id="insertToken" parameterType="com.pitchmanagement.dtos.TokenDto" >
+        INSERT INTO
+        tokens(token, user_id, expired_time)
+        VALUES (#{token},#{userId}, #{expiredTime})
+    </insert>
+
+    <select id="getToken" parameterType="String" resultType="com.pitchmanagement.dtos.TokenDto" >
+        SELECT
+            token,
+            user_id AS userId,
+            expired_time AS expiredTime
+        FROM tokens
+        WHERE token = #{token}
+    </select>
+
+    <delete id="deleteToken" parameterType="String">
+        DELETE FROM tokens
+        WHERE token = #{token}
+    </delete>
+
+    <delete id="deleteTokenByUserId" parameterType="Long">
+        DELETE FROM tokens
+        WHERE user_id = #{userId}
+    </delete>
+
+</mapper>

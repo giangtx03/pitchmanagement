@@ -212,4 +212,21 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="3" author="Truong Xuan Giang">
+        <createTable tableName="tokens">
+            <column name="token" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expired_time" type="timestamp"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="tokens"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_tokens_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
 </databaseChangeLog>
