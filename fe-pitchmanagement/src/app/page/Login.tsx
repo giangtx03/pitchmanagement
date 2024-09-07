@@ -29,7 +29,7 @@ export default function Login() {
         password: data.password,
       })
       .then((response) => {
-        console.log(response)
+        // console.log(response)
         if (response.status === 200) {
           toast.success(response.data.message, {
             position: "top-right",

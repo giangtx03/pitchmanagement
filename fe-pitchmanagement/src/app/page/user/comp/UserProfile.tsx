@@ -85,6 +85,7 @@ export default function UserProfile() {
             if (response.data.status === 200) {
               toast.success(response.data.message, {
                 position: "top-right",
+                autoClose: 1500,
               });
               // window.location.reload();
               dispatch(login(response.data.data));
@@ -94,6 +95,7 @@ export default function UserProfile() {
           .catch((error: any) => {
             toast.error(error.response.data.message, {
               position: "top-right",
+              autoClose: 1500,
             });
             // console.log(error);
             dispatch(showOrHideSpinner(false));

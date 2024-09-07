@@ -3,10 +3,16 @@ import { useAppDispatch } from "../../../store/hooks";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { ChangePasswordRequest } from "../../../model/User";
+import Swal from "sweetalert2";
+import { showOrHideSpinner } from "../../../reducer/SpinnerSlice";
+import { logout } from "../../../reducer/UserSlice";
+import { toast } from "react-toastify";
+import { UserService } from "../../../service/UserService";
+import { useSelector } from "react-redux";
 
 export default function ChangePassword() {
   const dispatch = useAppDispatch();
-  const navagate = useNavigate();
+  const userId = useSelector((state: any) => state.user.userDetail.id);
 
   const {
     register,
@@ -30,7 +36,46 @@ export default function ChangePassword() {
     }
   }, [watch("newPassword"), watch, setError, clearErrors]);
 
-  const onSubmit = (data: any) => {};
+  const onSubmit = (data: any) => {
+    Swal.fire({
+      title: "Bạn có chắc chắn ?",
+      text: "Bạn sẽ không thể hoàn tác hành động này!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Đồng ý",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        dispatch(showOrHideSpinner(true));
+        await UserService.getInstance()
+          .changePassword({
+            user_id: userId,
+            old_password: data.oldPassword,
+            new_password: data.newPassword,
+          })
+          .then((response: any) => {
+            // console.log(response.data);
+            if (response.data.status === 200) {
+              toast.success(response.data.message, {
+                position: "top-right",
+                autoClose: 1500,
+              });
+              dispatch(logout());
+              dispatch(showOrHideSpinner(false));
+            }
+          })
+          .catch((error: any) => {
+            toast.error(error.response.data.message, {
+              position: "top-right",
+              autoClose: 1500,
+            });
+            dispatch(showOrHideSpinner(false));
+          });
+      }
+    });
+  };
+
   return (
     <div className="shadow p-5">
       <div className="row mb-3">
