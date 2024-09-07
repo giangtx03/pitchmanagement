@@ -22,7 +22,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setFrom(MailConstant.FROM_EMAIL);
             helper.setTo(recipient);
             helper.setSubject(subject);
