@@ -3,6 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/hooks";
 import { useForm } from "react-hook-form";
 import { LoginRequest } from "../model/User";
+import { showOrHideSpinner } from "../reducer/SpinnerSlice";
+import { UserService } from "../service/UserService";
+import { toast } from "react-toastify";
+import { TokenService } from "../service/TokenService";
+import { login } from "../reducer/UserSlice";
 
 export default function Login() {
   const dispatch = useAppDispatch();
@@ -14,9 +19,43 @@ export default function Login() {
     formState: { errors, touchedFields },
   } = useForm<LoginRequest>({ mode: "onTouched" });
 
-  const onSubmit = (data : any) => {
-    console.log(data);
-  }
+  const onSubmit = async (data: any) => {
+    // console.log(data);
+    dispatch(showOrHideSpinner(true));
+
+    await UserService.getInstance()
+      .login({
+        email: data.email,
+        password: data.password,
+      })
+      .then((response) => {
+        console.log(response)
+        if (response.status === 200) {
+          toast.success(response.data.message, {
+            position: "top-right",
+            autoClose: 1500,
+          });
+          dispatch(showOrHideSpinner(false));
+          TokenService.getInstance().setToken(response.data.data.token);
+          dispatch(login(response.data.data))
+          navigate("/home");
+        } else {
+          toast.error(response.data.message, {
+            position: "top-right",
+            autoClose: 1500,
+          });
+
+          dispatch(showOrHideSpinner(false));
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message, {
+          position: "top-right",
+          autoClose: 1500,
+        });
+        dispatch(showOrHideSpinner(false));
+      });
+  };
 
   return (
     <div
@@ -71,8 +110,7 @@ export default function Login() {
         )}
         {/* 2 column grid layout for inline styling */}
         <div className="row mb-4">
-          <div className="col d-flex justify-content-center">
-            {/* Checkbox */}
+          {/* <div className="col d-flex justify-content-center">
             <div className="form-check">
               <input
                 className="form-check-input"
@@ -81,11 +119,10 @@ export default function Login() {
                 id="form2Example31"
               />
               <label className="form-check-label" htmlFor="form2Example31">
-                {" "}
-                Nhớ mật khẩu{" "}
+                Nhớ mật khẩu
               </label>
             </div>
-          </div>
+          </div> */}
           <div className="col">
             {/* Simple link */}
             <a href="#!">Quên mật khẩu?</a>

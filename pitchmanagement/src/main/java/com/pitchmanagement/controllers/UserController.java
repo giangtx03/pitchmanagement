@@ -87,7 +87,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER', 'ROLE_MANAGER')")
-    @PutMapping("/change_password")
+    @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(
             @RequestBody @Valid ChangePasswordRequest changePasswordRequest,
             BindingResult result

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
-import { showOrHindSpinner } from "../reducer/SpinnerSlice";
+import { showOrHideSpinner } from "../reducer/SpinnerSlice";
 import { useEffect } from "react";
 
 export default function AdminGuard(props: any) {
@@ -14,9 +14,9 @@ export default function AdminGuard(props: any) {
 
   useEffect(() => {
     if (isLoading) {
-      dispatch(showOrHindSpinner(true));
+      dispatch(showOrHideSpinner(true));
     } else {
-      dispatch(showOrHindSpinner(false));
+      dispatch(showOrHideSpinner(false));
       if (!isAuthenticated) {
         navigate("/login");
       } else if (user.role !== "ADMIN") {
@@ -26,7 +26,7 @@ export default function AdminGuard(props: any) {
   }, [isAuthenticated, isLoading, navigate, dispatch, user?.role]);
 
   if (!isLoading && (!isAuthenticated || user?.role !== "ADMIN")) {
-    dispatch(showOrHindSpinner(false));
+    dispatch(showOrHideSpinner(false));
     return null;
   }
 

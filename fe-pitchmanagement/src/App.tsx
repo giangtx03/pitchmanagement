@@ -10,10 +10,15 @@ import NotFound from './app/page/errors/NotFound';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import './assets/css/spinner.css';
+import "react-toastify/dist/ReactToastify.css";
+import 'primereact/resources/primereact.css';
+import 'primereact/resources/themes/lara-light-cyan/theme.css';
+import './App.css';
 
 export const spinner = (
-  <div className="progress-spinner text-center">
-    <div className="swm-loader"></div>
+  <div className="progress-spinner text-center ">
+    <div className="spinner-border text-primary"></div>
   </div>
 );
 

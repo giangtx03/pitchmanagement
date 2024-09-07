@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { showOrHindSpinner } from "../reducer/SpinnerSlice";
+import { showOrHideSpinner } from "../reducer/SpinnerSlice";
 
 export default function AuthGuard(props: any) {
   const navigate = useNavigate();
@@ -13,14 +13,9 @@ export default function AuthGuard(props: any) {
 
   useEffect(() => {
     if (isLoading) {
-      dispatch(showOrHindSpinner(true));
-      if (!isAuthenticated) {
-        dispatch(showOrHindSpinner(false));
-        navigate("/login");
-        return;
-      }
+      dispatch(showOrHideSpinner(true));
     } else {
-      dispatch(showOrHindSpinner(false));
+      dispatch(showOrHideSpinner(false));
       if (!isAuthenticated) {
         navigate("/login");
       }
@@ -28,12 +23,12 @@ export default function AuthGuard(props: any) {
   }, [isAuthenticated, isLoading, navigate, dispatch]);
 
   if (isLoading) {
-    dispatch(showOrHindSpinner(true));
+    dispatch(showOrHideSpinner(true));
     return null;
   }
 
   if (!isAuthenticated) {
-    dispatch(showOrHindSpinner(false));
+    dispatch(showOrHideSpinner(false));
     return null;
   }
 

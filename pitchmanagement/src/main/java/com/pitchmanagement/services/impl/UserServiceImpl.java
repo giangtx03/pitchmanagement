@@ -145,28 +145,27 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor =  Exception.class)
     public UserResponse updateUser(UpdateUserRequest updateUserRequest) throws Exception {
 
-        UserDto userFromDb = userDao.getUserById(updateUserRequest.getId());
+        UserDto userDto = userDao.getUserById(updateUserRequest.getId());
 
-        if(userFromDb == null){
+        if(userDto == null){
             throw new UsernameNotFoundException("Người dùng không tồn tại!!!");
         }
 
         String image = "";
         if(updateUserRequest.getAvatar() != null && !updateUserRequest.getAvatar().isEmpty()){
-            if(userFromDb.getAvatar() != null && !userFromDb.getAvatar().isEmpty()){
-                imageService.delete(userFromDb.getAvatar());
+            if(userDto.getAvatar() != null && !userDto.getAvatar().isEmpty()){
+                imageService.delete(userDto.getAvatar());
             }
             image = imageService.upload(updateUserRequest.getAvatar());
         }
 
-        UserDto userDto = UserDto.builder()
-                .id(updateUserRequest.getId())
-                .address(updateUserRequest.getAddress() != null ? updateUserRequest.getAddress() : userFromDb.getAddress())
-                .fullname(updateUserRequest.getFullname() != null ? updateUserRequest.getFullname() : userFromDb.getFullname())
-                .avatar(updateUserRequest.getAvatar() != null ? image : userFromDb.getAvatar())
-                .phoneNumber(updateUserRequest.getPhoneNumber() != null ? updateUserRequest.getPhoneNumber() : userFromDb.getPhoneNumber())
-                .updateAt(LocalDateTime.now())
-                .build();
+
+        userDto.setAddress(updateUserRequest.getAddress() != null ? updateUserRequest.getAddress() : userDto.getAddress());
+        userDto.setFullname(updateUserRequest.getFullname() != null ? updateUserRequest.getFullname() : userDto.getFullname());
+        userDto.setAvatar(updateUserRequest.getAvatar() != null ? image : userDto.getAvatar());
+        userDto.setPhoneNumber(updateUserRequest.getPhoneNumber() != null ? updateUserRequest.getPhoneNumber() : userDto.getPhoneNumber());
+        userDto.setUpdateAt(LocalDateTime.now());
+
         userDao.update(userDto);
         return UserResponse.fromUserDto(userDto);
     }
