@@ -1,4 +1,4 @@
-package com.pitchmanagement.models.requests;
+package com.pitchmanagement.models.requests.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

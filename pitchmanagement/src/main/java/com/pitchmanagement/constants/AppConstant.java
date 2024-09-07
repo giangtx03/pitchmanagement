@@ -1,8 +1,6 @@
 package com.pitchmanagement.constants;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-
 public class AppConstant {
-    public static final String APP_API_URL = "http://localhost:8080/";
+    public static final String SUB_URL_CONFIRM_EMAIL = "/users/confirm-email/";
+    public static final String SUB_URL_RENEW_PASSWORD = "/users/renew-password/";
 }

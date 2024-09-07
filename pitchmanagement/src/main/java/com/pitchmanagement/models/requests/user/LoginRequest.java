@@ -1,4 +1,4 @@
-package com.pitchmanagement.models.requests;
+package com.pitchmanagement.models.requests.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;

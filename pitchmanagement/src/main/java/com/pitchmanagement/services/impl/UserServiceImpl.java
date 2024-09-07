@@ -8,10 +8,7 @@ import com.pitchmanagement.daos.UserDao;
 import com.pitchmanagement.dtos.TokenDto;
 import com.pitchmanagement.dtos.UserDto;
 import com.pitchmanagement.models.User;
-import com.pitchmanagement.models.requests.ChangePasswordRequest;
-import com.pitchmanagement.models.requests.LoginRequest;
-import com.pitchmanagement.models.requests.RegisterRequest;
-import com.pitchmanagement.models.requests.UpdateUserRequest;
+import com.pitchmanagement.models.requests.user.*;
 import com.pitchmanagement.models.responses.LoginResponse;
 import com.pitchmanagement.models.responses.RegisterResponse;
 import com.pitchmanagement.models.responses.UserResponse;
@@ -32,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,6 +48,8 @@ public class UserServiceImpl implements UserService {
 
     @Value("${api.prefix}")
     private String apiPrefix;
+    @Value("${frontend.api}")
+    private String frontendApi;
     @Override
     public LoginResponse login(LoginRequest loginRequest) throws Exception {
 
@@ -118,7 +116,7 @@ public class UserServiceImpl implements UserService {
                 .build();
         userDao.insert(userDto);
 
-        generateTokenAndSendEmail(userDto);
+        generateTokenAndSendEmail(userDto, MailConstant.REGISTRATION_CONFIRMATION,MailConstant.SUBJECT_TYPE_CONFIRM_EMAIL ,AppConstant.SUB_URL_CONFIRM_EMAIL);
 
         return RegisterResponse.builder()
                 .id(userDto.getId())
@@ -231,10 +229,47 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy người dùng!"));
 
         tokenDao.deleteTokenByUserId(userDto.getId());
-        generateTokenAndSendEmail(userDto);
+        generateTokenAndSendEmail(userDto, MailConstant.REGISTRATION_CONFIRMATION, MailConstant.SUBJECT_TYPE_CONFIRM_EMAIL, AppConstant.SUB_URL_CONFIRM_EMAIL);
     }
 
-    private void generateTokenAndSendEmail(UserDto userDto){
+    @Override
+    @Transactional(rollbackFor =  Exception.class)
+    public void forgotPassword(String email) throws Exception {
+        UserDto userDto = Optional.ofNullable(userDao.getUserByEmail(email))
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy người dùng!"));
+
+        if(!userDto.isActive()){
+            throw new RuntimeException("Tài khoản chưa active");
+        }
+
+        tokenDao.deleteTokenByUserId(userDto.getId());
+        generateTokenAndSendEmail(userDto, MailConstant.FORGOT_PASSWORD, MailConstant.SUBJECT_TYPE_FORGOT_PASSWORD, AppConstant.SUB_URL_RENEW_PASSWORD);
+    }
+
+    @Override
+    public void renewPassword(String token, RenewPassword renewPassword) throws Exception {
+        TokenDto tokenDto = Optional.ofNullable(tokenDao.getToken(token))
+                .orElseThrow(() -> new NotFoundException("Mã xác nhận không hợp lệ"));
+
+        if(tokenDto.getExpiredTime().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("Mã xác nhận đã hết hạn");
+        }
+
+        if(!renewPassword.getNewPassword().trim().equals(renewPassword.getNewPassword())){
+            throw new InvalidPropertiesFormatException("Mật khẩu chứa dấu cách!!!");
+        }
+
+        UserDto userDto = Optional.ofNullable(userDao.getUserById(tokenDto.getUserId()))
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy người dùng!"));
+
+        userDto.setPassword(passwordEncoder.encode(renewPassword.getNewPassword()));
+        userDto.setUpdateAt(LocalDateTime.now());
+
+        userDao.changePassword(userDto);
+        tokenDao.deleteToken(token);
+    }
+
+    private void generateTokenAndSendEmail(UserDto userDto, String formBody, String subjectType, String subUrl){
         TokenDto tokenDto = TokenDto.builder()
                 .token(UUID.randomUUID().toString())
                 .userId(userDto.getId())
@@ -242,11 +277,11 @@ public class UserServiceImpl implements UserService {
                 .build();
         tokenDao.insertToken(tokenDto);
 
-        String body = MailConstant.REGISTRATION_CONFIRMATION
+        String body = formBody
                 .replace("{username}", userDto.getFullname())
-                .replace("{confirmationLink}", AppConstant.APP_API_URL + "public/" + apiPrefix + "/users/confirm-email/" + tokenDto.getToken());
+                .replace("{confirmationLink}", frontendApi + "public/" + apiPrefix + subUrl + tokenDto.getToken());
 
-        String subject = String.format("Xác thực email cho tài khoản %s", userDto.getFullname());
+        String subject = subjectType + " cho người dùng " + userDto.getFullname();
 
         sendEmailService.sendEmail(userDto.getEmail(), subject, body);
     }

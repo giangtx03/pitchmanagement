@@ -1,7 +1,7 @@
 package com.pitchmanagement.controllers;
 
-import com.pitchmanagement.models.requests.ChangePasswordRequest;
-import com.pitchmanagement.models.requests.UpdateUserRequest;
+import com.pitchmanagement.models.requests.user.ChangePasswordRequest;
+import com.pitchmanagement.models.requests.user.UpdateUserRequest;
 import com.pitchmanagement.models.responses.BaseResponse;
 import com.pitchmanagement.models.responses.UserResponse;
 import com.pitchmanagement.services.UserService;
