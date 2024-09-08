@@ -63,8 +63,7 @@ public class UserController {
             // trả về danh sách lỗi
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
-                    .message("Lỗi thông tin đầu vào!!!")
-                    .data(errorMessages)
+                    .message(errorMessages.toString())
                     .build();
             return ResponseEntity.badRequest().body(response);
         }
@@ -101,8 +100,7 @@ public class UserController {
             // trả về danh sách lỗi
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
-                    .message("Lỗi thông tin đầu vào!!!")
-                    .data(errorMessages)
+                    .message(errorMessages.toString())
                     .build();
             return ResponseEntity.badRequest().body(response);
         }

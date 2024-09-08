@@ -1,8 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/hooks";
 import { RegisterRequest } from "../model/User";
+import { Dialog } from "primereact/dialog";
+import ConfirmEmail from "./auth/ConfirmEmail";
+import { showOrHideSpinner } from "../reducer/SpinnerSlice";
+import { UserService } from "../service/UserService";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const dispatch = useAppDispatch();
@@ -18,8 +23,31 @@ export default function Register() {
     formState: { errors, touchedFields },
   } = useForm<RegisterRequest>({ mode: "onTouched" });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const [visible, setVisible] = useState(false);
+
+  const onSubmit = async (data: any) => {
+    dispatch(showOrHideSpinner(true));
+
+    await UserService.getInstance()
+      .register({
+        email: data.email,
+        password: data.password,
+        fullname: data.fullname,
+        phone_number: data.phoneNumber,
+      })
+      .then((response) => {
+        if (response.data.status === 201) {
+          setVisible(true);
+          dispatch(showOrHideSpinner(false));
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message, {
+          position: "top-right",
+          autoClose: 1500,
+        });
+        dispatch(showOrHideSpinner(false));
+      });
   };
 
   useEffect(() => {
@@ -97,6 +125,10 @@ export default function Register() {
             type="password"
             {...register("password", {
               required: "Mật khẩu không được để trống",
+              minLength: {
+                value: 8,
+                message: "Mật khẩu tối thiểu 8 ký tự",
+              },
             })}
             id="loginPassword"
             className="form-control"
@@ -162,6 +194,17 @@ export default function Register() {
           </p>
         </div>
       </form>
+      <Dialog
+        visible={visible}
+        style={{ width: "50vw" }}
+        onHide={() => {
+          if (!visible) return;
+          setVisible(false);
+          navigate("/login");
+        }}
+      >
+        <ConfirmEmail email={watch("email")} />
+      </Dialog>
     </div>
   );
 }

@@ -3,9 +3,13 @@ a.active {
   border: none;
 }
 
-a:hover,
+a:hover{
+  color: rgb(89, 211, 170);
+}
+
+a.btn:hover,
 .btn:hover {
-  background-color: rgb(247, 153, 30) !important;
+  background-color: rgb(60, 121, 172) !important;
 }
 
 .image-container {
