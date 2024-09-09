@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { UserService } from "../../service/UserService";
+import { useAppDispatch } from "../../store/hooks";
+import { toast } from "react-toastify";
+import { showOrHideSpinner } from "../../reducer/SpinnerSlice";
+import { Dialog } from "primereact/dialog";
 
 export default function ForgotPassword() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -10,7 +18,27 @@ export default function ForgotPassword() {
     formState: { errors, touchedFields },
   } = useForm<{ email: string }>({ mode: "onTouched" });
 
-  const onSubmit = async (data: any) => {};
+  const [visible, setVisible] = useState(false);
+
+  const onSubmit = async (data: any) => {
+    dispatch(showOrHideSpinner(true));
+
+    await UserService.getInstance()
+      .forgotPassword(data.email)
+      .then((response) => {
+        if (response.data.status === 200) {
+          setVisible(true);
+          dispatch(showOrHideSpinner(false));
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message, {
+          position: "top-right",
+          autoClose: 1500,
+        });
+        dispatch(showOrHideSpinner(false));
+      });
+  };
   return (
     <div
       className="d-flex flex-column m-auto justify-content-center align-items-center p-5 bg-light shadow"
@@ -49,11 +77,35 @@ export default function ForgotPassword() {
         {/* Register link */}
         <div className="text-center">
           <p>
-            <Link to="/login">Đăng nhập</Link>{" hoặc "}
+            <Link to="/login">Đăng nhập</Link>
+            {" hoặc "}
             <Link to="/register">Đăng ký ngay</Link>
           </p>
         </div>
       </form>
+      <Dialog
+        visible={visible}
+        style={{ width: "50vw" }}
+        onHide={() => {
+          if (!visible) return;
+          setVisible(false);
+          navigate("/login");
+        }}
+      >
+        <div className="container text-center bg-body-secondary p-2">
+          <img
+            src="https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/112-gmail_email_mail-512.png"
+            style={{ width: "200px" }}
+            alt="Img email"
+          />
+          <h3>Email đã được gửi thành công</h3>
+          <p>
+            Chúng tôi đã gửi tin nhắn qua địa chỉ email <b>{watch("email")}</b> để xác
+            thực tài khoản. Sau khi nhận email vui lòng thực hiện theo chỉ dẫn
+            mà email đã cung cấp để thực hiện bước tiếp theo.
+          </p>
+        </div>
+      </Dialog>
     </div>
   );
 }

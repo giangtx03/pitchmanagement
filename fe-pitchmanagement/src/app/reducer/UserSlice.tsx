@@ -42,8 +42,11 @@ const userSlice = createSlice({
         role: "",
       };
     },
+    setLoading(state) {
+      state.isLoading = false;
+    }
   },
 });
 
 export default userSlice.reducer;
-export const { login, logout } = userSlice.actions;
+export const { login, logout, setLoading } = userSlice.actions;

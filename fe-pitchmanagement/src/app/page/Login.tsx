@@ -67,7 +67,7 @@ export default function Login() {
 
   return (
     <div
-      className="m-auto"
+      className="m-auto shadow"
       style={{
         width: "500px",
         backgroundColor: "ghostwhite",
@@ -133,7 +133,7 @@ export default function Login() {
           </div> */}
           <div className="col">
             {/* Simple link */}
-            <a href="#!">Quên mật khẩu?</a>
+            <Link to="/forgot-password">Quên mật khẩu?</Link>
           </div>
         </div>
         {/* Submit button */}

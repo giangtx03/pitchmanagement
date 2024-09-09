@@ -238,7 +238,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy người dùng!"));
 
         if(!userDto.isActive()){
-            throw new RuntimeException("Tài khoản chưa active");
+            throw new RuntimeException("Tài khoản chưa active!!!");
         }
 
         tokenDao.deleteTokenByUserId(userDto.getId());

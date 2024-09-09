@@ -6,7 +6,7 @@ import { DecodedToken, UserDetails } from "../../model/User";
 import { decodeToken } from "react-jwt";
 import { TokenService } from "../../service/TokenService";
 import { UserService } from "../../service/UserService";
-import { login, logout } from "../../reducer/UserSlice";
+import { login, logout, setLoading } from "../../reducer/UserSlice";
 import { Avatar } from "primereact/avatar";
 import { BiUser } from "react-icons/bi";
 import { BiBell } from "react-icons/bi";
@@ -43,6 +43,7 @@ export default function Header() {
     };
 
     fetchUserDetails();
+    dispatch(setLoading())
   }, [TokenService.getInstance().getToken()]);
 
   useEffect(() => {

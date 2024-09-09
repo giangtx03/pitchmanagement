@@ -53,4 +53,16 @@ export class UserService {
     const headers = HeadersUtil.getHeaders();
     return axios.get(url, {headers});
   }
+
+  public forgotPassword(email: any) {
+    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/users/forgot-password/${email}`);
+    const headers = HeadersUtil.getHeaders();
+    return axios.get(url, {headers});
+  }
+
+  public renewPassword(modelRenewPassword: any) {
+    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/users/renew-password/${modelRenewPassword.token}`);
+    const headers = HeadersUtil.getHeaders();
+    return axios.post(url, {new_password : modelRenewPassword.new_password} ,{headers});
+  }
 }
