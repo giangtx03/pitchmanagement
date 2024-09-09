@@ -61,12 +61,12 @@ public class UserServiceImpl implements UserService {
 
         User user = User.fromUserDto(userDto);
 
-        if(!user.isActive()){
-            throw new BadCredentialsException("Tài khoản chưa active!!!");
-        }
-
         if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())){
             throw new BadCredentialsException("Sai thông tin đăng nhập!!!");
+        }
+
+        if(!user.isActive()){
+            throw new BadCredentialsException("Tài khoản chưa active!!!");
         }
 
         CustomUserDetails customUserDetails = CustomUserDetails.toCustomUser(user);

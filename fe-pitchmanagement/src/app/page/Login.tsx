@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/hooks";
 import { useForm } from "react-hook-form";
@@ -8,6 +8,9 @@ import { UserService } from "../service/UserService";
 import { toast } from "react-toastify";
 import { TokenService } from "../service/TokenService";
 import { login } from "../reducer/UserSlice";
+import { Dialog } from "primereact/dialog";
+import SendEmail from "./auth/SendEmail";
+import { ACCOUNT_IS_NOT_ACTIVE } from "../constant/ErrorMessage";
 
 export default function Login() {
   const dispatch = useAppDispatch();
@@ -16,8 +19,10 @@ export default function Login() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, touchedFields },
   } = useForm<LoginRequest>({ mode: "onTouched" });
+  const [visible, setVisible] = useState(false);
 
   const onSubmit = async (data: any) => {
     // console.log(data);
@@ -37,7 +42,7 @@ export default function Login() {
           });
           dispatch(showOrHideSpinner(false));
           TokenService.getInstance().setToken(response.data.data.token);
-          dispatch(login(response.data.data))
+          dispatch(login(response.data.data));
           navigate("/home");
         } else {
           toast.error(response.data.message, {
@@ -49,6 +54,9 @@ export default function Login() {
         }
       })
       .catch((error) => {
+        if (error.response.data.message === ACCOUNT_IS_NOT_ACTIVE) {
+          setVisible(true);
+        }
         toast.error(error.response.data.message, {
           position: "top-right",
           autoClose: 1500,
@@ -143,6 +151,17 @@ export default function Login() {
           </p>
         </div>
       </form>
+      <Dialog
+        visible={visible}
+        style={{ width: "50vw" }}
+        onHide={() => {
+          if (!visible) return;
+          setVisible(false);
+          navigate("/login");
+        }}
+      >
+        <SendEmail email={watch("email")} />
+      </Dialog>
     </div>
   );
 }

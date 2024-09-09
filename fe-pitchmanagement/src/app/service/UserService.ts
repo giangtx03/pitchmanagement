@@ -33,17 +33,23 @@ export class UserService {
   }
 
   public updateUserDetails(modelUpdateUserDetails: any) {
-    const url = ApiUrlUtil.buildQueryString('users');
+    const url = ApiUrlUtil.buildQueryString('/users');
     return axiosCustom.put(url, modelUpdateUserDetails);
   }
 
   public changePassword(modelChangePassword: any) {
-    const url = ApiUrlUtil.buildQueryString('users/change-password');
+    const url = ApiUrlUtil.buildQueryString('/users/change-password');
     return axiosCustom.put(url, modelChangePassword);
   }
 
   public sendEmail(email: any) {
-    const url = ApiUrlUtil.buildQueryString(`users/resend-confirm-email/${email}`);
+    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/users/resend-confirm-email/${email}`);
+    const headers = HeadersUtil.getHeaders();
+    return axios.get(url, {headers});
+  }
+
+  public confirmEmail(email: any) {
+    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/users/confirm-email/${email}`);
     const headers = HeadersUtil.getHeaders();
     return axios.get(url, {headers});
   }

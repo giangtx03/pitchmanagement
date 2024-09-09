@@ -1,62 +1,57 @@
-import React from "react";
-import { useAppDispatch } from "../../store/hooks";
-import { showOrHideSpinner } from "../../reducer/SpinnerSlice";
+import React, { useEffect } from "react";
 import { UserService } from "../../service/UserService";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppDispatch } from "../../store/hooks";
 import { toast } from "react-toastify";
+import { showOrHideSpinner } from "../../reducer/SpinnerSlice";
 
-export default function ConfirmEmail(props: any) {
-  const { email } = props;
+export default function ConfirmEmail() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const handleResendEmail = async () => {
-    dispatch(showOrHideSpinner(true));
-    await UserService.getInstance()
-      .sendEmail(email)
-      .then((response) => {
-        if (response.data.status === 200) {
-          dispatch(showOrHideSpinner(false));
+  const { token } = useParams<{ token: string }>();
+
+  useEffect(() => {
+    const confirmEmail = async () => {
+      await UserService.getInstance()
+        .confirmEmail(token)
+        .then((response) => {
           toast.success(response.data.message, {
             position: "top-right",
             autoClose: 1500,
           });
-        }
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message, {
-          position: "top-right",
-          autoClose: 1500,
+          dispatch(showOrHideSpinner(false));
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message, {
+            position: "top-right",
+            autoClose: 1500,
+          });
+          dispatch(showOrHideSpinner(false));
         });
-        dispatch(showOrHideSpinner(false));
-      });
-  };
+    };
+
+    if (token) {
+      confirmEmail();
+      navigate("/login");
+    }
+  }, [token]);
 
   return (
-    <div className="container text-center bg-body-secondary p-2">
-      <img
-        src="https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/112-gmail_email_mail-512.png"
-        style={{ width: "200px" }}
-        alt="Img email"
-      />
-      <h3>Xác thực Email</h3>
-      <p>
-        Chúng tôi đã gửi tin nhắn qua địa chỉ email <b>{email}</b> để xác thực
-        tài khoản. Sau khi nhận email vui lòng thực hiện theo chỉ dẫn mà email
-        đã cung cấp để hoàn thành đăng ký tài khoản của bạn.
-      </p>
-      <hr />
-      <div className="d-flex justify-content-center align-items-center">
-        <p className="mb-0">Nếu bạn không nhận được email</p>
-        <button
-          type="button"
-          onClick={handleResendEmail}
-          className="mx-2 text-success btn-link p-0"
-          style={{
-            border: "none",
-            backgroundColor: "transparent",
-          }}
-        >
-          Gửi lại email xác thực
-        </button>
+    <div className="d-flex justify-content-center align-items-center p-5 bg-light">
+      <div className="card shadow-sm p-4" style={{ width: "400px" }}>
+        <div className="card-body">
+          <h3 className="text-center mb-4">Xác nhận Email</h3>
+          <p className="text-center">
+            Đang xác nhận email. Vui lòng chờ trong
+            giây lát...
+          </p>
+          <div className="d-flex justify-content-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Đang tải...</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

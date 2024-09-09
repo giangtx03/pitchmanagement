@@ -1,4 +1,6 @@
 import Layout from "../comp/layout/Layout";
+import ConfirmEmail from "../page/auth/ConfirmEmail";
+import ForgotPassword from "../page/auth/ForgotPassword";
 import Home from "../page/Home";
 import Login from "../page/Login";
 import Register from "../page/Register";
@@ -9,9 +11,11 @@ export const RoutersHook: any = {
   path: "/",
   element: <Layout />,
   children: [
-    { path: "/home", element: <Home /> },
-    { path: "/login", element: <Login /> },
-    { path: "/register", element: <Register /> },
+    { path: "home", element: <Home /> },
+    { path: "login", element: <Login /> },
+    { path: "register", element: <Register /> },
+    { path: "confirm-email/:token", element: <ConfirmEmail /> },
+    { path: "forgot-password", element: <ForgotPassword /> },
     {...UserRouter},
     {...PitchRouter},
   ],

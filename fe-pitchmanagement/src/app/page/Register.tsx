@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/hooks";
 import { RegisterRequest } from "../model/User";
 import { Dialog } from "primereact/dialog";
-import ConfirmEmail from "./auth/ConfirmEmail";
+import SendEmail from "./auth/SendEmail";
 import { showOrHideSpinner } from "../reducer/SpinnerSlice";
 import { UserService } from "../service/UserService";
 import { toast } from "react-toastify";
@@ -17,7 +17,6 @@ export default function Register() {
     register,
     handleSubmit,
     watch,
-    setValue,
     setError,
     clearErrors,
     formState: { errors, touchedFields },
@@ -203,7 +202,7 @@ export default function Register() {
           navigate("/login");
         }}
       >
-        <ConfirmEmail email={watch("email")} />
+        <SendEmail email={watch("email")} />
       </Dialog>
     </div>
   );
