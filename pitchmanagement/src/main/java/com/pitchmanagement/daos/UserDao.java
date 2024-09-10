@@ -8,13 +8,10 @@ import java.util.Map;
 
 @Mapper
 public interface UserDao {
-
     UserDto getUserByEmail(String email);
     void insert(UserDto userDto);
     void update(UserDto userDto);
     void changePassword(UserDto userDto);
-
     boolean existingByEmail(@Param("email") String email);
-
     UserDto getUserById(@Param("id") Long id);
 }

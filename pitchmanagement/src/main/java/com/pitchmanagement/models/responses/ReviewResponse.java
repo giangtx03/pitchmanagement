@@ -1,6 +1,8 @@
 package com.pitchmanagement.models.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pitchmanagement.dtos.ReviewDto;
+import com.pitchmanagement.dtos.UserDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -25,4 +27,16 @@ public class ReviewResponse {
     private LocalDateTime createAt;
     @JsonProperty("update_at")
     private LocalDateTime updateAt;
+
+    public static ReviewResponse fromReviewDtoAndUserResponse(ReviewDto reviewDto, UserDto userDto){
+        return  ReviewResponse.builder()
+                .id(reviewDto.getId())
+                .pitchId(reviewDto.getPitchId())
+                .user(UserResponse.fromUserDto(userDto))
+                .comment(reviewDto.getComment())
+                .star(reviewDto.getStar())
+                .createAt(reviewDto.getCreateAt())
+                .updateAt(reviewDto.getUpdateAt())
+                .build();
+    }
 }
