@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 public class UpdatePitchRequest {
     @JsonProperty("id")
-    @Min(value = 1, message = "Id sân không được để trống")
+    @Min(value = 1, message = "Id sân không hợp lệ")
     private Long id;
     @JsonProperty("name")
     @NotBlank(message = "Tên sân không được để trống")
@@ -23,7 +23,7 @@ public class UpdatePitchRequest {
     @NotBlank(message = "Vị trí sân không được để trống")
     private String location;
     @JsonProperty("manager_id")
-    @Min(value = 1, message = "Quản lý sân phải khác rỗng")
+    @Min(value = 1, message = "Quản lý sân không hợp lệ")
     private Long managerId;
     @JsonProperty("is_active")
     private boolean isActive;

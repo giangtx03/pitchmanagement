@@ -14,7 +14,7 @@ import lombok.Setter;
 public class LoginRequest {
 
     @JsonProperty("email")
-    @Email
+    @Email(message = "Email không đúng định dạng")
     private String email;
 
     @JsonProperty("password")

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PitchTimeRequest {
-    @Min(value = 1, message = "Khung thời gian không được rỗng")
+    @Min(value = 1, message = "Khung thời gian không hợp lệ")
     private Long timeSlotId;
 
     @Min(value = 0, message = "Giá khung giờ và sân phải lớn hơn hoặc bằng 0")

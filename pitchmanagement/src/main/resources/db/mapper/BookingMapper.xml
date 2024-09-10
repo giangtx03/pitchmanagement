@@ -1,0 +1,77 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pitchmanagement.daos.BookingDao">
+
+    <insert id="insertBooking" parameterType="com.pitchmanagement.dtos.BookingDto" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO bookings(status, note, deposit, booking_date, user_id, sub_pitch_id, time_slot_id, create_at, update_at)
+        VALUES (#{status},#{note}, #{deposit}, #{bookingDate}, #{userId}, #{subPitchId}, #{timeSlotId}, #{createAt}, #{updateAt})
+    </insert>
+
+    <select id="getAllByUserId" parameterType="Long" resultType="com.pitchmanagement.dtos.BookingDto">
+        SELECT
+            id,
+            status,
+            note,
+            deposit,
+            booking_date AS bookingDate,
+            user_id AS userId,
+            sub_pitch_id AS subPitchId,
+            time_slot_id AS timeSlotId,
+            create_at AS createAt,
+            update_at AS updateAt
+        FROM bookings
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="getAllByManagerId" parameterType="Long" resultType="com.pitchmanagement.dtos.BookingDto">
+        SELECT
+            b.id,
+            b.status,
+            b.note,
+            b.deposit,
+            b.booking_date AS bookingDate,
+            b.user_id AS userId,
+            b.sub_pitch_id AS subPitchId,
+            b.time_slot_id AS timeSlotId,
+            b.create_at AS createAt,
+            b.update_at AS updateAt
+        FROM bookings b
+        LEFT JOIN sub_pitches sp ON sp.id = b.sub_pitch_id
+        LEFT JOIN pitches p ON p.id = sp.pitch_id
+        WHERE p.manager_id = #{managerId}
+    </select>
+
+    <select id="getBookingById" parameterType="Long" resultType="com.pitchmanagement.dtos.BookingDto">
+        SELECT
+            id,
+            status,
+            note,
+            deposit,
+            booking_date AS bookingDate,
+            user_id AS userId,
+            sub_pitch_id AS subPitchId,
+            time_slot_id AS timeSlotId,
+            create_at AS createAt,
+            update_at AS updateAt
+        FROM bookings
+        WHERE id = #{id}
+    </select>
+
+    <select id="isExistingBooking" parameterType="map" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM bookings
+        WHERE sub_pitch_id = #{subPitchId}
+        AND time_slot_id = #{timeSlotId}
+        AND booking_date = #{bookingDate}
+        AND status = #{status}
+    </select>
+
+    <update id="updateBooking" parameterType="com.pitchmanagement.dtos.BookingDto">
+        UPDATE bookings SET
+            status = #{status},
+            update_at = #{updateAt}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

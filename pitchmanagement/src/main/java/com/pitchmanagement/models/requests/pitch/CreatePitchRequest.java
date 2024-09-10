@@ -19,7 +19,7 @@ public class CreatePitchRequest {
     private String name;
     @NotBlank(message = "Vị trí sân không được để trống")
     private String location;
-    @Min(value = 1, message = "Quản lý sân phải khác rỗng")
+    @Min(value = 1, message = "Quản lý sân không hợp lệ")
     private Long managerId;
     private List<MultipartFile> images;
     private List<SubPitchRequest> subPitches;

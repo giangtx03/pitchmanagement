@@ -15,7 +15,7 @@ import lombok.Setter;
 public class ChangePasswordRequest {
 
     @JsonProperty("user_id")
-    @Min(value = 1, message = "Id người dùng phải lớn hơn 1")
+    @Min(value = 1, message = "Id người dùng không hợp lệ")
     private Long userId;
 
     @JsonProperty("old_password")

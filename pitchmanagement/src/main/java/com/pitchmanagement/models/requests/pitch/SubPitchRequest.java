@@ -17,7 +17,7 @@ public class SubPitchRequest {
     @NotBlank(message = "Tên sân con không được để trống")
     private String name;
 
-    @Min(value = 1, message = "Loại sân phải khác rỗng")
+    @Min(value = 1, message = "Kiểu sân không hợp lệ")
     private Long pitchTypeId;
 
     private List<PitchTimeRequest> pitchTimes;
