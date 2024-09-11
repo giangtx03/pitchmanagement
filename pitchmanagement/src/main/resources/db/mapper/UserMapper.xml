@@ -25,16 +25,16 @@
 
     <select id="getUserById" parameterType="Long" resultType="com.pitchmanagement.dtos.UserDto">
         SELECT
-        id,
-        email,
-        full_name AS fullname,
-        password,
-        address,
-        avatar,
-        phone_number AS phoneNumber,
-        create_at AS createAt,
-        update_at AS updateAt,
-        is_active AS isActive,
+            id,
+            email,
+            full_name AS fullname,
+            password,
+            address,
+            avatar,
+            phone_number AS phoneNumber,
+            create_at AS createAt,
+            update_at AS updateAt,
+            is_active AS isActive,
         role
         FROM users WHERE id = #{id}
     </select>

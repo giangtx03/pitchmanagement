@@ -21,7 +21,7 @@
             create_at AS createAt,
             update_at AS updateAt
         FROM bookings
-        WHERE user_id = #{userId}
+        WHERE user_id = #{userId} AND (#{status} IS NULL OR status = #{status})
     </select>
 
     <select id="getAllByManagerId" parameterType="Long" resultType="com.pitchmanagement.dtos.BookingDto">
@@ -39,7 +39,7 @@
         FROM bookings b
         LEFT JOIN sub_pitches sp ON sp.id = b.sub_pitch_id
         LEFT JOIN pitches p ON p.id = sp.pitch_id
-        WHERE p.manager_id = #{managerId}
+        WHERE p.manager_id = #{managerId} AND (#{status} IS NULL OR status = #{status})
     </select>
 
     <select id="getBookingById" parameterType="Long" resultType="com.pitchmanagement.dtos.BookingDto">
@@ -64,7 +64,7 @@
         WHERE sub_pitch_id = #{subPitchId}
         AND time_slot_id = #{timeSlotId}
         AND booking_date = #{bookingDate}
-        AND status = #{status}
+        AND status != #{status}
     </select>
 
     <update id="updateBooking" parameterType="com.pitchmanagement.dtos.BookingDto">

@@ -28,12 +28,13 @@
 
     <select id="getBySubPitchIdAndTimeSlotId" parameterType="map" resultType="com.pitchmanagement.dtos.PitchTimeDto">
         SELECT
-            price,
-            time_slot_id AS timeSlotId,
-            sub_pitch_id AS subPitchId,
-            is_active AS isActive
-        FROM pitch_times
-        WHERE sub_pitch_id = #{subPitchId} AND time_slot_id = #{timeSlotId}
+            pt.price,
+            pt.is_active AS isActive,
+            ts.start_time AS startTime,
+            ts.end_time AS endTime
+        FROM pitch_times pt
+        LEFT JOIN time_slots ts ON ts.id = pt.time_slot_id
+        WHERE pt.sub_pitch_id = #{subPitchId} AND pt.time_slot_id = #{timeSlotId}
     </select>
 
     <update id="updatePitchTime" parameterType="com.pitchmanagement.dtos.PitchTimeDto">

@@ -82,7 +82,7 @@ public class SubPitchController {
 
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())
-                    .message("Cập nhật sân nhỏ thành công!")
+                    .message("Cập nhật sân con thành công!")
                     .build();
             return ResponseEntity.ok().body(response);
         }

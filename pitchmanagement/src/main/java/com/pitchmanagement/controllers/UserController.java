@@ -73,7 +73,7 @@ public class UserController {
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())
                     .data(userResponse)
-                    .message("Thông tin người dùng !")
+                    .message("Cập nhật thông tin người dùng thành công!")
                     .build();
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {

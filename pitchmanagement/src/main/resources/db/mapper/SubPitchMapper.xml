@@ -31,15 +31,17 @@
 
     <select id="getSubPitchById" parameterType="Long" resultType="com.pitchmanagement.dtos.SubPitchDto" >
         SELECT
-            id,
-            name,
-            create_at AS createAt,
-            update_at AS updateAt,
-            pitch_type_id AS pitchTypeId,
-            pitch_id AS pitchId,
-            is_active AS isActive
-        FROM sub_pitches
-        WHERE id = #{id}
+            sp.id,
+            sp.name,
+            sp.create_at AS createAt,
+            sp.update_at AS updateAt,
+            sp.pitch_type_id AS pitchTypeId,
+            sp.is_active AS isActive,
+            sp.pitch_id AS pitchId,
+            pt.name AS pitchType
+        FROM sub_pitches sp
+        LEFT JOIN pitch_types pt ON pt.id = sp.pitch_type_id
+        WHERE sp.id = #{id}
     </select>
 
     <update id="updateSubPitch" parameterType="com.pitchmanagement.dtos.SubPitchDto" >
