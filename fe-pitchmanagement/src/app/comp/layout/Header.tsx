@@ -51,7 +51,7 @@ export default function Header() {
   }, [userDetail]);
 
   return (
-    <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+    <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom fixed-top bg-light">
       <div
         className="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none"
       >

@@ -12,7 +12,7 @@ export default function Layout() {
     <>
       {loading && spinner}
       <div className="container">
-        <div className="row">
+        <div className="row" style={{marginBottom: "100px"}}>
           <Header />
         </div>
         <div className="row">
