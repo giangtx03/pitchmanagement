@@ -55,3 +55,15 @@ a.btn:hover,
 span.p-image.p-component {
   display: block;
 }
+
+
+/* Ẩn radio button nhưng vẫn cho phép tương tác */
+input[type="radio"]:checked + label {
+  background-color: antiquewhite; /* Màu nền vàng */
+  border-radius: 5px; /* Tùy chọn: tạo border radius cho nhãn */
+  padding: 5px; /* Tùy chọn: thêm padding */
+}
+
+.star-label {
+  transition: background-color 0.3s ease;
+}
