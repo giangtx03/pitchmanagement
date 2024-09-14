@@ -11,9 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class VNPayRequest {
-    @JsonProperty("amount")
-    @Min(value = 1, message = "Số tiền thanh toán phải lớn hơn 1")
-    private int amount;
     @JsonProperty("payment_type")
     @NotNull(message = "Kiểu thanh toán không được null")
     private String paymentType;

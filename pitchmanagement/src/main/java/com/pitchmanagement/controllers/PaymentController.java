@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,11 +38,37 @@ public class PaymentController {
             return ResponseEntity.badRequest().body(response);
         }
         try{
-            String url = paymentService.createPayment(request.getAmount(), request.getPaymentType(), request.getUserId(), request.getBookingId());
+            String url = paymentService.createPayment(request.getPaymentType(), request.getUserId(), request.getBookingId());
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())
                     .data(url)
                     .message("Tạo mẫu thanh toán thành công!")
+                    .build();
+            return ResponseEntity.ok().body(response);
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest()
+                    .body(BaseResponse.builder()
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .message(e.getMessage())
+                            .build());
+        }
+    }
+
+    @GetMapping("/vnpay_return/{booking_id}")
+    public ResponseEntity<BaseResponse> returnPayment(
+        @PathVariable("booking_id") Long bookingId,
+        @RequestParam("vnp_Amount") int amount,
+        @RequestParam("vnp_BankCode") String bankCode,
+        @RequestParam("vnp_OrderInfo") String orderInfo,
+        @RequestParam("vnp_ResponseCode") String responseCode,
+        @RequestParam(value = "vnp_TransactionStatus", required = false) String transactionStatus
+    ) {
+        try{
+            paymentService.vnpayReturn(bookingId, amount, bankCode, orderInfo, responseCode, transactionStatus);
+            BaseResponse response = BaseResponse.builder()
+                    .status(HttpStatus.OK.value())
+                    .message("Thanh toán thành công!")
                     .build();
             return ResponseEntity.ok().body(response);
         }

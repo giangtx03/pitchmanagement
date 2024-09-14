@@ -1,6 +1,7 @@
 package com.pitchmanagement.services.impl;
 
 import com.pitchmanagement.configs.VNPayConfig;
+import com.pitchmanagement.constants.BookingStatus;
 import com.pitchmanagement.daos.BookingDao;
 import com.pitchmanagement.daos.UserDao;
 import com.pitchmanagement.dtos.BookingDto;
@@ -9,8 +10,10 @@ import com.pitchmanagement.services.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -24,8 +27,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final BookingDao bookingDao;
     private final UserDao userDao;
+    @Value("${frontend.api}")
+    private final String frontEndApi;
     @Override
-    public String createPayment(int amount, String paymentType, Long userId, Long bookingId) throws Exception {
+    public String createPayment(String paymentType, Long userId, Long bookingId) throws Exception {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
@@ -38,13 +43,13 @@ public class PaymentServiceImpl implements PaymentService {
         BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(bookingId))
                 .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ"));
 
-        String orderInfor = userDto.getFullname();
+        String orderInfor = userDto.getFullname() + " " + paymentType + " id sân: " + bookingDto.getSubPitchId() + " id khung giờ: " + bookingDto.getSubPitchId();
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount*100));
+        vnp_Params.put("vnp_Amount", String.valueOf((int)(bookingDto.getDeposit()*100)));
         vnp_Params.put("vnp_CurrCode", "VND");
 
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
@@ -54,7 +59,7 @@ public class PaymentServiceImpl implements PaymentService {
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
 
-        String urlReturn = "http://localhost:8080/public/api/v1/pitches";
+        String urlReturn = frontEndApi + VNPayConfig.vnp_ReturnUrl + "/" + bookingDto.getId();
         vnp_Params.put("vnp_ReturnUrl", urlReturn);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
@@ -99,5 +104,29 @@ public class PaymentServiceImpl implements PaymentService {
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
         return paymentUrl;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void vnpayReturn(Long bookingId, int amount, String bankCode, String orderInfo, String responseCode, String transactionStatus) throws Exception {
+        BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(bookingId))
+                .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ"));
+
+        if(!"00".equals(responseCode)){
+            throw new RuntimeException("Thanh toán thất bại!");
+        }
+        switch (transactionStatus) {
+            case "01" -> throw new RuntimeException("Giao dịch chưa hoàn tất!");
+            case "02" -> throw new RuntimeException("Giao dịch bị lỗi!");
+            case "04" ->
+                    throw new RuntimeException("Giao dịch đảo (Khách hàng đã bị trừ tiền tại Ngân hàng nhưng GD chưa thành công ở VNPAY)!");
+            case "05" -> throw new RuntimeException("VNPAY đang xử lý giao dịch này (GD hoàn tiền)!");
+            case "06" -> throw new RuntimeException("VNPAY đã gửi yêu cầu hoàn tiền sang Ngân hàng (GD hoàn tiền)!");
+            case "07" -> throw new RuntimeException("Giao dịch bị nghi ngờ gian lận!");
+            case "09" -> throw new RuntimeException("GD Hoàn trả bị từ chối!");
+        }
+
+        bookingDto.setStatus(BookingStatus.DEPOSIT_PAID.toString());
+        bookingDao.updateBooking(bookingDto);
     }
 }
