@@ -7,7 +7,6 @@ import com.pitchmanagement.daos.UserDao;
 import com.pitchmanagement.dtos.BookingDto;
 import com.pitchmanagement.dtos.UserDto;
 import com.pitchmanagement.services.PaymentService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +27,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final BookingDao bookingDao;
     private final UserDao userDao;
     @Value("${frontend.api}")
-    private final String frontEndApi;
+    private String frontEndApi;
     @Override
     public String createPayment(String paymentType, Long userId, Long bookingId) throws Exception {
         String vnp_Version = "2.1.0";

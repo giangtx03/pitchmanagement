@@ -167,6 +167,7 @@ public class PitchServiceImpl implements PitchService {
                             .updateAt(pitchDto.getUpdateAt())
                             .isActive(pitchDto.isActive())
                             .images(imagesResponse)
+                            .avgStar(pitchDto.getAvgStar())
                         .build();
 
                 })
@@ -229,6 +230,7 @@ public class PitchServiceImpl implements PitchService {
                 .createAt(pitchDto.getCreateAt())
                 .updateAt(pitchDto.getUpdateAt())
                 .isActive(pitchDto.isActive())
+                .avgStar(pitchDto.getAvgStar())
                 .build();
         return pitchResponse;
     }

@@ -20,5 +20,5 @@ public class PitchDto {
     private boolean isActive;
     private Long managerId;
     private UserDto managerDto;
-
+    private float avgStar;
 }

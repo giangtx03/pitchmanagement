@@ -19,10 +19,12 @@
             p.update_at AS updateAt,
             mg.id AS managerId,
             mg.full_name AS managerFullname,
-            mg.avatar AS managerAvatar
+            mg.avatar AS managerAvatar,
+            AVG(r.star) AS avgStar
         FROM pitches p
         LEFT JOIN sub_pitches sp ON sp.pitch_id = p.id
         LEFT JOIN users mg ON mg.id = p.manager_id
+        LEFT JOIN reviews r ON r.pitch_id = p.id
         WHERE (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.location, ''), IFNULL(mg.full_name, ''))
             LIKE CONCAT('%', #{keyword}, '%'))
             AND (#{managerId} IS NULL OR #{managerId} = 0 OR #{managerId} = p.manager_id)
@@ -31,14 +33,18 @@
 
     <select id="getPitchById" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchDto">
         SELECT
-            id,
-            name,
-            location,
-            is_active AS isActive,
-            manager_id AS managerId,
-            create_at AS createAt,
-            update_at AS updateAt
-        FROM pitches WHERE id = #{id}
+            p.id,
+            p.name,
+            p.location,
+            p.is_active AS isActive,
+            p.manager_id AS managerId,
+            p.create_at AS createAt,
+            p.update_at AS updateAt,
+            AVG(r.star) AS avgStar
+        FROM pitches p
+        LEFT JOIN reviews r ON r.pitch_id = p.id
+        WHERE p.id = #{id}
+        GROUP BY p.id, p.name, p.location, p.is_active, p.manager_id, p.create_at, p.update_at
     </select>
 
     <update id="updatePitch" parameterType="com.pitchmanagement.dtos.PitchDto" >
@@ -58,6 +64,7 @@
         <result column="updateAt" property="updateAt" />
         <result column="isActive" property="isActive" />
         <result column="managerId" property="managerId" />
+        <result column="avgStar" property="avgStar" />
 
         <association property="managerDto" javaType="com.pitchmanagement.dtos.UserDto">
             <id column="managerId" property="id" />

@@ -33,4 +33,6 @@ public class PitchResponse {
     private List<String> images;
     @JsonProperty("is_active")
     private boolean isActive;
+    @JsonProperty("avg_star")
+    private float avgStar;
 }
