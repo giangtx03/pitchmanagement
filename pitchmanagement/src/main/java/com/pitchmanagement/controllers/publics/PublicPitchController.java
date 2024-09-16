@@ -21,7 +21,6 @@ public class PublicPitchController {
     @GetMapping
     public ResponseEntity<BaseResponse> getAll(
             @RequestParam(value = "keyword", required = false) @Nullable String keyword,
-            @RequestParam(value = "manager_id", defaultValue = "0") @Nullable Long managerId,
             @RequestParam(value = "page_number", defaultValue = "1") @Nullable int pageNumber,
             @RequestParam(value = "limit", defaultValue = "12") @Nullable int limit,
             @RequestParam(value = "start_price", defaultValue = "0") @Nullable int startPrice,
@@ -33,7 +32,7 @@ public class PublicPitchController {
     ){
         try {
 
-            PageResponse pageResponse = pitchService.getAll(keyword, managerId,
+            PageResponse pageResponse = pitchService.getAll(keyword,
                     startPrice, endPrice, starRange, pitchTypes,
                     pageNumber, limit, orderBy, orderSort);
 

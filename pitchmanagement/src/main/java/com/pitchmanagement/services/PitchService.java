@@ -8,7 +8,7 @@ import com.pitchmanagement.models.responses.pitch.PitchResponse;
 
 public interface PitchService {
     PitchResponse createPitch(CreatePitchRequest request) throws Exception;
-    PageResponse getAll(String keyword, Long managerId,int startPrice, int endPrice,
+    PageResponse getAll(String keyword,int startPrice, int endPrice,
                         int starRange, long[] pitchTypes,
                         int pageNumber, int limit, String orderBy, String orderSort);
     PitchResponse getPitchById(Long id) throws Exception;

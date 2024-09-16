@@ -146,16 +146,15 @@ public class PitchServiceImpl implements PitchService {
     }
 
     @Override
-    public PageResponse getAll(String keyword, Long managerId,int startPrice, int endPrice,
+    public PageResponse getAll(String keyword, int startPrice, int endPrice,
                                int starRange, long[] pitchTypes,
                                int pageNumber, int limit, String orderBy, String orderSort) {
         PageHelper.startPage(pageNumber, limit);
         PageHelper.orderBy(orderBy + " " + orderSort);
-        List<PitchDto> pitchDtoList = pitchDao.getAll(keyword, managerId,startPrice, endPrice,starRange, pitchTypes);
+        List<PitchDto> pitchDtoList = pitchDao.getAll(keyword, startPrice, endPrice,starRange, pitchTypes);
         PageInfo<PitchDto> pageInfo = new PageInfo<>(pitchDtoList);
 
         List<PitchResponse> pitchResponseList = pitchDtoList.stream()
-                .filter(PitchDto::isActive)
                 .map(pitchDto -> {
                         List<String> imagesResponse = imageDao.getAllByPitchId(pitchDto.getId())
                                 .stream().map(ImageDto::getName)

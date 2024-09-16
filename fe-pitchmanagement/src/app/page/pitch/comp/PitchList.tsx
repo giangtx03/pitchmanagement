@@ -3,6 +3,7 @@ import { PitchResponse } from "../../../model/Pitch";
 import defaultAvatar from "../../../../assets/images/defaultAvatar.jpg";
 import defaultSanBong from "../../../../assets/images/defaultSanBong.jpeg";
 import { Image } from "primereact/image";
+import { Link } from "react-router-dom";
 
 export default function PitchList(props: any) {
   const { pitchList } = props;
@@ -12,7 +13,7 @@ export default function PitchList(props: any) {
       <div className="row">
         {/* Hiển thị danh sách pitches ở đây */}
         {pitchList.map((pitch: PitchResponse) => (
-          <div key={pitch.id} className="col-xl-4 col-md-6 col-sm-12 mb-3">
+          <Link to={`${pitch.id}`} key={pitch.id} className="col-xl-4 col-md-6 col-sm-12 mb-3 text-decoration-none">
             <div className="card" style={{ width: "18rem" }}>
               <img
                 src={
@@ -66,7 +67,7 @@ export default function PitchList(props: any) {
                 </p>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

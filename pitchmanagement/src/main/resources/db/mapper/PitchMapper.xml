@@ -27,16 +27,18 @@
         LEFT JOIN reviews r ON r.pitch_id = p.id
         LEFT JOIN pitch_times pt ON pt.sub_pitch_id = sp.id
         WHERE (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.location, ''), IFNULL(mg.full_name, ''))
-        LIKE CONCAT('%', #{keyword}, '%'))
-        AND (#{managerId} IS NULL OR #{managerId} = 0 OR #{managerId} = p.manager_id)
-        <if test="pitchTypes != null and pitchTypes.length > 0">
-            AND sp.pitch_type_id IN
-            <foreach collection="pitchTypes" item="type" open="(" separator="," close=")">
-                #{type}
-            </foreach>
-        </if>
-        AND (#{startPrice} IS NULL OR pt.price >= #{startPrice})
-        AND (#{endPrice} IS NULL OR #{endPrice} >= pt.price)
+            LIKE CONCAT('%', #{keyword}, '%'))
+            <if test="pitchTypes != null and pitchTypes.length > 0">
+                AND sp.pitch_type_id IN
+                <foreach collection="pitchTypes" item="type" open="(" separator="," close=")">
+                    #{type}
+                </foreach>
+            </if>
+            AND (#{startPrice} IS NULL OR pt.price >= #{startPrice})
+            AND (#{endPrice} IS NULL OR #{endPrice} >= pt.price)
+            AND p.is_active
+            AND sp.is_active
+            AND pt.is_active
         GROUP BY p.id, p.name, p.location, p.is_active, p.create_at, p.update_at, mg.id, mg.full_name, mg.avatar
         HAVING (#{starRange} IS NULL OR #{starRange} = 0 OR AVG(IFNULL(r.star, 0)) >= #{starRange})
     </select>
