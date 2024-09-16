@@ -10,7 +10,11 @@ import java.util.List;
 public interface PitchDao {
     void insertPitch(PitchDto pitchDto);
     List<PitchDto> getAll(@Param("keyword") String keyword,
-                          @Param("managerId") Long managerId);
+                          @Param("managerId") Long managerId,
+                          @Param("startPrice") int starPrice,
+                          @Param("endPrice") int endPrice,
+                          @Param("starRange") int starRange,
+                          @Param("pitchTypes") long[] pitchTypes);
     PitchDto getPitchById(@Param("id") Long id);
     void updatePitch(PitchDto pitchDto);
 }

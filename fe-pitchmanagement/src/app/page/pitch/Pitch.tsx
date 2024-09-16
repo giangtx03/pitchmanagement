@@ -5,10 +5,14 @@ import { useAppDispatch } from "../../store/hooks";
 import { useNavigate } from "react-router-dom";
 import { showOrHideSpinner } from "../../reducer/SpinnerSlice";
 import { FaRegStar, FaStar } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 type SearchModel = {
   keyword: string;
-  pitch_type_id: number;
+  pitch_types: number[];
+  start_price: number;
+  end_price: number;
+  star_range: number;
   timer: number;
   pageNumber: number;
   limit: number;
@@ -19,9 +23,13 @@ export default function Pitch() {
   const navigate = useNavigate();
 
   const [pitchList, setPitchList] = useState<any>();
+  const [pitchTypes, setPitchTypes] = useState<any>();
   const [search, setSearch] = useState<SearchModel>({
     keyword: "",
-    pitch_type_id: 0,
+    pitch_types: [],
+    start_price: 0,
+    end_price: 9999999,
+    star_range: 0,
     pageNumber: 1,
     limit: 12,
     timer: 0,
@@ -34,6 +42,10 @@ export default function Pitch() {
         .getAll({
           keyword: search.keyword,
           page_number: search.pageNumber,
+          start_price: search.start_price,
+          end_price: search.end_price,
+          star_range: search.star_range,
+          pitch_types: search.pitch_types,
           limit: search.limit,
         })
         .then((response) => {
@@ -52,23 +64,55 @@ export default function Pitch() {
   }, [search.timer]);
 
   const handleInput = (event: any) => {
-    let value = event.target.value.replace(/[^0-9]/g, ""); 
+    let value = event.target.value.replace(/[^0-9]/g, "");
     value = value.replace(/^0+(?!$)/, "");
     event.target.value = value;
+  };
+
+  const handleRadioChange = (e: any) => {
+    setSearch({
+      ...search,
+      star_range: e.target.value,
+      timer: Date.now(),
+    });
+  };
+
+  const handleCheckboxChange = (e: any) => {
+    const value = Number.parseInt(e.target.value);
+    const isChecked = e.target.checked;
+
+    if (isChecked) {
+      // Thêm giá trị vào mảng pitch_types nếu radio button được chọn
+      setSearch({
+        ...search,
+        pitch_types: [...search.pitch_types, value], // Tạo một mảng mới với giá trị mới
+        timer: Date.now(),
+      });
+    } else {
+      // Loại bỏ giá trị khỏi mảng pitch_types nếu radio button bị bỏ chọn
+      setSearch({
+        ...search,
+        pitch_types: search.pitch_types.filter((type) => type !== value), // Lọc phần tử không muốn
+        timer: Date.now(),
+      });
+    }
   };
   return (
     <div>
       <div className="row">
         <div className="col-md-3 col-sm-12">
           <h4 className="mt-3">Bộ lọc tìm kiếm</h4>
+          {/* {"Kiểu sân"} */}
           <div className="mt-2 ">
             <label htmlFor="pitch-type">Theo kiểu sân</label>
             <div className="form-check">
               <input
                 className="form-check-input"
                 type="checkbox"
-                defaultValue=""
+                value="1"
                 id="flexCheckDefault"
+                checked={search.pitch_types.includes(1)}
+                onChange={handleCheckboxChange}
               />
               <label className="form-check-label" htmlFor="flexCheckDefault">
                 Sân 5
@@ -78,8 +122,10 @@ export default function Pitch() {
               <input
                 className="form-check-input"
                 type="checkbox"
-                defaultValue=""
+                value="2"
                 id="flexCheckDefault"
+                checked={search.pitch_types.includes(2)}
+                onChange={handleCheckboxChange}
               />
               <label className="form-check-label" htmlFor="flexCheckDefault">
                 Sân 7
@@ -89,8 +135,10 @@ export default function Pitch() {
               <input
                 className="form-check-input"
                 type="checkbox"
-                defaultValue=""
+                value="3"
                 id="flexCheckDefault"
+                checked={search.pitch_types.includes(3)}
+                onChange={handleCheckboxChange}
               />
               <label className="form-check-label" htmlFor="flexCheckDefault">
                 Sân 9
@@ -100,8 +148,10 @@ export default function Pitch() {
               <input
                 className="form-check-input"
                 type="checkbox"
-                defaultValue=""
+                value="4"
                 id="flexCheckDefault"
+                checked={search.pitch_types.includes(4)}
+                onChange={handleCheckboxChange}
               />
               <label className="form-check-label" htmlFor="flexCheckDefault">
                 Sân 11
@@ -109,6 +159,7 @@ export default function Pitch() {
             </div>
             <hr className="w-75" />
           </div>
+          {/* {"khoảng giá"} */}
           <div className="mt-2">
             <label htmlFor="price-around">Khoảng giá</label>
             <div className="mt-3">
@@ -119,7 +170,13 @@ export default function Pitch() {
                   min={0}
                   maxLength={7}
                   placeholder="Từ"
-                  onChange={handleInput}
+                  onChange={(e) => {
+                    handleInput(e);
+                    setSearch({
+                      ...search,
+                      start_price: Number.parseInt(e.target.value),
+                    });
+                  }}
                 />
                 &nbsp;&nbsp;<b>-</b>&nbsp;&nbsp;
                 <input
@@ -128,13 +185,38 @@ export default function Pitch() {
                   min={0}
                   maxLength={7}
                   placeholder="Đến"
-                  onChange={handleInput}
+                  onChange={(e) => {
+                    handleInput(e);
+                    console.log(e.target.value);
+                    setSearch({
+                      ...search,
+                      end_price: Number.parseInt(e.target.value),
+                    });
+                  }}
                 />
               </div>
             </div>
-            <button className="btn btn-primary w-75 mt-3">Áp dụng</button>
+            <button
+              className="btn btn-primary w-75 mt-3"
+              onClick={() => {
+                if (
+                  search.start_price <= search.end_price ||
+                  (search.start_price === 0 && search.end_price === 0)
+                ) {
+                  setSearch({ ...search, timer: Date.now() });
+                } else {
+                  toast.warn("Khoảng giá không phù hợp", {
+                    position: "top-left",
+                    autoClose: 1500,
+                  });
+                }
+              }}
+            >
+              Áp dụng
+            </button>
             <hr className="w-75" />
           </div>
+          {/* {"đánh giá"} */}
           <div className="mt-2">
             <label htmlFor="star">Đánh giá</label>
 
@@ -147,6 +229,8 @@ export default function Pitch() {
                 id="rating5"
                 value="5"
                 style={{ display: "none" }} // Ẩn radio button
+                onChange={handleRadioChange}
+                checked={search.star_range == 5}
               />
               <label
                 className="form-check-label star-label text-warning"
@@ -169,6 +253,8 @@ export default function Pitch() {
                 id="rating4"
                 value="4"
                 style={{ display: "none" }} // Ẩn radio button
+                onChange={handleRadioChange}
+                checked={search.star_range == 4}
               />
               <label
                 className="form-check-label star-label text-warning d-flex align-items-center"
@@ -192,6 +278,8 @@ export default function Pitch() {
                 id="rating3"
                 value="3"
                 style={{ display: "none" }} // Ẩn radio button
+                onChange={handleRadioChange}
+                checked={search.star_range == 3}
               />
               <label
                 className="form-check-label star-label text-warning d-flex align-items-center"
@@ -215,6 +303,8 @@ export default function Pitch() {
                 id="rating2"
                 value="2"
                 style={{ display: "none" }} // Ẩn radio button
+                onChange={handleRadioChange}
+                checked={search.star_range == 2}
               />
               <label
                 className="form-check-label star-label text-warning d-flex align-items-center"
@@ -238,6 +328,8 @@ export default function Pitch() {
                 id="rating1"
                 value="1"
                 style={{ display: "none" }} // Ẩn radio button
+                onChange={handleRadioChange}
+                checked={search.star_range == 1}
               />
               <label
                 className="form-check-label star-label text-warning d-flex align-items-center"
@@ -253,7 +345,24 @@ export default function Pitch() {
             </div>
             <hr className="w-75" />
           </div>
-          <button className="btn btn-secondary w-75 mt-3">Xóa tất cả</button>
+          {/* {"xóa bộ lọc"} */}
+          <button
+            className="btn btn-secondary w-75 mt-3"
+            onClick={() => {
+              setSearch({
+                keyword: "",
+                pitch_types: [],
+                start_price: 0,
+                end_price: 9999999,
+                star_range: 0,
+                pageNumber: 1,
+                limit: 12,
+                timer: Date.now(),
+              });
+            }}
+          >
+            Xóa tất cả
+          </button>
         </div>
         <div className="col-md-9 col-sm-12">
           <div className="row">

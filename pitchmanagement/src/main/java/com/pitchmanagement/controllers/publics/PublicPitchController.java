@@ -24,12 +24,18 @@ public class PublicPitchController {
             @RequestParam(value = "manager_id", defaultValue = "0") @Nullable Long managerId,
             @RequestParam(value = "page_number", defaultValue = "1") @Nullable int pageNumber,
             @RequestParam(value = "limit", defaultValue = "12") @Nullable int limit,
+            @RequestParam(value = "start_price", defaultValue = "0") @Nullable int startPrice,
+            @RequestParam(value = "end_price", defaultValue = "9999999") @Nullable int endPrice,
+            @RequestParam(value = "star_range", defaultValue = "0") @Nullable int starRange,
+            @RequestParam(value = "pitch_types", defaultValue = "") long[] pitchTypes,
             @RequestParam(value = "order_by", defaultValue = SortConstant.SORT_BY_ID) @Nullable String orderBy,
             @RequestParam(value = "order_sort", defaultValue = SortConstant.SORT_ASC) @Nullable String orderSort
     ){
         try {
 
-            PageResponse pageResponse = pitchService.getAll(keyword, managerId, pageNumber, limit, orderBy, orderSort);
+            PageResponse pageResponse = pitchService.getAll(keyword, managerId,
+                    startPrice, endPrice, starRange, pitchTypes,
+                    pageNumber, limit, orderBy, orderSort);
 
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())
