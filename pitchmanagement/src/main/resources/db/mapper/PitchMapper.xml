@@ -26,19 +26,22 @@
         LEFT JOIN users mg ON mg.id = p.manager_id
         LEFT JOIN reviews r ON r.pitch_id = p.id
         LEFT JOIN pitch_times pt ON pt.sub_pitch_id = sp.id
-        WHERE (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.location, ''), IFNULL(mg.full_name, ''))
+        WHERE (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.location, ''))
             LIKE CONCAT('%', #{keyword}, '%'))
+            AND (#{managerId} IS NULL OR #{managerId} = 0 OR #{managerId} = mg.id)
             <if test="pitchTypes != null and pitchTypes.length > 0">
                 AND sp.pitch_type_id IN
                 <foreach collection="pitchTypes" item="type" open="(" separator="," close=")">
                     #{type}
                 </foreach>
             </if>
-            AND (#{startPrice} IS NULL OR pt.price >= #{startPrice})
-            AND (#{endPrice} IS NULL OR #{endPrice} >= pt.price)
-            AND p.is_active
-            AND sp.is_active
-            AND pt.is_active
+            AND (#{startPrice} IS NULL OR #{startPrice} = 0 OR pt.price >= #{startPrice})
+            AND (#{endPrice} IS NULL OR #{endPrice} = 0 OR #{endPrice} >= pt.price)
+            <if test="requestQuery != null and requestQuery">
+                AND p.is_active = TRUE
+                AND sp.is_active = TRUE
+                AND pt.is_active = TRUE
+            </if>
         GROUP BY p.id, p.name, p.location, p.is_active, p.create_at, p.update_at, mg.id, mg.full_name, mg.avatar
         HAVING (#{starRange} IS NULL OR #{starRange} = 0 OR AVG(IFNULL(r.star, 0)) >= #{starRange})
     </select>
@@ -55,7 +58,14 @@
             AVG(r.star) AS avgStar
         FROM pitches p
         LEFT JOIN reviews r ON r.pitch_id = p.id
+        LEFT JOIN sub_pitches sp ON sp.pitch_id = p.id
+        LEFT JOIN pitch_times pt ON pt.sub_pitch_id = sp.id
         WHERE p.id = #{id}
+            <if test="requestQuery != null and requestQuery">
+                AND p.is_active = TRUE
+                AND sp.is_active = TRUE
+                AND pt.is_active = TRUE
+            </if>
         GROUP BY p.id, p.name, p.location, p.is_active, p.manager_id, p.create_at, p.update_at
     </select>
 

@@ -50,7 +50,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Sân và khung giờ không hợp lệ!"));
         SubPitchDto subPitchDto = Optional.ofNullable(subPitchDao.getSubPitchById(request.getSubPitchId()))
                 .orElseThrow(() -> new NotFoundException("Sân con không hợp lệ!"));
-        PitchDto pitchDto = Optional.ofNullable(pitchDao.getPitchById(subPitchDto.getPitchId()))
+        PitchDto pitchDto = Optional.ofNullable(pitchDao.getPitchById(subPitchDto.getPitchId(), true))
                 .orElseThrow(() -> new NotFoundException("Sân không hợp lệ!"));
         List<ImageDto> imageDtoList = imageDao.getAllByPitchId(pitchDto.getId());
         UserDto managerDto = Optional.ofNullable(userDao.getUserById(pitchDto.getManagerId()))
@@ -111,7 +111,7 @@ public class BookingServiceImpl implements BookingService {
                 bookingDto -> {
                     PitchTimeDto pitchTimeDto = pitchTimeDao.getBySubPitchIdAndTimeSlotId(bookingDto.getSubPitchId(),bookingDto.getTimeSlotId());
                     SubPitchDto subPitchDto = subPitchDao.getSubPitchById(bookingDto.getSubPitchId());
-                    PitchDto pitchDto = pitchDao.getPitchById(subPitchDto.getPitchId());
+                    PitchDto pitchDto = pitchDao.getPitchById(subPitchDto.getPitchId(), false);
                     List<ImageDto> imageDtoList = imageDao.getAllByPitchId(pitchDto.getId());
                     UserDto managerDto = userDao.getUserById(pitchDto.getManagerId());
 
@@ -168,7 +168,7 @@ public class BookingServiceImpl implements BookingService {
                 bookingDto -> {
                     PitchTimeDto pitchTimeDto = pitchTimeDao.getBySubPitchIdAndTimeSlotId(bookingDto.getSubPitchId(),bookingDto.getTimeSlotId());
                     SubPitchDto subPitchDto = subPitchDao.getSubPitchById(bookingDto.getSubPitchId());
-                    PitchDto pitchDto = pitchDao.getPitchById(subPitchDto.getPitchId());
+                    PitchDto pitchDto = pitchDao.getPitchById(subPitchDto.getPitchId(), false);
                     List<ImageDto> imageDtoList = imageDao.getAllByPitchId(pitchDto.getId());
                     UserDto userDto = userDao.getUserById(bookingDto.getUserId());
 
@@ -215,7 +215,7 @@ public class BookingServiceImpl implements BookingService {
 
         PitchTimeDto pitchTimeDto = pitchTimeDao.getBySubPitchIdAndTimeSlotId(bookingDto.getSubPitchId(),bookingDto.getTimeSlotId());
         SubPitchDto subPitchDto = subPitchDao.getSubPitchById(bookingDto.getSubPitchId());
-        PitchDto pitchDto = pitchDao.getPitchById(subPitchDto.getPitchId());
+        PitchDto pitchDto = pitchDao.getPitchById(subPitchDto.getPitchId(), true);
         List<ImageDto> imageDtoList = imageDao.getAllByPitchId(pitchDto.getId());
         UserDto userDto = userDao.getUserById(bookingDto.getUserId());
         UserDto managerDto = userDao.getUserById(pitchDto.getManagerId());

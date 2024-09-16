@@ -12,8 +12,10 @@ public interface PitchDao {
     List<PitchDto> getAll(@Param("keyword") String keyword,
                           @Param("startPrice") int starPrice,
                           @Param("endPrice") int endPrice,
+                          @Param("managerId") Long managerId,
                           @Param("starRange") int starRange,
-                          @Param("pitchTypes") long[] pitchTypes);
-    PitchDto getPitchById(@Param("id") Long id);
+                          @Param("pitchTypes") long[] pitchTypes,
+                          @Param("requestQuery") boolean requestQuery);
+    PitchDto getPitchById(@Param("id") Long id, @Param("requestQuery") boolean requestQuery);
     void updatePitch(PitchDto pitchDto);
 }

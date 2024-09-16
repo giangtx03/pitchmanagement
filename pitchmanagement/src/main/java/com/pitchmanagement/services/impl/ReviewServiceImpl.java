@@ -34,7 +34,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReviewResponse createReview(CreateReviewRequest createReviewRequest) throws Exception {
-        PitchDto pitchDto = Optional.ofNullable(pitchDao.getPitchById(createReviewRequest.getPitchId()))
+        PitchDto pitchDto = Optional.ofNullable(pitchDao.getPitchById(createReviewRequest.getPitchId(),true))
                 .orElseThrow(() -> new NotFoundException("Sân bóng không tồn tại!"));
         UserDto userDto = Optional.ofNullable(userDao.getUserById(createReviewRequest.getUserId()))
                 .orElseThrow(() -> new NotFoundException("Người dùng không tồn tại!"));

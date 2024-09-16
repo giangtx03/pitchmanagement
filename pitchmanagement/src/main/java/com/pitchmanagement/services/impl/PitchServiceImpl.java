@@ -147,11 +147,13 @@ public class PitchServiceImpl implements PitchService {
 
     @Override
     public PageResponse getAll(String keyword, int startPrice, int endPrice,
+                               Long managerId,
                                int starRange, long[] pitchTypes,
+                               boolean requestQuery,
                                int pageNumber, int limit, String orderBy, String orderSort) {
         PageHelper.startPage(pageNumber, limit);
         PageHelper.orderBy(orderBy + " " + orderSort);
-        List<PitchDto> pitchDtoList = pitchDao.getAll(keyword, startPrice, endPrice,starRange, pitchTypes);
+        List<PitchDto> pitchDtoList = pitchDao.getAll(keyword, startPrice, endPrice,managerId,starRange, pitchTypes, requestQuery);
         PageInfo<PitchDto> pageInfo = new PageInfo<>(pitchDtoList);
 
         List<PitchResponse> pitchResponseList = pitchDtoList.stream()
@@ -170,7 +172,6 @@ public class PitchServiceImpl implements PitchService {
                             .images(imagesResponse)
                             .avgStar(pitchDto.getAvgStar())
                         .build();
-
                 })
                 .toList();
 
@@ -183,8 +184,8 @@ public class PitchServiceImpl implements PitchService {
     }
 
     @Override
-    public PitchResponse getPitchById(Long id) throws Exception {
-        PitchDto pitchDto = pitchDao.getPitchById(id);
+    public PitchResponse getPitchById(Long id, boolean requestQuery) throws Exception {
+        PitchDto pitchDto = pitchDao.getPitchById(id, requestQuery);
 
         if(pitchDto == null){
             throw new NotFoundException("Không tìm thấy sân bóng!");
@@ -239,7 +240,7 @@ public class PitchServiceImpl implements PitchService {
     @Override
     @Transactional(rollbackFor =  Exception.class)
     public PitchResponse updatePitch(UpdatePitchRequest updatePitchRequest) throws Exception {
-        PitchDto pitchDto = pitchDao.getPitchById(updatePitchRequest.getId());
+        PitchDto pitchDto = pitchDao.getPitchById(updatePitchRequest.getId(), false);
 
         if(pitchDto == null) {
             logger.warn("Không tìm thấy sân bóng với id : {}", updatePitchRequest.getId());
@@ -258,13 +259,13 @@ public class PitchServiceImpl implements PitchService {
 
         pitchDao.updatePitch(pitchDto);
         logger.info("Cập nhật sân bóng thành công : {}", updatePitchRequest.getName());
-        return getPitchById(updatePitchRequest.getId());
+        return getPitchById(updatePitchRequest.getId(), false);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addImages(CreateImageRequest imageRequest) throws Exception {
-        PitchDto pitchDto = pitchDao.getPitchById(imageRequest.getPitchId());
+        PitchDto pitchDto = pitchDao.getPitchById(imageRequest.getPitchId(), false);
 
         if(pitchDto == null) {
             logger.warn("Không tìm thấy sân bóng với id : {}", imageRequest.getPitchId());

@@ -9,9 +9,11 @@ import com.pitchmanagement.models.responses.pitch.PitchResponse;
 public interface PitchService {
     PitchResponse createPitch(CreatePitchRequest request) throws Exception;
     PageResponse getAll(String keyword,int startPrice, int endPrice,
+                        Long managerId,
                         int starRange, long[] pitchTypes,
+                        boolean requestQuery,
                         int pageNumber, int limit, String orderBy, String orderSort);
-    PitchResponse getPitchById(Long id) throws Exception;
+    PitchResponse getPitchById(Long id, boolean requestQuery) throws Exception;
     PitchResponse updatePitch(UpdatePitchRequest updatePitchRequest) throws Exception;
     void addImages(CreateImageRequest imageRequest) throws Exception;
     void deleteImage(String name);

@@ -14,11 +14,17 @@ export class PitchService {
     return PitchService._pitchService;
   }
 
-  public getAll(SearchModel : any){
-    const params = ParamUtil.toRequestParams(SearchModel);
+  public getAll(searchModel : any){
+    const params = ParamUtil.toRequestParams(searchModel);
     const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/pitches`, params);
     const headers = HeadersUtil.getHeaders();
     return axios.get(url, {headers});
   }
 
+  public getPitchById(id : any, modelRequest : any){
+    const params = ParamUtil.toRequestParams(modelRequest);
+    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/pitches/${id}`, params);
+    const headers = HeadersUtil.getHeaders();
+    return axios.get(url, {headers});
+  }
 }

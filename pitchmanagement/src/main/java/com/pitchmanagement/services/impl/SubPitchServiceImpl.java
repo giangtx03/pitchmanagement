@@ -30,7 +30,7 @@ public class SubPitchServiceImpl implements SubPitchService {
     @Override
     @Transactional(rollbackFor =  Exception.class)
     public void createSubPitch(CreateSubPitchRequest createSubPitchRequest) throws Exception {
-        PitchDto pitchDto = pitchDao.getPitchById(createSubPitchRequest.getPitchId());
+        PitchDto pitchDto = pitchDao.getPitchById(createSubPitchRequest.getPitchId(), false);
         PitchTypeDto pitchTypeDto = pitchTypeDao.getPitchTypeById(createSubPitchRequest.getPitchTypeId());
 
         if(pitchDto == null){

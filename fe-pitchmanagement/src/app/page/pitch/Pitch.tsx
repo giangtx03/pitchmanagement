@@ -28,7 +28,7 @@ export default function Pitch() {
     keyword: "",
     pitch_types: [],
     start_price: 0,
-    end_price: 9999999,
+    end_price: 0,
     star_range: 0,
     pageNumber: 1,
     limit: 12,
@@ -47,6 +47,7 @@ export default function Pitch() {
           star_range: search.star_range,
           pitch_types: search.pitch_types,
           limit: search.limit,
+          request_query: true,
         })
         .then((response) => {
           // console.log(response);
@@ -57,6 +58,10 @@ export default function Pitch() {
           }
         })
         .catch((error) => {
+          toast.error(error.response.data.message, {
+            position: "top-right",
+            autoClose: 1500,
+          });
           dispatch(showOrHideSpinner(false));
         });
     };

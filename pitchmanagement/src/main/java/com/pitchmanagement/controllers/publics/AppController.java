@@ -32,7 +32,7 @@ public class AppController {
             @PathVariable("image_name") String imageName) {
         try {
             Resource source = imageService.download(imageName);
-            logger.info("Lấy hình ảnh : {}", imageName);
+//            logger.info("Lấy hình ảnh : {}", imageName);
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_PNG)
                     .body(source);
