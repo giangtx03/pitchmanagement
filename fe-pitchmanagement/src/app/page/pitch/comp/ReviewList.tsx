@@ -10,6 +10,8 @@ import defaultAvatar from "../../../../assets/images/defaultAvatar.jpg";
 import { formatDate } from "../../../util/FormatDate";
 import { Menu } from "primereact/menu";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { toast } from "react-toastify";
+import { Dialog } from "primereact/dialog";
 
 export default function ReviewList(props: any) {
   const dispatch = useAppDispatch();
@@ -22,13 +24,25 @@ export default function ReviewList(props: any) {
     comment: "",
   });
   const menu = useRef<Menu>(null);
+  const [search, setSearch] = useState({
+    star_range: 0,
+    user_id: 0,
+    timer: 0,
+    limit: 3,
+  });
+  const [visible, setVisible] = useState(false);
+  const [selectReview, setSelectReview] = useState<any>({
+    id: 0,
+    star: 0,
+    comment: "",
+  });
 
   useEffect(() => {
     const fetchApi = async () => {
       await ReviewService.getInstance()
-        .getByPitchId(pitchId, { request_query: true })
+        .getByPitchId(pitchId, { star: search.star_range, limit: search.limit })
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           if (response.data.status === 200) {
             setReviews(response.data.data);
             dispatch(showOrHideSpinner(false));
@@ -40,10 +54,88 @@ export default function ReviewList(props: any) {
     };
     dispatch(showOrHideSpinner(true));
     fetchApi();
-  }, [pitchId]);
+  }, [pitchId, search.timer]);
 
   const onSubmitCreateReview = async () => {
-    console.log(data);
+    dispatch(showOrHideSpinner(true));
+    await ReviewService.getInstance()
+      .createReview({
+        pitch_id: pitchId,
+        user_id: user.userDetail.id,
+        comment: data.comment,
+        star: data.star,
+      })
+      .then((response) => {
+        if (response.data.status === 201) {
+          toast.success(response.data.message, {
+            position: "top-right",
+            autoClose: 1500,
+          });
+          dispatch(showOrHideSpinner(false));
+          setSearch({ ...search, star_range: 0, timer: 0, limit: 3 });
+          setData({ star: 0, comment: "" });
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message, {
+          position: "top-right",
+          autoClose: 1500,
+        });
+        dispatch(showOrHideSpinner(false));
+      });
+  };
+
+  const onSubmitUpdate = async () => {
+    dispatch(showOrHideSpinner(true));
+    await ReviewService.getInstance()
+      .updateReview({
+        id: selectReview.id,
+        user_id: user.userDetail.id,
+        comment: selectReview.comment,
+        star: selectReview.star,
+      })
+      .then((response) => {
+        if (response.data.status === 200) {
+          toast.success(response.data.message, {
+            position: "top-right",
+            autoClose: 1500,
+          });
+          dispatch(showOrHideSpinner(false));
+          setVisible(false);
+          setSearch({ ...search, star_range: 0, timer: Date.now(), limit: 3 });
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message, {
+          position: "top-right",
+          autoClose: 1500,
+        });
+        dispatch(showOrHideSpinner(false));
+      });
+  };
+
+  const onDelete = async () => {
+    dispatch(showOrHideSpinner(true));
+    await ReviewService.getInstance()
+      .deleteReview(selectReview.id)
+      .then((response) => {
+        if (response.data.status === 200) {
+          toast.success(response.data.message, {
+            position: "top-right",
+            autoClose: 1500,
+          });
+          dispatch(showOrHideSpinner(false));
+          setVisible(false);
+          setSearch({ ...search, star_range: 0, timer: Date.now(), limit: 3 });
+        }
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message, {
+          position: "top-right",
+          autoClose: 1500,
+        });
+        dispatch(showOrHideSpinner(false));
+      });
   };
 
   const items = [
@@ -52,9 +144,15 @@ export default function ReviewList(props: any) {
       items: [
         {
           label: "Chỉnh sửa",
+          command: () => {
+            setVisible(true);
+          },
         },
         {
           label: "Xóa",
+          command: () => {
+            onDelete();
+          },
         },
       ],
     },
@@ -62,8 +160,76 @@ export default function ReviewList(props: any) {
   return (
     <div className="col-10 m-auto pt-3">
       <h4>Đánh giá </h4>
+      <div className="d-flex mb-2">
+        <button
+          onClick={() =>
+            setSearch({ ...search, star_range: 0, timer: Date.now() })
+          }
+          className={
+            "m-2 text-dark btn btn-outline-info " +
+            `${search.star_range == 0 ? "active" : ""}`
+          }
+        >
+          Tất cả
+        </button>
+        <button
+          onClick={() =>
+            setSearch({ ...search, star_range: 5, timer: Date.now() })
+          }
+          className={
+            "m-2 text-dark btn btn-outline-info " +
+            `${search.star_range == 5 ? "active" : ""}`
+          }
+        >
+          5 sao
+        </button>
+        <button
+          onClick={() =>
+            setSearch({ ...search, star_range: 4, timer: Date.now() })
+          }
+          className={
+            "m-2 text-dark btn btn-outline-info " +
+            `${search.star_range == 4 ? "active" : ""}`
+          }
+        >
+          4 sao
+        </button>
+        <button
+          onClick={() =>
+            setSearch({ ...search, star_range: 3, timer: Date.now() })
+          }
+          className={
+            "m-2 text-dark btn btn-outline-info " +
+            `${search.star_range == 3 ? "active" : ""}`
+          }
+        >
+          3 sao
+        </button>
+        <button
+          onClick={() =>
+            setSearch({ ...search, star_range: 2, timer: Date.now() })
+          }
+          className={
+            "m-2 text-dark btn btn-outline-info " +
+            `${search.star_range == 2 ? "active" : ""}`
+          }
+        >
+          2 sao
+        </button>
+        <button
+          onClick={() =>
+            setSearch({ ...search, star_range: 1, timer: Date.now() })
+          }
+          className={
+            "m-2 text-dark btn btn-outline-info " +
+            `${search.star_range == 1 ? "active" : ""}`
+          }
+        >
+          1 sao
+        </button>
+      </div>
       {user.isAuthenticated && (
-        <div className="col-md-8 col-sm-12 m-auto border-1 shadow p-4">
+        <div className="col-md-8 mb-2 col-sm-12 m-auto border-1 shadow p-4">
           <div>
             <Rating
               value={data.star}
@@ -119,7 +285,10 @@ export default function ReviewList(props: any) {
                   <div className="m-auto text-end">
                     <button
                       className="border-0 btn m-0 p-0 px-2"
-                      onClick={(e) => menu.current?.toggle(e)}
+                      onClick={(e) => {
+                        menu.current?.toggle(e);
+                        setSelectReview(review);
+                      }}
                     >
                       <BsThreeDotsVertical />
                     </button>
@@ -141,10 +310,61 @@ export default function ReviewList(props: any) {
               <hr />
             </div>
           ))}
+          {reviews.total_items >= search.limit && reviews.total_pages > 1 && (
+            <div className="d-flex mb-2 justify-content-center">
+              <button
+                className="btn text-dark btn-link text-decoration-none"
+                onClick={() => {
+                  setSearch({
+                    ...search,
+                    limit: search.limit + 3,
+                    timer: Date.now(),
+                  });
+                }}
+              >
+                Xem thêm
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <p>Chưa có đánh giá nào</p>
       )}
+      <Dialog
+        header="Chỉnh sửa"
+        visible={visible}
+        style={{ width: "50vw" }}
+        onHide={() => {
+          if (!visible) return;
+          setVisible(false);
+        }}
+      >
+        <div className="col-md-8 mb-2 col-sm-12 m-auto border-1 shadow p-4">
+          <div>
+            <Rating
+              value={selectReview.star}
+              onChange={(e) =>
+                setSelectReview({ ...selectReview, star: e.target.value })
+              }
+              cancel={false}
+            />
+          </div>
+          <input
+            type="text"
+            className="form-control my-3"
+            placeholder="Bình luận..."
+            value={selectReview?.comment}
+            onChange={(e) =>
+              setSelectReview({ ...selectReview, comment: e.target.value })
+            }
+          />
+          <div className="mt-auto text-end">
+            <button className="btn btn-primary" onClick={onSubmitUpdate}>
+              Cập nhật
+            </button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

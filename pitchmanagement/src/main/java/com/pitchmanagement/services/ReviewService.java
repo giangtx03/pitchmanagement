@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ReviewService {
     ReviewResponse createReview(CreateReviewRequest createReviewRequest) throws Exception;
-    PageResponse getAllByPitchId(Long pitchId, Long userId, int pageNumber, int limit, String orderSort);
+    PageResponse getAllByPitchId(Long pitchId, Long userId,int star, int pageNumber, int limit, String orderSort);
     ReviewResponse updateReview(UpdateReviewRequest updateReviewRequest) throws Exception;
     void deleteReview(Long id);
 }

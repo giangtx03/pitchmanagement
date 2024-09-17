@@ -49,12 +49,13 @@ public class AppController {
     public ResponseEntity<?> getReview(
             @PathVariable("pitch_id") Long pitchId,
             @RequestParam(value = "user_id", defaultValue = "0") @Nullable Long userId,
+            @RequestParam(value = "star", defaultValue = "0") @Nullable int star,
             @RequestParam(value = "page_number", defaultValue = "1") @Nullable int pageNumber,
-            @RequestParam(value = "limit", defaultValue = "5") @Nullable int limit,
+            @RequestParam(value = "limit", defaultValue = "3") @Nullable int limit,
             @RequestParam(value = "order_sort", defaultValue = SortConstant.SORT_ASC) @Nullable String orderSort) {
         try {
 
-            PageResponse pageResponse = reviewService.getAllByPitchId(pitchId,userId,pageNumber,limit,orderSort);
+            PageResponse pageResponse = reviewService.getAllByPitchId(pitchId,userId,star,pageNumber,limit,orderSort);
 
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())

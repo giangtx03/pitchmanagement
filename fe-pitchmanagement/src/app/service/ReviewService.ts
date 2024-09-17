@@ -20,4 +20,19 @@ export class ReviewService {
     const headers = HeadersUtil.getHeaders();
     return axios.get(url, {headers});
   }
+
+  public createReview(requestModel : any){
+    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/reviews`);
+    return axiosCustom.post(url, requestModel);
+  }
+
+  public updateReview(requestModel : any){
+    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/reviews`);
+    return axiosCustom.put(url, requestModel);
+  }
+
+  public deleteReview(id : any){
+    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/reviews/${id}`);
+    return axiosCustom.delete(url);
+  }
 }

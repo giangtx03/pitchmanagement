@@ -19,6 +19,7 @@
             update_at AS updateAt
         FROM reviews
         WHERE pitch_id = #{pitchId} AND (#{userId} IS NULL OR #{userId} = 0 OR #{userId} = user_id)
+        AND (#{star} IS NULL OR #{star} = 0 OR star = #{star})
     </select>
 
     <select id="getReviewById" parameterType="map" resultType="com.pitchmanagement.dtos.ReviewDto">

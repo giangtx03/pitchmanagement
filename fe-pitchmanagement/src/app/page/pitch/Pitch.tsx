@@ -112,53 +112,53 @@ export default function Pitch() {
             <label htmlFor="pitch-type">Theo kiểu sân</label>
             <div className="form-check">
               <input
-                className="form-check-input"
+                className="form-check-input cursor-pointer"
                 type="checkbox"
                 value="1"
-                id="flexCheckDefault"
+                id="flexCheckDefault1"
                 checked={search.pitch_types.includes(1)}
                 onChange={handleCheckboxChange}
               />
-              <label className="form-check-label" htmlFor="flexCheckDefault">
+              <label className="form-check-label" htmlFor="flexCheckDefault1">
                 Sân 5
               </label>
             </div>
             <div className="form-check">
               <input
-                className="form-check-input"
+                className="form-check-input cursor-pointer"
                 type="checkbox"
                 value="2"
-                id="flexCheckDefault"
+                id="flexCheckDefault2"
                 checked={search.pitch_types.includes(2)}
                 onChange={handleCheckboxChange}
               />
-              <label className="form-check-label" htmlFor="flexCheckDefault">
+              <label className="form-check-label" htmlFor="flexCheckDefault2">
                 Sân 7
               </label>
             </div>
             <div className="form-check">
               <input
-                className="form-check-input"
+                className="form-check-input cursor-pointer"
                 type="checkbox"
                 value="3"
-                id="flexCheckDefault"
+                id="flexCheckDefault3"
                 checked={search.pitch_types.includes(3)}
                 onChange={handleCheckboxChange}
               />
-              <label className="form-check-label" htmlFor="flexCheckDefault">
+              <label className="form-check-label" htmlFor="flexCheckDefault3">
                 Sân 9
               </label>
             </div>
             <div className="form-check">
               <input
-                className="form-check-input"
+                className="form-check-input cursor-pointer"
                 type="checkbox"
                 value="4"
-                id="flexCheckDefault"
+                id="flexCheckDefault4"
                 checked={search.pitch_types.includes(4)}
                 onChange={handleCheckboxChange}
               />
-              <label className="form-check-label" htmlFor="flexCheckDefault">
+              <label className="form-check-label" htmlFor="flexCheckDefault4">
                 Sân 11
               </label>
             </div>
@@ -238,7 +238,7 @@ export default function Pitch() {
                 checked={search.star_range == 5}
               />
               <label
-                className="form-check-label star-label text-warning"
+                className="form-check-label star-label text-warning cursor-pointer"
                 htmlFor="rating5"
               >
                 <FaStar />
@@ -262,7 +262,7 @@ export default function Pitch() {
                 checked={search.star_range == 4}
               />
               <label
-                className="form-check-label star-label text-warning d-flex align-items-center"
+                className="form-check-label star-label text-warning d-flex align-items-center cursor-pointer"
                 htmlFor="rating4"
               >
                 <FaStar />
@@ -287,7 +287,7 @@ export default function Pitch() {
                 checked={search.star_range == 3}
               />
               <label
-                className="form-check-label star-label text-warning d-flex align-items-center"
+                className="form-check-label star-label text-warning cursor-pointer d-flex align-items-center"
                 htmlFor="rating3"
               >
                 <FaStar />
@@ -312,7 +312,7 @@ export default function Pitch() {
                 checked={search.star_range == 2}
               />
               <label
-                className="form-check-label star-label text-warning d-flex align-items-center"
+                className="form-check-label star-label text-warning d-flex cursor-pointer align-items-center"
                 htmlFor="rating2"
               >
                 <FaStar />
@@ -337,7 +337,7 @@ export default function Pitch() {
                 checked={search.star_range == 1}
               />
               <label
-                className="form-check-label star-label text-warning d-flex align-items-center"
+                className="form-check-label star-label text-warning cursor-pointer d-flex align-items-center"
                 htmlFor="rating1"
               >
                 <FaStar />

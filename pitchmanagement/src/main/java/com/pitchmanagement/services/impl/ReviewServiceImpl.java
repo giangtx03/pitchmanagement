@@ -52,10 +52,10 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public PageResponse getAllByPitchId(Long pitchId, Long userId, int pageNumber, int limit, String orderSort) {
+    public PageResponse getAllByPitchId(Long pitchId, Long userId,int star, int pageNumber, int limit, String orderSort) {
         PageHelper.startPage(pageNumber, limit);
         PageHelper.orderBy("create_at DESC, star " + orderSort);
-        List<ReviewDto> reviewDtoList = reviewDao.getAllByPitchId(pitchId, userId);
+        List<ReviewDto> reviewDtoList = reviewDao.getAllByPitchId(pitchId, userId, star);
         PageInfo<ReviewDto> pageInfo = new PageInfo<>(reviewDtoList);
 
         List<ReviewResponse> reviewResponseList = reviewDtoList.stream().map(
