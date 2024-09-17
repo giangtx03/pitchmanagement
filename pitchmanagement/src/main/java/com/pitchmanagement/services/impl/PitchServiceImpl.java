@@ -3,6 +3,8 @@ package com.pitchmanagement.services.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pitchmanagement.constants.AuthConstant;
+import com.pitchmanagement.constants.BookingStatus;
+import com.pitchmanagement.constants.PitchTimeStatus;
 import com.pitchmanagement.daos.*;
 import com.pitchmanagement.dtos.*;
 import com.pitchmanagement.exceptions.InvalidDataException;
@@ -28,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +47,7 @@ public class PitchServiceImpl implements PitchService {
     private final UserDao userDao;
     private final TimeSlotDao timeSlotDao;
     private final ImageService imageService;
+    private final BookingDao bookingDao;
     private static final Logger logger = LoggerFactory.getLogger(PitchServiceImpl.class);
     @Override
     @Transactional(rollbackFor =  Exception.class)
@@ -199,13 +203,24 @@ public class PitchServiceImpl implements PitchService {
                 subPitchDto -> {
                     List<PitchTimeResponse> pitchTimeResponses = pitchTimeDao.getPitchTimeBySubPitchId(subPitchDto.getId())
                             .stream()
-                            .map(pitchTimeDto ->
-                                PitchTimeResponse.builder()
+                            .map(pitchTimeDto -> {
+                                PitchTimeResponse pitchTimeResponse = PitchTimeResponse.builder()
                                         .startTime(pitchTimeDto.getStartTime())
                                         .endTime(pitchTimeDto.getEndTime())
                                         .price(pitchTimeDto.getPrice())
                                         .isActive(pitchTimeDto.isActive())
-                                        .build()
+                                        .build();
+                                List<String> schedules = new ArrayList<>();
+                                for(long i = 0; i < 7; i++){
+                                    if(bookingDao.isExistingBooking(subPitchDto.getId(), pitchTimeDto.getTimeSlotId(),
+                                            LocalDate.now().plusDays(i), BookingStatus.CANCELLED.toString())){
+                                        schedules.add(PitchTimeStatus.ORDERED.toString());
+                                    }
+                                    else schedules.add(PitchTimeStatus.OPENED.toString());
+                                }
+                                pitchTimeResponse.setSchedules(schedules);
+                                return pitchTimeResponse;
+                            }
                             ).toList();
                     return SubPitchResponse.builder()
                             .id(subPitchDto.getId())

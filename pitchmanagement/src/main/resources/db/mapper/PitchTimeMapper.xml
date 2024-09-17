@@ -14,7 +14,8 @@
             pt.price,
             pt.is_active AS isActive,
             ts.start_time AS startTime,
-            ts.end_time AS endTime
+            ts.end_time AS endTime,
+            pt.time_slot_id AS timeSlotId
         FROM pitch_times pt
         LEFT JOIN time_slots ts ON ts.id = pt.time_slot_id
         WHERE pt.sub_pitch_id = #{subPitchId}

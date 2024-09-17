@@ -14,6 +14,8 @@ import { Image } from "primereact/image";
 import defaultAvatar from "../../../assets/images/defaultAvatar.jpg";
 import { formatTime } from "../../util/FormatDate";
 import ReviewList from "./comp/ReviewList";
+import { Dialog } from "primereact/dialog";
+import BookingPitch from "./comp/BookingPitch";
 
 export default function PitchDetail() {
   const dispatch = useAppDispatch();
@@ -28,13 +30,14 @@ export default function PitchDetail() {
   const [selectedTime, setSelectedTime] = useState<PitchTimeResponse | null>(
     null
   );
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const fetchApi = async () => {
       await PitchService.getInstance()
         .getPitchById(id, { request_query: true })
         .then((response) => {
-          // console.log(response);
+          console.log(response);
           if (response.data.status === 200) {
             setPitch(response.data.data);
             if (response.data.data.images?.length > 0) {
@@ -177,7 +180,7 @@ export default function PitchDetail() {
           <div className="mx-3">
             <div className="d-flex justify-content-between align-items-center">
               <h4>{pitch.name}</h4>
-              <button className="btn btn-success">Đặt sân ngay</button>
+              <button className="btn btn-success" onClick={() => setVisible(true)}>Đặt sân ngay</button>
             </div>
             <div className="card-text">
               <b className="text-warning d-flex align-items-center">
@@ -306,8 +309,19 @@ export default function PitchDetail() {
         </div>
       </div>
       <div className="row shadow mt-3">
-        <ReviewList pitchId={id}/>
+        <ReviewList pitchId={id} />
       </div>
+      <Dialog
+        header="Đặt sân"
+        visible={visible}
+        style={{ width: "80vw" }}
+        onHide={() => {
+          if (!visible) return;
+          setVisible(false);
+        }}
+      >
+        <BookingPitch pitch={pitch} />
+      </Dialog>
     </div>
   ) : (
     <p> Không tìm thấy sân bóng </p>

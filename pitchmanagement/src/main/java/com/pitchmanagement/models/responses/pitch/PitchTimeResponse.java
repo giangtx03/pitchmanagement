@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,4 +22,6 @@ public class PitchTimeResponse {
     private LocalTime endTime;
     @JsonProperty("is_active")
     private boolean isActive;
+    @JsonProperty("schedules")
+    private List<String> schedules;
 }

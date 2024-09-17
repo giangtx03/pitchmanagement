@@ -28,4 +28,5 @@ export type PitchTimeResponse = {
   start_time: string;
   end_time: string;
   is_active: boolean;
+  schedules: string[];
 };

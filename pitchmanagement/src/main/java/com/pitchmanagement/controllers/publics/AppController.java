@@ -3,7 +3,9 @@ package com.pitchmanagement.controllers.publics;
 import com.pitchmanagement.constants.SortConstant;
 import com.pitchmanagement.models.responses.BaseResponse;
 import com.pitchmanagement.models.responses.PageResponse;
+import com.pitchmanagement.models.responses.pitch.PitchTimeResponse;
 import com.pitchmanagement.services.ImageService;
+import com.pitchmanagement.services.PitchTimeService;
 import com.pitchmanagement.services.ReviewService;
 import com.pitchmanagement.services.SendEmailService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("public/${api.prefix}")
@@ -24,6 +28,7 @@ public class AppController {
 
     private final ImageService imageService;
     private final ReviewService reviewService;
+    private final PitchTimeService pitchTimeService;
 
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
 

@@ -62,9 +62,9 @@
         SELECT COUNT(1) > 0
         FROM bookings
         WHERE sub_pitch_id = #{subPitchId}
-        AND time_slot_id = #{timeSlotId}
-        AND booking_date = #{bookingDate}
-        AND status != #{status}
+            AND time_slot_id = #{timeSlotId}
+            AND booking_date = #{bookingDate}
+            AND status != #{status}
     </select>
 
     <update id="updateBooking" parameterType="com.pitchmanagement.dtos.BookingDto">
