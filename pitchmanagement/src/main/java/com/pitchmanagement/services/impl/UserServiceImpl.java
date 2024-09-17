@@ -278,7 +278,7 @@ public class UserServiceImpl implements UserService {
 
         String body = formBody
                 .replace("{username}", userDto.getFullname())
-                .replace("{confirmationLink}", frontendApi + "public/" + apiPrefix + subUrl + tokenDto.getToken());
+                .replace("{confirmationLink}", frontendApi + subUrl + tokenDto.getToken());
 
         String subject = subjectType + " cho người dùng " + userDto.getFullname();
 

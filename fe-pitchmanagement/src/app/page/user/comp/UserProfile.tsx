@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "../../../store/hooks";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { UpdateUserDetailsRequest, UserDetails } from "../../../model/User";
+import { UpdateUserDetailsRequest, UserResponse } from "../../../model/User";
 import { showOrHideSpinner } from "../../../reducer/SpinnerSlice";
 import { Image } from "primereact/image";
 import defaultAvatar from "../../../../assets/images/defaultAvatar.jpg";
@@ -22,7 +22,7 @@ export default function UserProfile() {
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [user, setUser] = useState<UserDetails>();
+  const [user, setUser] = useState<UserResponse>();
   const {
     register,
     handleSubmit,

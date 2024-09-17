@@ -4,6 +4,7 @@ import defaultAvatar from "../../../../assets/images/defaultAvatar.jpg";
 import defaultSanBong from "../../../../assets/images/defaultSanBong.jpeg";
 import { Image } from "primereact/image";
 import { Link } from "react-router-dom";
+import { FaStar } from "react-icons/fa";
 
 export default function PitchList(props: any) {
   const { pitchList } = props;
@@ -13,7 +14,11 @@ export default function PitchList(props: any) {
       <div className="row">
         {/* Hiển thị danh sách pitches ở đây */}
         {pitchList.map((pitch: PitchResponse) => (
-          <Link to={`${pitch.id}`} key={pitch.id} className="col-xl-4 col-md-6 col-sm-12 mb-3 text-decoration-none">
+          <Link
+            to={`${pitch.id}`}
+            key={pitch.id}
+            className="col-xl-4 col-md-6 col-sm-12 mb-3 text-decoration-none"
+          >
             <div className="card" style={{ width: "18rem" }}>
               <img
                 src={
@@ -55,11 +60,13 @@ export default function PitchList(props: any) {
                   Địa điểm:
                   {" " + pitch.location}
                 </p>
-                <p className="card-text">
-                  Đánh giá :{" "}
-                  <b className="text-warning">
+                <p className="card-text ">
+                  <b className="text-warning d-flex align-items-center">
                     {pitch.avg_star > 0 ? (
-                      <>{pitch.avg_star.toFixed(2)}/5 </>
+                      <>
+                        {pitch.avg_star.toFixed(2)}
+                        <FaStar />
+                      </>
                     ) : (
                       "chưa có đánh giá"
                     )}

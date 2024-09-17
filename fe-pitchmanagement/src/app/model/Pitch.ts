@@ -1,10 +1,10 @@
-import { UserDetails } from "./User";
+import { UserResponse } from "./User";
 
 export type PitchResponse = {
   id: number;
   name: string;
   location: string;
-  manager: UserDetails;
+  manager: UserResponse;
   images: string[];
   create_at: string;
   update_at: string;

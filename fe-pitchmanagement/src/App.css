@@ -67,3 +67,20 @@ input[type="radio"]:checked + label {
 .star-label {
   transition: background-color 0.3s ease;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.p-rating-icon{
+  color: rgba(255,193,7,1);
+}
+
+.p-menu-list{
+  margin: 0;
+  padding: 0;
+}
+
+.p-menuitem-link{
+  text-decoration: none;
+}

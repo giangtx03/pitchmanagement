@@ -11,7 +11,7 @@ export type RegisterRequest = {
   retypePassword: string;
 };
 
-export type UserDetails = {
+export type UserResponse = {
   id: number;
   email: string;
   phone_number: string;

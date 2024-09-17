@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../store/hooks";
-import { DecodedToken, UserDetails } from "../../model/User";
+import { DecodedToken, UserResponse } from "../../model/User";
 import { decodeToken } from "react-jwt";
 import { TokenService } from "../../service/TokenService";
 import { UserService } from "../../service/UserService";
@@ -18,7 +18,7 @@ export default function Header() {
   const isAuthenticated = useSelector(
     (state: any) => state.user.isAuthenticated
   );
-  const [user, setUser] = useState<UserDetails | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(null);
   const userDetail = useSelector((state: any) => state.user.userDetail);
 
   useEffect(() => {
