@@ -20,15 +20,13 @@ export default function AuthGuard(props: any) {
         navigate("/login");
       }
     }
-  }, [isAuthenticated, isLoading, navigate, dispatch]);
+  }, [isLoading, isAuthenticated, navigate, dispatch]);
 
   if (isLoading) {
-    dispatch(showOrHideSpinner(true));
     return null;
   }
 
   if (!isAuthenticated) {
-    dispatch(showOrHideSpinner(false));
     return null;
   }
 

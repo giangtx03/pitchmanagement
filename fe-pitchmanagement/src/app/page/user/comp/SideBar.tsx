@@ -68,11 +68,11 @@ export default function SideBar() {
             >
               <li>
                 <NavLink
-                  to="/users/profile"
+                  to="/users/bookings"
                   className="btn text-start rounded mb-1"
                   style={{ width: "80%" }}
                 >
-                  Chỉnh sửa thông tin
+                  Đơn đặt
                 </NavLink>
               </li>
               <li>

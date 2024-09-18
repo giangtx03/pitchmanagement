@@ -43,7 +43,6 @@ export default function Header() {
     };
 
     fetchUserDetails();
-    dispatch(setLoading())
   }, [TokenService.getInstance().getToken()]);
 
   useEffect(() => {
