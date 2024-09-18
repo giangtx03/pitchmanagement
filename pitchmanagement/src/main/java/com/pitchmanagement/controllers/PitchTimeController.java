@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("public/${api.prefix}/pitch-times")
+@RequestMapping("${api.prefix}/pitch-times")
 public class PitchTimeController {
 
     private final PitchTimeService pitchTimeService;
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PostMapping
     public ResponseEntity<BaseResponse> createPitchTime(
             @RequestBody @Valid CreatePitchTimeRequest request,
@@ -60,6 +62,7 @@ public class PitchTimeController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PutMapping
     public ResponseEntity<BaseResponse> updeatePitchTime(
             @RequestBody @Valid UpdatePitchTimeRequest updatePitchTimeRequest,

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +20,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("public/${api.prefix}/pitches")
+@RequestMapping("${api.prefix}/pitches")
 public class PitchController {
 
     private final PitchService pitchService;
 
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse> createPitch(
             @ModelAttribute @Valid CreatePitchRequest request,
@@ -63,6 +65,7 @@ public class PitchController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PutMapping
     public ResponseEntity<BaseResponse> updeatePitch(
             @RequestBody @Valid UpdatePitchRequest updatePitchRequest,
@@ -101,6 +104,7 @@ public class PitchController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PostMapping(value = "/images",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse> addImages(
             @ModelAttribute @Valid CreateImageRequest request,
@@ -138,6 +142,7 @@ public class PitchController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @DeleteMapping("/images/{name}")
     public ResponseEntity<BaseResponse> deleteImage(
             @PathVariable("name") String name

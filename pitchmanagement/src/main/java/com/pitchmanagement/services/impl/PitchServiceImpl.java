@@ -197,17 +197,18 @@ public class PitchServiceImpl implements PitchService {
 
         UserDto managerDto = userDao.getUserById(pitchDto.getManagerId());
         UserResponse managerResponse = UserResponse.fromUserDto(managerDto);
-        List<SubPitchDto> subPitchDtos = subPitchDao.getAllByPitchId(pitchDto.getId());
+        List<SubPitchDto> subPitchDtos = subPitchDao.getAllByPitchId(pitchDto.getId(), requestQuery);
         List<SubPitchResponse> subPitchResponses = subPitchDtos.stream()
                 .map(
                 subPitchDto -> {
-                    List<PitchTimeResponse> pitchTimeResponses = pitchTimeDao.getPitchTimeBySubPitchId(subPitchDto.getId())
+                    List<PitchTimeResponse> pitchTimeResponses = pitchTimeDao.getPitchTimeBySubPitchId(subPitchDto.getId(), requestQuery)
                             .stream()
                             .map(pitchTimeDto -> {
                                 PitchTimeResponse pitchTimeResponse = PitchTimeResponse.builder()
                                         .startTime(pitchTimeDto.getStartTime())
                                         .endTime(pitchTimeDto.getEndTime())
                                         .price(pitchTimeDto.getPrice())
+                                        .timeSlotId(pitchTimeDto.getTimeSlotId())
                                         .isActive(pitchTimeDto.isActive())
                                         .build();
                                 List<String> schedules = new ArrayList<>();

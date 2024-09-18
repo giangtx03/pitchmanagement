@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +20,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("public/${api.prefix}/reviews")
+@RequestMapping("${api.prefix}/reviews")
 public class ReviewController {
 
     private final ReviewService reviewService;
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @PostMapping
     public ResponseEntity<BaseResponse> createReview(
             @RequestBody @Valid CreateReviewRequest request,
@@ -62,6 +64,8 @@ public class ReviewController {
         }
     }
 
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @PutMapping
     public ResponseEntity<BaseResponse> updeateReview(
             @RequestBody @Valid UpdateReviewRequest updateReviewRequest,
@@ -100,6 +104,8 @@ public class ReviewController {
         }
     }
 
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse> deleteReview(
             @PathVariable("id") Long id

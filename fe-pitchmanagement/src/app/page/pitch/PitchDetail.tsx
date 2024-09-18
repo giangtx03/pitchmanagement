@@ -16,10 +16,14 @@ import { formatTime } from "../../util/FormatDate";
 import ReviewList from "./comp/ReviewList";
 import { Dialog } from "primereact/dialog";
 import BookingPitch from "./comp/BookingPitch";
+import { useSelector } from "react-redux";
 
 export default function PitchDetail() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const isAuthenticated = useSelector(
+    (state: any) => state.user.isAuthenticated
+  );
   const { id } = useParams();
 
   const [pitch, setPitch] = useState<PitchResponse | any>();
@@ -37,7 +41,7 @@ export default function PitchDetail() {
       await PitchService.getInstance()
         .getPitchById(id, { request_query: true })
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           if (response.data.status === 200) {
             setPitch(response.data.data);
             if (response.data.data.images?.length > 0) {
@@ -180,7 +184,15 @@ export default function PitchDetail() {
           <div className="mx-3">
             <div className="d-flex justify-content-between align-items-center">
               <h4>{pitch.name}</h4>
-              <button className="btn btn-success" onClick={() => setVisible(true)}>Đặt sân ngay</button>
+              <button
+                className="btn btn-success"
+                onClick={() => {
+                  if (isAuthenticated) setVisible(true);
+                  else navigate("/login")
+                }}
+              >
+                Đặt sân ngay
+              </button>
             </div>
             <div className="card-text">
               <b className="text-warning d-flex align-items-center">
@@ -319,6 +331,7 @@ export default function PitchDetail() {
           if (!visible) return;
           setVisible(false);
         }}
+        baseZIndex={100}
       >
         <BookingPitch pitch={pitch} />
       </Dialog>

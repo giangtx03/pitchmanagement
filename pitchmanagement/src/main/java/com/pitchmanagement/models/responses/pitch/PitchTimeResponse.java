@@ -24,4 +24,6 @@ public class PitchTimeResponse {
     private boolean isActive;
     @JsonProperty("schedules")
     private List<String> schedules;
+    @JsonProperty("time_slot_id")
+    private Long timeSlotId;
 }

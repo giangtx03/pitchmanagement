@@ -19,8 +19,14 @@
             sp.is_active AS isActive,
             pt.name AS pitchType
         FROM sub_pitches sp
+        LEFT JOIN pitch_times pi ON pi.sub_pitch_id = sp.id
         LEFT JOIN pitch_types pt ON pt.id = sp.pitch_type_id
         WHERE pitch_id = #{pitchId}
+        <if test="requestQuery != null and requestQuery">
+            AND sp.is_active = TRUE
+            AND pi.is_active = TRUE
+        </if>
+        GROUP BY sp.id, sp.name,sp.create_at,sp.update_at,sp.pitch_type_id,sp.is_active
     </select>
 
     <select id="isExisting" parameterType="map" resultType="boolean">

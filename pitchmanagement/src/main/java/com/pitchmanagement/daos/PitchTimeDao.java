@@ -10,7 +10,7 @@ import java.util.List;
 public interface PitchTimeDao {
 
     void insertPitchTime(PitchTimeDto pitchTimeDto);
-    List<PitchTimeDto> getPitchTimeBySubPitchId(@Param("subPitchId") Long subPitchId);
+    List<PitchTimeDto> getPitchTimeBySubPitchId(@Param("subPitchId") Long subPitchId, @Param("requestQuery") boolean requestQuery);
     void updatePitchTime(PitchTimeDto pitchTimeDto);
     boolean isExisting(@Param("subPitchId") Long subPitchId, @Param("timeSlotId") Long timeSlotId);
     PitchTimeDto getBySubPitchIdAndTimeSlotId(@Param("subPitchId") Long subPitchId, @Param("timeSlotId") Long timeSlotId);

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +16,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("public/${api.prefix}/payments")
+@RequestMapping("${api.prefix}/payments")
 public class PaymentController {
 
     private final PaymentService paymentService;
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @GetMapping("/create-payment")
     public ResponseEntity<BaseResponse> createPayment(
             @RequestBody @Valid VNPayRequest request,
@@ -55,6 +58,8 @@ public class PaymentController {
         }
     }
 
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @GetMapping("/vnpay_return/{booking_id}")
     public ResponseEntity<BaseResponse> returnPayment(
         @PathVariable("booking_id") Long bookingId,

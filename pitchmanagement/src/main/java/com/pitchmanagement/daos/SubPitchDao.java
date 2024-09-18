@@ -10,7 +10,7 @@ import java.util.List;
 public interface SubPitchDao {
 
     void insertSubPitch(SubPitchDto subPitchDto);
-    List<SubPitchDto> getAllByPitchId(@Param("pitchId") Long pitchId);
+    List<SubPitchDto> getAllByPitchId(@Param("pitchId") Long pitchId, @Param("requestQuery") boolean requestQuery);
     void updateSubPitch(SubPitchDto subPitchDto);
     boolean isExisting(@Param("name") String name, @Param("pitchId") Long pitchId);
     SubPitchDto getSubPitchById(@Param("id") Long id);

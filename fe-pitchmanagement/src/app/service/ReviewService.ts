@@ -22,17 +22,17 @@ export class ReviewService {
   }
 
   public createReview(requestModel : any){
-    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/reviews`);
+    const url = ApiUrlUtil.buildQueryString(`/reviews`);
     return axiosCustom.post(url, requestModel);
   }
 
   public updateReview(requestModel : any){
-    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/reviews`);
+    const url = ApiUrlUtil.buildQueryString(`/reviews`);
     return axiosCustom.put(url, requestModel);
   }
 
   public deleteReview(id : any){
-    const url = ApiUrlUtil.buildQueryString(process.env.REACT_APP_API_URL +  `/reviews/${id}`);
+    const url = ApiUrlUtil.buildQueryString(`/reviews/${id}`);
     return axiosCustom.delete(url);
   }
 }

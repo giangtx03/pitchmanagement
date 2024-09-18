@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +23,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("public/${api.prefix}/bookings")
+@RequestMapping("${api.prefix}/bookings")
 public class BookingController {
 
     private final BookingService bookingService;
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @PostMapping
     public ResponseEntity<BaseResponse> createBooking(
             @RequestBody @Valid CreateBookingRequest request,
@@ -65,6 +67,8 @@ public class BookingController {
         }
     }
 
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse> getBookingById(
             @PathVariable("id") Long id
@@ -89,6 +93,7 @@ public class BookingController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     @GetMapping("/user/{user_id}")
     public ResponseEntity<BaseResponse> getBookingByUserId(
             @PathVariable("user_id") Long userId,
@@ -116,6 +121,8 @@ public class BookingController {
         }
     }
 
+
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @GetMapping("/manager/{manager_id}")
     public ResponseEntity<BaseResponse> getBookingByManagerId(
             @PathVariable("manager_id") Long managerId,
