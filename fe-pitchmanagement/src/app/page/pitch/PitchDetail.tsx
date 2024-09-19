@@ -279,6 +279,7 @@ export default function PitchDetail() {
           if (!visible) return;
           setVisible(false);
         }}
+        dismissableMask={true}
         baseZIndex={100}
       >
         <BookingPitch pitch={pitch} />

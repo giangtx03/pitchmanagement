@@ -3,9 +3,12 @@ package com.pitchmanagement.services.impl;
 import com.pitchmanagement.configs.VNPayConfig;
 import com.pitchmanagement.constants.BookingStatus;
 import com.pitchmanagement.daos.BookingDao;
+import com.pitchmanagement.daos.PaymentDao;
 import com.pitchmanagement.daos.UserDao;
 import com.pitchmanagement.dtos.BookingDto;
+import com.pitchmanagement.dtos.PaymentDto;
 import com.pitchmanagement.dtos.UserDto;
+import com.pitchmanagement.models.requests.payment.VNPayRequest;
 import com.pitchmanagement.services.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
@@ -18,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -26,10 +30,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final BookingDao bookingDao;
     private final UserDao userDao;
+    private final PaymentDao paymentDao;
     @Value("${frontend.api}")
     private String frontEndApi;
     @Override
-    public String createPayment(String paymentType, Long userId, Long bookingId) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public String createPayment(VNPayRequest request) throws Exception {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
@@ -37,18 +43,27 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
         String orderType = "order-type";
 
-        UserDto userDto = Optional.ofNullable(userDao.getUserById(userId))
+        UserDto userDto = Optional.ofNullable(userDao.getUserById(request.getUserId()))
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Người thanh toán không hợp lệ"));
-        BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(bookingId))
+        BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(request.getBookingId()))
                 .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ"));
 
-        String orderInfor = userDto.getFullname() + " " + paymentType + " id sân: " + bookingDto.getSubPitchId() + " id khung giờ: " + bookingDto.getSubPitchId();
+        String orderInfor = userDto.getFullname() + " " + request.getPaymentType() + " id sân: " + bookingDto.getSubPitchId() + " id khung giờ: " + bookingDto.getSubPitchId();
+
+        PaymentDto paymentDto = PaymentDto.builder()
+                .paymentMethod("VNPAY")
+                .paymentType(request.getPaymentType())
+                .note(request.getNote())
+                .bookingId(request.getBookingId())
+                .amount(request.getAmount())
+                .createAt(LocalDateTime.now())
+                .build();
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf((int)(bookingDto.getDeposit()*100)));
+        vnp_Params.put("vnp_Amount", String.valueOf((int)(request.getAmount()*100)));
         vnp_Params.put("vnp_CurrCode", "VND");
 
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
@@ -102,6 +117,8 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
+
+        paymentDao.insertPayment(paymentDto);
         return paymentUrl;
     }
 

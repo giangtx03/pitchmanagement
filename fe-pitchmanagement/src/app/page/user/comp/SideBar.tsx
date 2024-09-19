@@ -33,7 +33,7 @@ export default function SideBar() {
                 <NavLink
                   to="/users/profile"
                   className="btn text-start rounded mb-1"
-                  style={{ width: "80%" }}
+                  style={{ width: "90%" }}
                 >
                   Chỉnh sửa thông tin
                 </NavLink>
@@ -42,7 +42,7 @@ export default function SideBar() {
                 <NavLink
                   to="/users/change-password"
                   className="btn text-start rounded mb-1"
-                  style={{ width: "80%" }}
+                  style={{ width: "90%" }}
                 >
                   Đổi mật khẩu
                 </NavLink>
@@ -51,87 +51,31 @@ export default function SideBar() {
           </div>
         </li>
         <li className="mb-1">
-          <button
-            className="btn btn-toggle text-start btn-secondary align-items-center rounded collapsed"
-            data-bs-toggle="collapse"
-            data-bs-target="#dashboard-collapse"
-            aria-expanded="false"
+          <NavLink
+            to="/users/bookings"
+            className="btn btn-secondary text-start align-items-center rounded"
             style={{ width: "100%" }}
           >
-            <BsChevronDown className="me-2 fs-5" />
             Lịch sử đặt sân
-          </button>
-          <div className="collapse" id="dashboard-collapse">
-            <ul
-              className="btn-toggle-nav list-unstyled fw-normal pb-1 small"
-              style={{ textAlign: "right" }}
-            >
-              <li>
-                <NavLink
-                  to="/users/bookings"
-                  className="btn text-start rounded mb-1"
-                  style={{ width: "80%" }}
-                >
-                  Đơn đặt
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/users/change-password"
-                  className="btn text-start rounded mb-1"
-                  style={{ width: "80%" }}
-                >
-                  Đổi mật khẩu
-                </NavLink>
-              </li>
-            </ul>
-          </div>
+          </NavLink>
         </li>
         <li className="mb-1">
-          <button
-            className="btn btn-toggle text-start btn-secondary align-items-center rounded collapsed"
-            data-bs-toggle="collapse"
-            data-bs-target="#orders-collapse"
-            aria-expanded="false"
+          <NavLink
+            to="/users/payments"
+            className="btn btn-secondary text-start align-items-center rounded"
             style={{ width: "100%" }}
           >
-            <BsChevronDown className="me-2 fs-5" />
-            Hóa đơn
-          </button>
-          <div className="collapse" id="orders-collapse">
-            <ul
-              className="btn-toggle-nav list-unstyled fw-normal pb-1 small"
-              style={{ textAlign: "right" }}
-            >
-              <li>
-                <NavLink
-                  to="/users/profile"
-                  className="btn text-start rounded mb-1"
-                  style={{ width: "80%" }}
-                >
-                  Chỉnh sửa thông tin
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/users/change-password"
-                  className="btn text-start rounded mb-1"
-                  style={{ width: "80%" }}
-                >
-                  Đổi mật khẩu
-                </NavLink>
-              </li>
-            </ul>
-          </div>
+            Danh sách hóa đơn
+          </NavLink>
         </li>
       </ul>
       <button
-          className="btn btn-secondary align-items-center rounded"
-          style={{ width: "100%" }}
-          onClick={() => dispatch(logout())}
-        >
-          Đăng xuất
-        </button>
+        className="btn btn-secondary align-items-center rounded"
+        style={{ width: "100%" }}
+        onClick={() => dispatch(logout())}
+      >
+        Đăng xuất
+      </button>
     </div>
   );
 }

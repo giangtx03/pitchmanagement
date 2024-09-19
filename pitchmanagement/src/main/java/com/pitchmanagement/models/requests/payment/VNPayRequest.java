@@ -20,4 +20,9 @@ public class VNPayRequest {
     @JsonProperty("booking_id")
     @Min(value = 1, message = "Đơn đặt không hợp lệ")
     private Long bookingId;
+    @JsonProperty("note")
+    private String note;
+    @JsonProperty("amount")
+    @Min(value = 0, message = "Tiền thanh toán không hợp lệ")
+    private Float amount;
 }

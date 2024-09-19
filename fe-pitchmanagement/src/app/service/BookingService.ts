@@ -24,13 +24,21 @@ export class BookingService {
     return axiosCustom.get(url);
   }
 
-  public getBookingByUserId(id: number ){
-    const url = ApiUrlUtil.buildQueryString(`/bookings/user/${id}`);
+  public getBookingByUserId(id: number, searchModel : any ){
+    const params = ParamUtil.toRequestParams(searchModel);
+    const url = ApiUrlUtil.buildQueryString(`/bookings/user/${id}`, params);
     return axiosCustom.get(url);
   }
 
   public getBookingByManagerId(id: number ){
     const url = ApiUrlUtil.buildQueryString(`/bookings/manager/${id}`);
     return axiosCustom.get(url);
+  }
+
+  public payBooking(payModel: any) {
+    console.log(payModel);
+    const url = ApiUrlUtil.buildQueryString(`/payments/create-payment`);
+    console.log(url)
+    return axiosCustom.post(url, payModel);
   }
 }

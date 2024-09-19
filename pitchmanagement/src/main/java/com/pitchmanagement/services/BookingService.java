@@ -7,7 +7,7 @@ import com.pitchmanagement.models.responses.PageResponse;
 
 public interface BookingService {
     BookingResponse createBooking(CreateBookingRequest createBookingRequest) throws Exception;
-    PageResponse getAllByUserId(Long userId, int pageNumber, int limit, String status);
-    PageResponse getAllByManagerId(Long managerId, int pageNumber, int limit, String status);
+    PageResponse getAllByUserId(Long userId,String keyword, int pageNumber, int limit, String status);
+    PageResponse getAllByManagerId(Long managerId, String keyword, int pageNumber, int limit, String status);
     BookingResponse getBookingById(Long id) throws Exception;
 }

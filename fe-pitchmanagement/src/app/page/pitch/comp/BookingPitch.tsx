@@ -61,14 +61,14 @@ export default function BookingPitch(props: any) {
         reverseButtons: true,
       }).then(async (result) => {
         if (result.isConfirmed) {
-          // dispatch(showOrHideSpinner(true));
+          dispatch(showOrHideSpinner(true));
           const date = new Date();
           date.setDate(today.getDate() + selectedDateIndex);
           const localDateString = date.toISOString().split("T")[0];
-          console.log(note);
-          console.log(localDateString);
-          console.log(selectPitchTime);
-          console.log(selectSubPitch);
+          // console.log(note);
+          // console.log(localDateString);
+          // console.log(selectPitchTime);
+          // console.log(selectSubPitch);
 
           await BookingService.getInstance()
             .createBooking({

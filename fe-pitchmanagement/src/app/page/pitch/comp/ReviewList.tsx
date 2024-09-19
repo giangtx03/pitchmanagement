@@ -338,6 +338,7 @@ export default function ReviewList(props: any) {
           if (!visible) return;
           setVisible(false);
         }}
+        dismissableMask={true}
       >
         <div className="col-md-8 mb-2 col-sm-12 m-auto border-1 shadow p-4">
           <div>

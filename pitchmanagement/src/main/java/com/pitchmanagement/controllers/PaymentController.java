@@ -22,7 +22,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
-    @GetMapping("/create-payment")
+    @PostMapping("/create-payment")
     public ResponseEntity<BaseResponse> createPayment(
             @RequestBody @Valid VNPayRequest request,
             BindingResult result
@@ -41,7 +41,7 @@ public class PaymentController {
             return ResponseEntity.badRequest().body(response);
         }
         try{
-            String url = paymentService.createPayment(request.getPaymentType(), request.getUserId(), request.getBookingId());
+            String url = paymentService.createPayment(request);
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())
                     .data(url)

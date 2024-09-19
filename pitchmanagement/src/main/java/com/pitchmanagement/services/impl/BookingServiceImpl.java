@@ -101,10 +101,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public PageResponse getAllByUserId(Long userId, int pageNumber, int limit, String status) {
+    public PageResponse getAllByUserId(Long userId,String keyword, int pageNumber, int limit, String status) {
         PageHelper.startPage(pageNumber, limit);
-        PageHelper.orderBy("update_at DESC");
-        List<BookingDto> bookingDtoList = bookingDao.getAllByUserId(userId, status);
+        PageHelper.orderBy("b.update_at DESC");
+        List<BookingDto> bookingDtoList = bookingDao.getAllByUserId(userId,keyword, status);
         PageInfo<BookingDto> pageInfo = new PageInfo<>(bookingDtoList);
 
         List<BookingResponse> bookingResponseList = bookingDtoList.stream().map(
@@ -122,6 +122,7 @@ public class BookingServiceImpl implements BookingService {
                             .images(imageDtoList.stream().map(ImageDto::getName).toList())
                             .manager(UserResponse.fromUserDto(managerDto))
                             .isActive(pitchDto.isActive())
+                            .avgStar(pitchDto.getAvgStar())
                             .build();
 
                     SubPitchResponse subPitchResponse = SubPitchResponse.builder()
@@ -153,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public PageResponse getAllByManagerId(Long managerId, int pageNumber, int limit, String status) {
+    public PageResponse getAllByManagerId(Long managerId,String keyword, int pageNumber, int limit, String status) {
         PageHelper.startPage(pageNumber, limit);
         if(!status.trim().isEmpty() && status.equals(BookingStatus.PENDING.toString())){
             PageHelper.orderBy("b.create_at ASC");
@@ -161,7 +162,7 @@ public class BookingServiceImpl implements BookingService {
         else{
             PageHelper.orderBy("b.update_at DESC");
         }
-        List<BookingDto> bookingDtoList = bookingDao.getAllByManagerId(managerId, status);
+        List<BookingDto> bookingDtoList = bookingDao.getAllByManagerId(managerId,keyword, status);
         PageInfo<BookingDto> pageInfo = new PageInfo<>(bookingDtoList);
 
         List<BookingResponse> bookingResponseList = bookingDtoList.stream().map(

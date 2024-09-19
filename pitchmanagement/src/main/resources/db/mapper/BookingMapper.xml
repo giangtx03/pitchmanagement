@@ -8,23 +8,7 @@
         VALUES (#{status},#{note}, #{deposit}, #{bookingDate}, #{userId}, #{subPitchId}, #{timeSlotId}, #{createAt}, #{updateAt})
     </insert>
 
-    <select id="getAllByUserId" parameterType="Long" resultType="com.pitchmanagement.dtos.BookingDto">
-        SELECT
-            id,
-            status,
-            note,
-            deposit,
-            booking_date AS bookingDate,
-            user_id AS userId,
-            sub_pitch_id AS subPitchId,
-            time_slot_id AS timeSlotId,
-            create_at AS createAt,
-            update_at AS updateAt
-        FROM bookings
-        WHERE user_id = #{userId} AND (#{status} IS NULL OR status = #{status})
-    </select>
-
-    <select id="getAllByManagerId" parameterType="Long" resultType="com.pitchmanagement.dtos.BookingDto">
+    <select id="getAllByUserId" parameterType="map" resultType="com.pitchmanagement.dtos.BookingDto">
         SELECT
             b.id,
             b.status,
@@ -39,7 +23,31 @@
         FROM bookings b
         LEFT JOIN sub_pitches sp ON sp.id = b.sub_pitch_id
         LEFT JOIN pitches p ON p.id = sp.pitch_id
-        WHERE p.manager_id = #{managerId} AND (#{status} IS NULL OR status = #{status})
+        WHERE user_id = #{userId}
+        AND (#{status} IS NULL OR #{status} = '' OR b.status = #{status})
+        AND (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.location, ''))
+        LIKE CONCAT('%', #{keyword}, '%'))
+    </select>
+
+    <select id="getAllByManagerId" parameterType="map" resultType="com.pitchmanagement.dtos.BookingDto">
+        SELECT
+            b.id,
+            b.status,
+            b.note,
+            b.deposit,
+            b.booking_date AS bookingDate,
+            b.user_id AS userId,
+            b.sub_pitch_id AS subPitchId,
+            b.time_slot_id AS timeSlotId,
+            b.create_at AS createAt,
+            b.update_at AS updateAt
+        FROM bookings b
+        LEFT JOIN sub_pitches sp ON sp.id = b.sub_pitch_id
+        LEFT JOIN pitches p ON p.id = sp.pitch_id
+        WHERE p.manager_id = #{managerId}
+        AND (#{status} IS NULL OR #{status} = '' OR b.status = #{status})
+        AND (#{keyword} IS NULL OR CONCAT(IFNULL(p.name, ''), IFNULL(p.location, ''))
+        LIKE CONCAT('%', #{keyword}, '%'))
     </select>
 
     <select id="getBookingById" parameterType="Long" resultType="com.pitchmanagement.dtos.BookingDto">

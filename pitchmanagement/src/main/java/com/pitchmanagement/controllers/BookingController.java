@@ -97,13 +97,14 @@ public class BookingController {
     @GetMapping("/user/{user_id}")
     public ResponseEntity<BaseResponse> getBookingByUserId(
             @PathVariable("user_id") Long userId,
+            @RequestParam(value = "keyword", defaultValue = "") @Nullable String keyword,
             @RequestParam(value = "page_number", defaultValue = "1") @Nullable int pageNumber,
             @RequestParam(value = "limit", defaultValue = "12") @Nullable int limit,
-            @RequestParam(value = "status") @Nullable String status
+            @RequestParam(value = "status", defaultValue = "") @Nullable String status
     ){
         try {
 
-            PageResponse pageResponse = bookingService.getAllByUserId(userId, pageNumber ,limit, status);
+            PageResponse pageResponse = bookingService.getAllByUserId(userId, keyword, pageNumber ,limit, status);
 
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())
@@ -126,13 +127,14 @@ public class BookingController {
     @GetMapping("/manager/{manager_id}")
     public ResponseEntity<BaseResponse> getBookingByManagerId(
             @PathVariable("manager_id") Long managerId,
+            @RequestParam(value = "keyword", defaultValue = "") @Nullable String keyword,
             @RequestParam(value = "page_number", defaultValue = "1") @Nullable int pageNumber,
             @RequestParam(value = "limit", defaultValue = "12") @Nullable int limit,
             @RequestParam(value = "status") @Nullable String status
     ){
         try {
 
-            PageResponse pageResponse = bookingService.getAllByManagerId(managerId, pageNumber ,limit, status);
+            PageResponse pageResponse = bookingService.getAllByManagerId(managerId,keyword, pageNumber ,limit, status);
 
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())

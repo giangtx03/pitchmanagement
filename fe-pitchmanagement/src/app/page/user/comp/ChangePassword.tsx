@@ -100,7 +100,7 @@ export default function ChangePassword() {
                 required: "Mật khẩu hiện tại không được để trống",
               })}
               placeholder="Nhập mật khẩu hiện tại"
-              className="form-control"
+              className="form-control w-75"
             />
             {touchedFields.oldPassword && errors.oldPassword && (
               <p className="text-danger">{errors.oldPassword.message}</p>
@@ -134,7 +134,7 @@ export default function ChangePassword() {
                 setValue("newPassword", trimmedValue);
               }}
               placeholder="Nhập mật khẩu mới"
-              className="form-control"
+              className="form-control w-75"
             />
             {touchedFields.newPassword && errors.newPassword && (
               <p className="text-danger">{errors.newPassword.message}</p>
@@ -156,7 +156,7 @@ export default function ChangePassword() {
             <input
               type="password"
               id="registerRetypePassword"
-              className="form-control"
+              className="form-control w-75"
               {...register("retypePassword", {
                 required: "Xác nhận mật khẩu không được để trống",
                 validate: (value) =>

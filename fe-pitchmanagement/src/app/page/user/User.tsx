@@ -5,10 +5,10 @@ import { Outlet } from 'react-router-dom'
 export default function User() {
   return (
     <>
-        <div className="col-3">
+        <div className="col-2 p-0">
             <SideBar/>
         </div>
-        <div className="col-9">
+        <div className="col-10">
             <Outlet/>
         </div>
     </>

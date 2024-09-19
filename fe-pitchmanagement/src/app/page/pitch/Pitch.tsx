@@ -432,7 +432,7 @@ export default function Pitch() {
                         </button>
                       </li>
                       {search.pageNumber === pitchList.total_pages &&
-                        pitchList.total_pages > 1 && (
+                        pitchList.total_pages > 2 && (
                           <li className="page-item">
                             <button
                               className="page-link"

@@ -229,4 +229,9 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet id="4" author="Truong Xuan Giang">
+        <addColumn tableName="payments">
+            <column name="payment_type" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

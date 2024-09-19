@@ -10,8 +10,8 @@ import java.util.List;
 @Mapper
 public interface BookingDao {
     void insertBooking(BookingDto bookingDto);
-    List<BookingDto> getAllByUserId(@Param("userId") Long userId, @Param("status") String status);
-    List<BookingDto> getAllByManagerId(@Param("managerId") Long managerId, @Param("status") String status);
+    List<BookingDto> getAllByUserId(@Param("userId") Long userId, @Param("keyword") String keyword,  @Param("status") String status);
+    List<BookingDto> getAllByManagerId(@Param("managerId") Long managerId, @Param("keyword") String keyword,  @Param("status") String status);
     BookingDto getBookingById(@Param("id") Long id);
     void updateBooking(BookingDto bookingDto);
     boolean isExistingBooking(@Param("subPitchId") Long subPitchId,
