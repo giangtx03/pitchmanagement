@@ -5,6 +5,7 @@ import RenewPassword from "../page/auth/RenewPassword";
 import Home from "../page/Home";
 import Login from "../page/Login";
 import Register from "../page/Register";
+import { PaymentRouter } from "./paymentRouter";
 import { PitchRouter } from "./pitchRouter";
 import { UserRouter } from "./userRouter";
 
@@ -20,5 +21,6 @@ export const RoutersHook: any = {
     { path: "forgot-password", element: <ForgotPassword /> },
     {...UserRouter},
     {...PitchRouter},
+    {...PaymentRouter},
   ],
 };

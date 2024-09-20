@@ -34,7 +34,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${frontend.api}")
     private String frontEndApi;
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public String createPayment(VNPayRequest request) throws Exception {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -43,23 +42,13 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
         String orderType = "order-type";
 
-        UserDto userDto = Optional.ofNullable(userDao.getUserById(request.getUserId()))
-                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Người thanh toán không hợp lệ"));
         BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(request.getBookingId()))
                 .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ"));
 
-        String orderInfor = userDto.getFullname() + " " + request.getPaymentType() + " id sân: " + bookingDto.getSubPitchId() + " id khung giờ: " + bookingDto.getSubPitchId();
-
-        PaymentDto paymentDto = PaymentDto.builder()
-                .paymentMethod("VNPAY")
-                .paymentType(request.getPaymentType())
-                .note(request.getNote())
-                .bookingId(request.getBookingId())
-                .amount(request.getAmount())
-                .createAt(LocalDateTime.now())
-                .build();
+        String orderInfor = request.getPaymentType() + " id san: " + bookingDto.getSubPitchId() + " id khung gio: " + bookingDto.getSubPitchId();
 
         Map<String, String> vnp_Params = new HashMap<>();
+
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
@@ -73,7 +62,12 @@ public class PaymentServiceImpl implements PaymentService {
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
 
-        String urlReturn = frontEndApi + VNPayConfig.vnp_ReturnUrl + "/" + bookingDto.getId();
+        String noteEncoded = !(request.getNote() == null) ? URLEncoder.encode(request.getNote(), StandardCharsets.UTF_8.toString()) : "";
+
+        String urlReturn = frontEndApi + VNPayConfig.vnp_ReturnUrl
+                + "?note="+noteEncoded
+                + "&booking_id="+ request.getBookingId()
+                + "&payment_type="+ request.getPaymentType();
         vnp_Params.put("vnp_ReturnUrl", urlReturn);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
@@ -116,15 +110,15 @@ public class PaymentServiceImpl implements PaymentService {
         String queryUrl = query.toString();
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+
         String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
 
-        paymentDao.insertPayment(paymentDto);
         return paymentUrl;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void vnpayReturn(Long bookingId, int amount, String bankCode, String orderInfo, String responseCode, String transactionStatus) throws Exception {
+    public void vnpayReturn(Long bookingId, int amount, String note,String paymentType, String bankCode, String orderInfo, String responseCode, String transactionStatus) throws Exception {
         BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(bookingId))
                 .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ"));
 
@@ -142,6 +136,16 @@ public class PaymentServiceImpl implements PaymentService {
             case "09" -> throw new RuntimeException("GD Hoàn trả bị từ chối!");
         }
 
+        PaymentDto paymentDto = PaymentDto.builder()
+                .paymentMethod("VNPAY")
+                .paymentType(paymentType)
+                .note(note)
+                .bookingId(bookingId)
+                .amount((float)amount)
+                .createAt(LocalDateTime.now())
+                .build();
+
+        paymentDao.insertPayment(paymentDto);
         bookingDto.setStatus(BookingStatus.DEPOSIT_PAID.toString());
         bookingDao.updateBooking(bookingDto);
     }

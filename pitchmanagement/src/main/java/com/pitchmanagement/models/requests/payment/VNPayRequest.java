@@ -14,9 +14,6 @@ public class VNPayRequest {
     @JsonProperty("payment_type")
     @NotNull(message = "Kiểu thanh toán không được null")
     private String paymentType;
-    @JsonProperty("user_id")
-    @Min(value = 1, message = "Người thanh toán không hợp lệ")
-    private Long userId;
     @JsonProperty("booking_id")
     @Min(value = 1, message = "Đơn đặt không hợp lệ")
     private Long bookingId;

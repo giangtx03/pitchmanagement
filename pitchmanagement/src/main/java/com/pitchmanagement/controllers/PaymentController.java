@@ -60,17 +60,19 @@ public class PaymentController {
 
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
-    @GetMapping("/vnpay_return/{booking_id}")
+    @GetMapping("/vnpay_return")
     public ResponseEntity<BaseResponse> returnPayment(
-        @PathVariable("booking_id") Long bookingId,
+        @RequestParam("booking_id") Long bookingId,
         @RequestParam("vnp_Amount") int amount,
         @RequestParam("vnp_BankCode") String bankCode,
         @RequestParam("vnp_OrderInfo") String orderInfo,
         @RequestParam("vnp_ResponseCode") String responseCode,
+        @RequestParam("note") String note,
+        @RequestParam("payment_type") String paymentType,
         @RequestParam(value = "vnp_TransactionStatus", required = false) String transactionStatus
     ) {
         try{
-            paymentService.vnpayReturn(bookingId, amount, bankCode, orderInfo, responseCode, transactionStatus);
+            paymentService.vnpayReturn(bookingId, amount, note,paymentType, bankCode, orderInfo, responseCode, transactionStatus);
             BaseResponse response = BaseResponse.builder()
                     .status(HttpStatus.OK.value())
                     .message("Thanh toán thành công!")

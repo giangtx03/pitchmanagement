@@ -5,6 +5,7 @@ import UserProfile from "../page/user/comp/UserProfile";
 import User from "../page/user/User";
 import ChangePassword from "../page/user/comp/ChangePassword";
 import BookingList from "../page/user/comp/BookingList";
+import PaymentList from "../page/user/comp/PaymentList";
 
 export const UserRouter: any = {
   path: "users",
@@ -18,5 +19,6 @@ export const UserRouter: any = {
     { path: "profile", element: <UserProfile /> },
     { path: "change-password", element: <ChangePassword /> },
     { path: "bookings", element: <BookingList /> },
+    { path: "payments", element: <PaymentList /> },
   ],
 };

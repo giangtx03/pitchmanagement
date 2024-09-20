@@ -15,6 +15,7 @@ import {
 } from "../../../util/FormatDate";
 import { toast } from "react-toastify";
 import { Dialog } from "primereact/dialog";
+import { PaymentService } from "../../../service/PaymentService";
 
 type SearchModel = {
   keyword: string;
@@ -62,7 +63,7 @@ export default function BookingList() {
 
     dispatch(showOrHideSpinner(true));
     fetchApi();
-  }, [userDetail.id, search.timer]);
+  }, [search.timer]);
 
   const statuses = [
     { label: "Tất cả", value: "", color: "btn-info" },
@@ -76,12 +77,10 @@ export default function BookingList() {
   const [selectBooking, setSelectBooking] = useState<BookingResponse>();
 
   const handelPayDeposit = async () => {
-    console.log(userDetail.id ,selectBooking?.id, note ,selectBooking?.deposit, "DEPOSIT");
 
     dispatch(showOrHideSpinner(true));
-    await BookingService.getInstance()
+    await PaymentService.getInstance()
       .payBooking({
-        user_id: userDetail.id,
         booking_id: selectBooking?.id,
         note: note,
         amount: selectBooking?.deposit,

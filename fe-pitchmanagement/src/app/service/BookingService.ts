@@ -34,11 +34,4 @@ export class BookingService {
     const url = ApiUrlUtil.buildQueryString(`/bookings/manager/${id}`);
     return axiosCustom.get(url);
   }
-
-  public payBooking(payModel: any) {
-    console.log(payModel);
-    const url = ApiUrlUtil.buildQueryString(`/payments/create-payment`);
-    console.log(url)
-    return axiosCustom.post(url, payModel);
-  }
 }
