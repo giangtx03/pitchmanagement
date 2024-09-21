@@ -16,6 +16,7 @@ import {
 import { toast } from "react-toastify";
 import { Dialog } from "primereact/dialog";
 import { PaymentService } from "../../../service/PaymentService";
+import { useLocation } from "react-router-dom";
 
 type SearchModel = {
   keyword: string;
@@ -29,6 +30,11 @@ export default function BookingList() {
   const userDetail = useSelector((state: any) => state.user.userDetail);
 
   const dispatch = useAppDispatch();
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const message = queryParams.get("message");
+
   const [data, setData] = useState<any>();
   const [search, setSearch] = useState<SearchModel>({
     keyword: "",
@@ -38,6 +44,15 @@ export default function BookingList() {
     timer: 0,
   });
   const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if(message){
+      toast.error(message, {
+        position: "top-right",
+        autoClose: 1500,
+      });
+    }
+  },[message])
 
   useEffect(() => {
     const fetchApi = async () => {

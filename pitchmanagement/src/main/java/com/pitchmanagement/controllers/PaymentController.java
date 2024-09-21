@@ -57,34 +57,4 @@ public class PaymentController {
                             .build());
         }
     }
-
-
-    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
-    @GetMapping("/vnpay_return")
-    public ResponseEntity<BaseResponse> returnPayment(
-        @RequestParam("booking_id") Long bookingId,
-        @RequestParam("vnp_Amount") int amount,
-        @RequestParam("vnp_BankCode") String bankCode,
-        @RequestParam("vnp_OrderInfo") String orderInfo,
-        @RequestParam("vnp_ResponseCode") String responseCode,
-        @RequestParam("note") String note,
-        @RequestParam("payment_type") String paymentType,
-        @RequestParam(value = "vnp_TransactionStatus", required = false) String transactionStatus
-    ) {
-        try{
-            paymentService.vnpayReturn(bookingId, amount, note,paymentType, bankCode, orderInfo, responseCode, transactionStatus);
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Thanh toán thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
-    }
 }

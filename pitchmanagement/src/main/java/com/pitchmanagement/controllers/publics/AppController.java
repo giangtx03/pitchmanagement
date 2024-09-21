@@ -4,10 +4,7 @@ import com.pitchmanagement.constants.SortConstant;
 import com.pitchmanagement.models.responses.BaseResponse;
 import com.pitchmanagement.models.responses.PageResponse;
 import com.pitchmanagement.models.responses.pitch.PitchTimeResponse;
-import com.pitchmanagement.services.ImageService;
-import com.pitchmanagement.services.PitchTimeService;
-import com.pitchmanagement.services.ReviewService;
-import com.pitchmanagement.services.SendEmailService;
+import com.pitchmanagement.services.*;
 import lombok.RequiredArgsConstructor;
 
 import org.slf4j.Logger;
@@ -18,7 +15,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class AppController {
 
     private final ImageService imageService;
     private final ReviewService reviewService;
-    private final PitchTimeService pitchTimeService;
+    private final PaymentService paymentService;
 
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
 
@@ -74,6 +75,30 @@ public class AppController {
                             .status(HttpStatus.BAD_REQUEST.value())
                             .message(e.getMessage())
                             .build());
+        }
+    }
+
+    @GetMapping("/payments/vnpay-return")
+    public RedirectView returnPayment(
+            @RequestParam("booking_id") Long bookingId,
+            @RequestParam("vnp_Amount") int amount,
+            @RequestParam("vnp_BankCode") String bankCode,
+            @RequestParam("vnp_OrderInfo") String orderInfo,
+            @RequestParam("vnp_ResponseCode") String responseCode,
+            @RequestParam("note") String note,
+            @RequestParam("payment_type") String paymentType,
+            @RequestParam(value = "vnp_TransactionStatus", required = false) String transactionStatus
+    ) throws UnsupportedEncodingException {
+        try{
+            paymentService.vnpayReturn(bookingId, amount, note,paymentType, bankCode, orderInfo, responseCode, transactionStatus);
+            String encodedMessage = URLEncoder.encode("Thanh toán thành công!", StandardCharsets.UTF_8.toString());
+            String redirectUrl = "http://localhost:3000/users/payments?" + "message=" + encodedMessage;
+            return new RedirectView(redirectUrl);
+        }
+        catch (Exception e){
+            String encodedMessage = URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8.toString());
+            String errorUrl = "http://localhost:3000/users/bookings?" + "message=" + encodedMessage;
+            return new RedirectView(errorUrl);
         }
     }
 }

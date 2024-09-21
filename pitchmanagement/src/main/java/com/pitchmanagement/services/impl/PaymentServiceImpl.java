@@ -7,13 +7,11 @@ import com.pitchmanagement.daos.PaymentDao;
 import com.pitchmanagement.daos.UserDao;
 import com.pitchmanagement.dtos.BookingDto;
 import com.pitchmanagement.dtos.PaymentDto;
-import com.pitchmanagement.dtos.UserDto;
 import com.pitchmanagement.models.requests.payment.VNPayRequest;
 import com.pitchmanagement.services.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +62,11 @@ public class PaymentServiceImpl implements PaymentService {
 
         String noteEncoded = !(request.getNote() == null) ? URLEncoder.encode(request.getNote(), StandardCharsets.UTF_8.toString()) : "";
 
-        String urlReturn = frontEndApi + VNPayConfig.vnp_ReturnUrl
+//        String urlReturn = frontEndApi + VNPayConfig.vnp_ReturnUrl
+//                + "?note="+noteEncoded
+//                + "&booking_id="+ request.getBookingId()
+//                + "&payment_type="+ request.getPaymentType();
+        String urlReturn = "http://localhost:8080/public/api/v1/payments/vnpay-return"
                 + "?note="+noteEncoded
                 + "&booking_id="+ request.getBookingId()
                 + "&payment_type="+ request.getPaymentType();
