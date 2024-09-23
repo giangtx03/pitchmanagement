@@ -10,7 +10,6 @@ import java.util.List;
 public interface PaymentDao {
     void insertPayment(PaymentDto paymentDto);
     PaymentDto getPaymentById(@Param("id") Long id);
-    List<PaymentDto> getPaymentByUserId(@Param("userId") Long userId, @Param("paymentType") String paymentType);
-    List<PaymentDto> getPaymentByManagerId(@Param("managerId") Long managerId, @Param("paymentType") String paymentType);
+    List<PaymentDto> getPaymentByManagerId(@Param("managerId") Long managerId,@Param("keyword") String keyword , @Param("paymentType") String paymentType);
 
 }

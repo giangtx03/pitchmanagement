@@ -1,5 +1,7 @@
 package com.pitchmanagement.services.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pitchmanagement.configs.VNPayConfig;
 import com.pitchmanagement.constants.BookingStatus;
 import com.pitchmanagement.daos.BookingDao;
@@ -8,6 +10,9 @@ import com.pitchmanagement.daos.UserDao;
 import com.pitchmanagement.dtos.BookingDto;
 import com.pitchmanagement.dtos.PaymentDto;
 import com.pitchmanagement.models.requests.payment.VNPayRequest;
+import com.pitchmanagement.models.responses.PageResponse;
+import com.pitchmanagement.models.responses.PaymentResponse;
+import com.pitchmanagement.services.BookingService;
 import com.pitchmanagement.services.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
@@ -29,6 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final BookingDao bookingDao;
     private final UserDao userDao;
     private final PaymentDao paymentDao;
+    private final BookingService bookingService;
     @Value("${frontend.api}")
     private String frontEndApi;
     @Override
@@ -143,12 +149,47 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentType(paymentType)
                 .note(note)
                 .bookingId(bookingId)
-                .amount((float)amount)
+                .amount((float)amount/100)
                 .createAt(LocalDateTime.now())
                 .build();
 
         paymentDao.insertPayment(paymentDto);
         bookingDto.setStatus(BookingStatus.DEPOSIT_PAID.toString());
         bookingDao.updateBooking(bookingDto);
+    }
+
+    @Override
+    public PageResponse getAllPaymentByManagerId(Long managerId, String keyword, String paymentType, int pageNumber, int limit) {
+        PageHelper.startPage(pageNumber,limit);
+        PageHelper.orderBy("p.create_at DESC");
+        List<PaymentDto> paymentDtoList = paymentDao.getPaymentByManagerId(managerId, keyword, paymentType);
+        PageInfo<PaymentDto> pageInfo = new PageInfo<>(paymentDtoList);
+
+        List<PaymentResponse> paymentResponseList = paymentDtoList.stream()
+                .map(paymentDto -> {
+                    PaymentResponse paymentResponse = null;
+                    try {
+                        paymentResponse = PaymentResponse.builder()
+                                .id(paymentDto.getId())
+                                .paymentType(paymentDto.getPaymentType())
+                                .paymentMethod(paymentDto.getPaymentMethod())
+                                .note(paymentDto.getNote())
+                                .createAt(paymentDto.getCreateAt())
+                                .amount(paymentDto.getAmount())
+                                .bookingResponse(bookingService.getBookingById(paymentDto.getId()))
+                                .build();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    return paymentResponse;
+                })
+                .toList();
+
+
+        return PageResponse.builder()
+                .items(paymentResponseList)
+                .totalPages(pageInfo.getPages())
+                .totalItems(pageInfo.getTotal())
+                .build();
     }
 }

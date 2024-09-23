@@ -21,21 +21,6 @@
         WHERE id = #{id}
     </select>
 
-    <select id="getPaymentByUserId" parameterType="map" resultType="com.pitchmanagement.dtos.PaymentDto">
-        SELECT
-            p.id,
-            p.amount,
-            p.payment_method AS paymentMethod,
-            p.note,
-            p.booking_id AS bookingId,
-            p.payment_type AS paymentType,
-            p.create_at AS createAt
-        FROM payments p
-        LEFT JOIN bookings b ON b.id = p.booking_id
-        WHERE (#{paymentType} IS NULL OR #{paymentType} = "" OR  p.payment_type = #{paymentType})
-            AND (#{userId} IS NULL OR #{userId} = 0 OR b.user_id = #{userId})
-    </select>
-
     <select id="getPaymentByManagerId" parameterType="map" resultType="com.pitchmanagement.dtos.PaymentDto">
         SELECT
             p.id,
@@ -49,8 +34,11 @@
         LEFT JOIN bookings b ON b.id = p.booking_id
         LEFT JOIN sub_pitches sp ON sp.id = b.sub_pitch_id
         LEFT JOIN pitches pt ON pt.id = sp.pitch_id
+        LEFT JOIN users u ON u.id = b.user_id
         WHERE (#{paymentType} IS NULL OR #{paymentType} = "" OR  p.payment_type = #{paymentType})
             AND (#{managerId} IS NULL OR #{managerId} = 0 OR pt.manager_id = #{managerId})
+        AND (#{keyword} IS NULL OR #{keyword} = "" OR CONCAT(IFNULL(u.full_name, ''), IFNULL(p.name, ''))
+        LIKE CONCAT('%', #{keyword}, '%'))
     </select>
 
 </mapper>

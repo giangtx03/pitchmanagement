@@ -224,7 +224,7 @@ export default function PitchDetail() {
                           />
                           <label
                             htmlFor={`sub_pitch_${sub_pitch.id}`}
-                            className="form-check-label cursor-pointer px-4"
+                            className="btn border px-4"
                           >
                             {sub_pitch.name}
                           </label>
@@ -249,7 +249,7 @@ export default function PitchDetail() {
                                   style={{ display: "none" }}
                                 />
                                 <label
-                                  className="form-check-label cursor-pointer"
+                                  className="btn border"
                                   htmlFor={`pitch_time_${sub_pitch.id}_${index}`}
                                 >
                                   {formatTime(pitch_time.start_time)} -{" "}

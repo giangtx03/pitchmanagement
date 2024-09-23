@@ -59,15 +59,6 @@ export default function SideBar() {
             Lịch sử đặt sân
           </NavLink>
         </li>
-        <li className="mb-1">
-          <NavLink
-            to="/users/payments"
-            className="btn btn-secondary text-start align-items-center rounded"
-            style={{ width: "100%" }}
-          >
-            Danh sách hóa đơn
-          </NavLink>
-        </li>
       </ul>
       <button
         className="btn btn-secondary align-items-center rounded"

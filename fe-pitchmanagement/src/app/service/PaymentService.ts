@@ -15,15 +15,13 @@ export class PaymentService {
   }
 
   public payBooking(payModel: any) {
-    console.log(payModel);
     const url = ApiUrlUtil.buildQueryString(`/payments/create-payment`);
     return axiosCustom.post(url, payModel);
   }
 
-  public confirmPayment(payModel: any) {
-    console.log(payModel);
-    const params = ParamUtil.toRequestParams(payModel);
-    const url = ApiUrlUtil.buildQueryString(`/payments/create-payment`, params);
-    return axiosCustom.post(url, payModel);
+  public getPaymentsByManagerId(id: number, searchModel: any) {
+    const params = ParamUtil.toRequestParams(searchModel);
+    const url = ApiUrlUtil.buildQueryString(`/payments/manager/${id}`, params);
+    return axiosCustom.get(url);
   }
 }
