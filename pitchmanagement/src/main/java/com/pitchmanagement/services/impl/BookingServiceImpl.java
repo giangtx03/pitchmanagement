@@ -2,9 +2,11 @@ package com.pitchmanagement.services.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.pitchmanagement.constants.AppConstant;
 import com.pitchmanagement.constants.BookingStatus;
 import com.pitchmanagement.daos.*;
 import com.pitchmanagement.dtos.*;
+import com.pitchmanagement.models.requests.booking.CancelRequest;
 import com.pitchmanagement.models.requests.booking.CreateBookingRequest;
 import com.pitchmanagement.models.requests.booking.UpdateBookingRequest;
 import com.pitchmanagement.models.responses.BookingResponse;
@@ -16,11 +18,14 @@ import com.pitchmanagement.models.responses.pitch.SubPitchResponse;
 import com.pitchmanagement.services.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +62,12 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Người quản lý không hợp lệ!"));
         if(!pitchTimeDto.isActive() || !pitchDto.isActive() || !subPitchDto.isActive()){
             throw new RuntimeException("Sân và khung giờ không hoạt động!");
+        }
+
+        if(request.getBookingDate().isEqual(LocalDate.now())){
+            if(pitchTimeDto.getStartTime().isBefore(LocalTime.now())){
+                throw new RuntimeException("Sân và khung giờ không hoạt động!");
+            }
         }
 
         BookingDto bookingDto = BookingDto.builder()
@@ -246,4 +257,42 @@ public class BookingServiceImpl implements BookingService {
         return bookingResponse;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void requestCancelBooking(Long bookingId, CancelRequest cancelRequest) throws Exception {
+        BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(bookingId))
+                .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ!"));
+
+        if(cancelRequest.getCaseCancel().equals(AppConstant.CANCEL_NONE) ||
+                (cancelRequest.getCaseCancel().equals(AppConstant.CANCEL_WEATHER)
+                && bookingDto.getStatus().equals(BookingStatus.PENDING.toString())
+        )){
+            bookingDto.setStatus(BookingStatus.CANCELLED.toString());
+            bookingDto.setUpdateAt(LocalDateTime.now());
+            bookingDao.updateBooking(bookingDto);
+        }else if(cancelRequest.getCaseCancel().equals(AppConstant.CANCEL_WEATHER) ||
+                (cancelRequest.getCaseCancel().equals(AppConstant.CANCEL_REFUND) &&
+                bookingDto.getBookingDate().compareTo(LocalDate.now().plusDays(1L)) == 1)){
+            bookingDto.setStatus(BookingStatus.REQUEST_CANCELLATION.toString());
+            bookingDto.setUpdateAt(LocalDateTime.now());
+            bookingDao.updateBooking(bookingDto);
+        }
+        else{
+            throw new RuntimeException("Trường hợp hủy không xác định!");
+        }
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void checkPendingPayments(){
+        List<BookingDto> pendingBookings = bookingDao.getAll(BookingStatus.PENDING.toString());
+
+        for(BookingDto booking : pendingBookings){
+            if (booking.getCreateAt().plusMinutes(30).isBefore(LocalDateTime.now())) {
+                // Hủy đơn đặt hàng
+                booking.setStatus(BookingStatus.CANCELLED.toString());
+                booking.setUpdateAt(LocalDateTime.now());
+                bookingDao.updateBooking(booking);
+            }
+        }
+    }
 }

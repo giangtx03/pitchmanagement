@@ -1,6 +1,7 @@
 package com.pitchmanagement.controllers;
 
 import com.pitchmanagement.constants.SortConstant;
+import com.pitchmanagement.models.requests.booking.CancelRequest;
 import com.pitchmanagement.models.requests.booking.CreateBookingRequest;
 import com.pitchmanagement.models.requests.booking.UpdateBookingRequest;
 import com.pitchmanagement.models.requests.pitch.UpdatePitchRequest;
@@ -122,7 +123,6 @@ public class BookingController {
         }
     }
 
-
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @GetMapping("/manager/{manager_id}")
     public ResponseEntity<BaseResponse> getBookingByManagerId(
@@ -152,5 +152,42 @@ public class BookingController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PostMapping("/cancel/{id}")
+    public ResponseEntity<BaseResponse> cancelBooking(
+            @PathVariable("id") Long bookingId,
+            @RequestBody CancelRequest cancelRequest,
+            BindingResult result
+    ){
+        if (result.hasErrors()) {
+            // lấy ra danh sách lỗi
+            List<String> errorMessages = result.getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+            // trả về danh sách lỗi
+            BaseResponse response = BaseResponse.builder()
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .message(errorMessages.toString())
+                    .build();
+            return ResponseEntity.badRequest().body(response);
+        }
+        try {
 
+            bookingService.requestCancelBooking(bookingId, cancelRequest);
+
+            BaseResponse response = BaseResponse.builder()
+                    .status(HttpStatus.OK.value())
+                    .message("Yêu cầu hủy đơn thành công!")
+                    .build();
+            return ResponseEntity.ok().body(response);
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest()
+                    .body(BaseResponse.builder()
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .message(e.getMessage())
+                            .build());
+        }
+    }
 }

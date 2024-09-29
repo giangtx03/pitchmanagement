@@ -25,7 +25,7 @@ export default function BookingPitch(props: any) {
     "Saturday",
   ];
   const [selectSubPitch, setSelectSubPitch] = useState<SubPitchResponse | null>(
-    null
+    pitch.sub_pitches[0]
   );
   const [selectPitchTime, setSelectPitchTime] =
     useState<PitchTimeResponse | null>(null);
@@ -84,7 +84,7 @@ export default function BookingPitch(props: any) {
                   position: "top-right",
                   autoClose: 1500,
                 });
-                navigate("/pitches");
+                navigate("/users/bookings");
                 dispatch(showOrHideSpinner(false));
               }
             })
@@ -190,24 +190,46 @@ export default function BookingPitch(props: any) {
                   " - " +
                   formatTime(ptime.end_time)}
               </th>
-              {ptime.schedules.map((schedule, index) => (
-                <td
-                  key={index}
-                  className={`${schedule == "OPENED" ? "" : "bg-danger"} ${
-                    selectPitchTime == ptime && selectedDateIndex == index
-                      ? "bg-success text-light"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    if (schedule == "OPENED") {
-                      setSelectedDateIndex(index);
-                      setSelectPitchTime(ptime);
-                    }
-                  }}
-                >
-                  {schedule == "OPENED" ? "Còn trống" : "Đã hết"}
-                </td>
-              ))}
+              {ptime.schedules.map((schedule, index) => {
+                let isPastTime = false;
+                if (index == 0) {
+                  const currentDate = new Date();
+                  const [hoursStr, minutesStr] = ptime.start_time.split(":");
+                  const hours = Number.parseInt(hoursStr, 10);
+                  const minutes = Number.parseInt(minutesStr, 10);
+
+                  const currentDateTime = new Date(
+                    currentDate.getFullYear(),
+                    currentDate.getMonth(),
+                    currentDate.getDate(),
+                    hours,
+                    minutes
+                  );
+                  isPastTime = currentDateTime < new Date() ? true : false;
+                }
+                return (
+                  <td
+                    key={index}
+                    className={`${
+                      schedule === "OPENED" && !isPastTime ? "" : "bg-danger"
+                    } ${
+                      selectPitchTime === ptime && selectedDateIndex === index
+                        ? "bg-success text-light"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      if (schedule === "OPENED" && !isPastTime) {
+                        setSelectedDateIndex(index);
+                        setSelectPitchTime(ptime);
+                      }
+                    }}
+                  >
+                    {schedule === "OPENED" && !isPastTime
+                      ? "Còn trống"
+                      : "Đã hết"}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

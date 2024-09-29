@@ -34,4 +34,9 @@ export class BookingService {
     const url = ApiUrlUtil.buildQueryString(`/bookings/manager/${id}`);
     return axiosCustom.get(url);
   }
+
+  public cancelBooking(id: number, modelCancel: any ){
+    const url = ApiUrlUtil.buildQueryString(`/bookings/cancel/${id}`);
+    return axiosCustom.post(url, modelCancel);
+  }
 }

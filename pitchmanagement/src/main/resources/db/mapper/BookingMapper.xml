@@ -7,6 +7,22 @@
         INSERT INTO bookings(status, note, deposit, booking_date, user_id, sub_pitch_id, time_slot_id, create_at, update_at)
         VALUES (#{status},#{note}, #{deposit}, #{bookingDate}, #{userId}, #{subPitchId}, #{timeSlotId}, #{createAt}, #{updateAt})
     </insert>
+    <select id="getAll" parameterType="map" resultType="com.pitchmanagement.dtos.BookingDto">
+        SELECT
+            b.id,
+            b.status,
+            b.note,
+            b.deposit,
+            b.booking_date AS bookingDate,
+            b.user_id AS userId,
+            b.sub_pitch_id AS subPitchId,
+            b.time_slot_id AS timeSlotId,
+            b.create_at AS createAt,
+            b.update_at AS updateAt
+        FROM bookings b
+        WHERE b.status = #{status}
+    </select>
+
 
     <select id="getAllByUserId" parameterType="map" resultType="com.pitchmanagement.dtos.BookingDto">
         SELECT

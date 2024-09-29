@@ -1,12 +1,47 @@
 import React, { useState } from "react";
 import { convertBookingStatus, formatTime } from "../../../util/FormatDate";
+import { useAppDispatch } from "../../../store/hooks";
+import { showOrHideSpinner } from "../../../reducer/SpinnerSlice";
+import { BookingService } from "../../../service/BookingService";
+import { toast } from "react-toastify";
+import { error } from "console";
+import { useNavigate } from "react-router-dom";
 
 export default function CancelBooking(props: any) {
   const { selectBooking } = props;
 
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const [note, setNote] = useState<string>();
   const [caseCancel, setCaseCancel] = useState("none");
   const [confirmPolicy, setConfirmPolicy] = useState(false);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+
+  const onSubmitCancel =  async () => {
+    dispatch(showOrHideSpinner(true));
+    await BookingService.getInstance().cancelBooking(selectBooking.id, {
+      case_cancel : caseCancel,
+      note : note,
+    })
+    .then((response) => {
+      if(response.data.status === 200){
+        toast.success(response.data.message, {
+          autoClose: 1500,
+          position: "top-right",
+        });
+        window.location.reload();
+      }
+      dispatch(showOrHideSpinner(false));
+    })
+    .catch((error) => {
+      console.log(error);
+      dispatch(showOrHideSpinner(false));
+    });
+  }
 
   return (
     selectBooking && (
@@ -70,9 +105,14 @@ export default function CancelBooking(props: any) {
                   id="flexRadioDefault1"
                   value={"weather"}
                   checked={caseCancel === "weather"}
-                  onChange={(e) => {setCaseCancel(e.target.value)}}
+                  onChange={(e) => {
+                    setCaseCancel(e.target.value);
+                  }}
                 />
-                <label className="form-check-label cursor-pointer" htmlFor="flexRadioDefault1">
+                <label
+                  className="form-check-label cursor-pointer"
+                  htmlFor="flexRadioDefault1"
+                >
                   Thời tiết mưa ngập...
                 </label>
               </div>
@@ -84,10 +124,21 @@ export default function CancelBooking(props: any) {
                   id="flexRadioDefault2"
                   value={"refund"}
                   checked={caseCancel === "refund"}
-                  onChange={(e) => {setCaseCancel(e.target.value)}}
-                  disabled={new Date(selectBooking.booking_date).getTime() <= Date.now() + 86400000} 
+                  onChange={(e) => {
+                    setCaseCancel(e.target.value);
+                  }}
+                  disabled={
+                    !(
+                      new Date(selectBooking.booking_date).getTime() >=
+                        tomorrow.getTime() &&
+                      selectBooking.status === "DEPOSIT_PAID"
+                    )
+                  }
                 />
-                <label className="form-check-label cursor-pointer" htmlFor="flexRadioDefault2">
+                <label
+                  className="form-check-label cursor-pointer"
+                  htmlFor="flexRadioDefault2"
+                >
                   Hủy hoàn cọc
                 </label>
               </div>
@@ -99,9 +150,14 @@ export default function CancelBooking(props: any) {
                   id="flexRadioDefault3"
                   value={"none"}
                   checked={caseCancel === "none"}
-                  onChange={(e) => {setCaseCancel(e.target.value)}}
+                  onChange={(e) => {
+                    setCaseCancel(e.target.value);
+                  }}
                 />
-                <label className="form-check-label cursor-pointer" htmlFor="flexRadioDefault3">
+                <label
+                  className="form-check-label cursor-pointer"
+                  htmlFor="flexRadioDefault3"
+                >
                   Khác
                 </label>
               </div>
@@ -120,7 +176,7 @@ export default function CancelBooking(props: any) {
                 className="form-check-input cursor-pointer"
                 type="checkbox"
                 id="confirmPolicy"
-                onChange={(e)=> setConfirmPolicy(e.target.checked)}
+                onChange={(e) => setConfirmPolicy(e.target.checked)}
                 checked={confirmPolicy}
               />
               <label className="form-check-label" htmlFor="confirmPolicy">
@@ -130,7 +186,11 @@ export default function CancelBooking(props: any) {
           </div>
         </div>
         <div className="d-flex justify-content-end mt-3 mx-2">
-          <button className="btn btn-danger px-5" disabled={!confirmPolicy} onClick={() => {}}>
+          <button
+            className="btn btn-danger px-5"
+            disabled={!confirmPolicy}
+            onClick={onSubmitCancel}
+          >
             Hủy
           </button>
         </div>

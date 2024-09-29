@@ -4,20 +4,9 @@ import { BookingService } from "../../../service/BookingService";
 import { useAppDispatch } from "../../../store/hooks";
 import { showOrHideSpinner } from "../../../reducer/SpinnerSlice";
 import { BookingResponse } from "../../../model/Booking";
-import defaultAvatar from "../../../../assets/images/defaultAvatar.jpg";
-import defaultSanBong from "../../../../assets/images/defaultSanBong.jpeg";
-import { Image } from "primereact/image";
-import { FaStar } from "react-icons/fa";
-import {
-  convertBookingStatus,
-  formatDate,
-  formatTime,
-} from "../../../util/FormatDate";
 import { toast } from "react-toastify";
-import { Dialog } from "primereact/dialog";
 import { useLocation } from "react-router-dom";
-import CreateBooking from "./CreateBooking";
-import CancelBooking from "./CancelBooking";
+import Booking from "./Booking";
 
 type SearchModel = {
   keyword: string;
@@ -44,8 +33,6 @@ export default function BookingList() {
     status: "",
     timer: 0,
   });
-  const [visible, setVisible] = useState(false);
-
   useEffect(() => {
     if (message) {
       toast.error(message, {
@@ -86,9 +73,6 @@ export default function BookingList() {
     { label: "Hoàn thành", value: "COMPLETED", color: "btn-info" },
     { label: "Đã hủy", value: "CANCELLED", color: "btn-info" },
   ];
-
-  const [selectBooking, setSelectBooking] = useState<BookingResponse>();
-  const [btn, setBtn] = useState(0);
 
   return (
     data && (
@@ -149,137 +133,7 @@ export default function BookingList() {
         <p>Tổng số đơn đặt: {data.total_items} </p>
         {data.items.map((booking: BookingResponse) => (
           <div className="row mt-2 border rounded shadow p-3" key={booking.id}>
-            <div className="col-2">
-              <img
-                src={
-                  process.env.REACT_APP_API_URL +
-                  "/images/" +
-                  booking.pitch.images[0]
-                }
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = defaultSanBong;
-                }}
-                style={{ height: "120px", width: "auto" }}
-                className="card-img-top"
-                alt="..."
-              />
-            </div>
-            <div className="col-3">
-              <div className="mx-2">
-                <h5 className="card-title">{booking.pitch.name}</h5>
-                <div className="d-flex align-items-center">
-                  <Image
-                    src={
-                      process.env.REACT_APP_API_URL +
-                      "/images/" +
-                      booking.pitch.manager.avatar
-                    }
-                    alt="User Avatar"
-                    width="30"
-                    height="30"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = defaultAvatar;
-                    }}
-                    style={{
-                      borderRadius: "50%",
-                      overflow: "hidden",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <b>{booking.pitch.manager.fullname}</b>
-                </div>
-                <p className="card-text m-0">
-                  {" "}
-                  Địa điểm:
-                  {" " + booking.pitch.location}
-                </p>
-                <p className="card-text ">
-                  <b className="text-warning d-flex align-items-center">
-                    {booking.pitch.avg_star > 0 ? (
-                      <>
-                        {booking.pitch.avg_star.toFixed(2)}
-                        <FaStar />
-                      </>
-                    ) : (
-                      "chưa có đánh giá"
-                    )}
-                  </b>
-                </p>
-              </div>
-            </div>
-            <div className="col-5 p-0 d-flex justify-content-around">
-              <div className="col-3">
-                <p className="m-0">
-                  Tên sân:{" "}
-                  <b className="text-danger">{booking.sub_pitch.name}</b>
-                </p>
-                <p className="m-0">
-                  Loại sân:{" "}
-                  <b className="text-danger">{booking.sub_pitch.pitch_type}</b>
-                </p>
-                <p className="m-0">
-                  Khung giờ:{" "}
-                  <b className="text-danger">
-                    {formatTime(booking.pitch_time.start_time) +
-                      " - " +
-                      formatTime(booking.pitch_time.end_time)}
-                  </b>
-                </p>
-                <p className="m-0">
-                  Ngày đá: <b className="text-danger">{booking.booking_date}</b>
-                </p>
-              </div>
-              <div className="col-3">
-                <p className="m-0">
-                  Giá sân:{" "}
-                  <b className="text-success">
-                    {booking.pitch_time.price.toLocaleString() + " VND"}
-                  </b>
-                </p>
-                <p className="m-0">
-                  {" "}
-                  Tiền cọc:{" "}
-                  <b className="text-success">
-                    {booking.deposit.toLocaleString() + " VND"}
-                  </b>
-                </p>
-              </div>
-              <div className="col-4">
-                <p>Thời gian đặt: {formatDate(booking.create_at)}</p>
-              </div>
-            </div>
-            <div className="col-2 p-0">
-              <p className="m-0 p-0">Trạng thái:</p>
-              <p className="border p-1 rounded bg-info text-secondary text-center m-0">
-                {convertBookingStatus(booking.status)}
-              </p>
-              {booking.status === "PENDING" && (
-                <button
-                  className="btn btn-success mt-1 p-1 w-100"
-                  onClick={() => {
-                    setVisible(true);
-                    setBtn(0);
-                    setSelectBooking(booking);
-                  }}
-                >
-                  Thanh toán cọc
-                </button>
-              )}
-              {booking.status !== "CANCELED" && (
-                <button
-                  className="btn btn-danger mt-1 p-1 w-100"
-                  onClick={() => {
-                    setVisible(true);
-                    setBtn(1);
-                    setSelectBooking(booking);
-                  }}
-                >
-                  Hủy
-                </button>
-              )}
-            </div>
+            <Booking booking={booking} handleChangeTimer={() => setSearch({...search, timer: Date.now()})} />
           </div>
         ))}
         {data.items.length > 0 && (
@@ -394,19 +248,6 @@ export default function BookingList() {
             </nav>
           </div>
         )}
-        <Dialog
-          header={`${btn === 0 ? "Thanh toán" : "Hủy"}`}
-          visible={visible}
-          style={{ width: "60vw" }}
-          onHide={() => {
-            if (!visible) return;
-            setVisible(false);
-          }}
-          dismissableMask={true}
-          baseZIndex={100}
-        >
-          {btn === 0 ? <CreateBooking selectBooking={selectBooking} /> : <CancelBooking selectBooking={selectBooking}></CancelBooking>}
-        </Dialog>
       </div>
     )
   );
