@@ -92,7 +92,7 @@ public class AppController {
         try{
             paymentService.vnpayReturn(bookingId, amount, note,paymentType, bankCode, orderInfo, responseCode, transactionStatus);
             String encodedMessage = URLEncoder.encode("Thanh toán thành công!", StandardCharsets.UTF_8.toString());
-            String redirectUrl = "http://localhost:3000/users/payments?" + "message=" + encodedMessage;
+            String redirectUrl = "http://localhost:3000/users/bookings?" + "message=" + encodedMessage;
             return new RedirectView(redirectUrl);
         }
         catch (Exception e){

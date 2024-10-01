@@ -11,16 +11,16 @@ export default function Layout() {
   return (
     <>
       {loading && spinner}
+      <div className="row" style={{ marginBottom: "100px" }}>
+        <Header />
+      </div>
       <div className="container">
-        <div className="row" style={{marginBottom: "100px"}}>
-          <Header />
-        </div>
-        <div className="row">
+        <div className="row my-3">
           <Outlet />
         </div>
-        <div className="row">
-          <Footer />
-        </div>
+      </div>
+      <div className="row">
+        <Footer />
       </div>
     </>
   );

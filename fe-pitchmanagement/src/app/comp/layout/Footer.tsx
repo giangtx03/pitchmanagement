@@ -12,7 +12,7 @@ export default function Footer() {
             <use xlinkHref="#bootstrap" />
           </svg>
         </a>
-        <span className="mb-3 mb-md-0 text-muted">© 2022 Company, Inc</span>
+        <span className="mb-3 mb-md-0 text-muted">© 2024 Công ty quản lý sân bóng</span>
       </div>
       <ul className="nav col-md-4 justify-content-end list-unstyled d-flex">
         <li className="ms-3">

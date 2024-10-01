@@ -34,7 +34,13 @@ export default function BookingList() {
     timer: 0,
   });
   useEffect(() => {
-    if (message) {
+    if (message === "Thanh toán thành công!") {
+      toast.success(message, {
+        position: "top-right",
+        autoClose: 1500,
+      });
+    }
+    else{
       toast.error(message, {
         position: "top-right",
         autoClose: 1500,

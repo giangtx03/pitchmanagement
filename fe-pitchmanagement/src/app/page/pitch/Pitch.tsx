@@ -175,6 +175,7 @@ export default function Pitch() {
                   min={0}
                   maxLength={7}
                   placeholder="Từ"
+                  value={search.start_price ? search.start_price : ''}
                   onChange={(e) => {
                     handleInput(e);
                     setSearch({
@@ -190,9 +191,9 @@ export default function Pitch() {
                   min={0}
                   maxLength={7}
                   placeholder="Đến"
+                  value={search.end_price ? search.end_price : ''}
                   onChange={(e) => {
                     handleInput(e);
-                    console.log(e.target.value);
                     setSearch({
                       ...search,
                       end_price: Number.parseInt(e.target.value),
@@ -358,7 +359,7 @@ export default function Pitch() {
                 keyword: "",
                 pitch_types: [],
                 start_price: 0,
-                end_price: 9999999,
+                end_price: 0,
                 star_range: 0,
                 pageNumber: 1,
                 limit: 12,
