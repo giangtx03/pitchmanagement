@@ -12,6 +12,7 @@ import { Dialog } from "primereact/dialog";
 import { BookingResponse } from "../../../model/Booking";
 import CreateBooking from "./CreateBooking";
 import CancelBooking from "./CancelBooking";
+import { Link } from "react-router-dom";
 
 export default function Booking(props: any) {
   const { booking, handleChangeTimer } = props;
@@ -70,7 +71,7 @@ export default function Booking(props: any) {
       </div>
       <div className="col-3">
         <div className="mx-2">
-          <h5 className="card-title">{booking.pitch.name}</h5>
+          <Link to={`/pitches/${booking.pitch.id}`} className="card-title fs-5 text-decoration-none">{booking.pitch.name}</Link>
           <div className="d-flex align-items-center">
             <Image
               src={
@@ -175,7 +176,7 @@ export default function Booking(props: any) {
             Thanh toán cọc
           </button>
         )}
-        {booking.status !== "CANCELLED" && (
+        {!["CANCELLED", "COMPLETED", "NO_SHOW"].includes(booking.status) && (
           <button
             className="btn btn-danger mt-1 p-1 w-100"
             onClick={() => {

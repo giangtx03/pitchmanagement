@@ -38,6 +38,7 @@ public class BookingServiceImpl implements BookingService {
     private final SubPitchDao subPitchDao;
     private final PitchDao pitchDao;
     private final ImageDao imageDao;
+    private final TimeSlotDao timeSlotDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -285,6 +286,7 @@ public class BookingServiceImpl implements BookingService {
     @Scheduled(fixedDelay = 60000)
     public void checkPendingPayments(){
         List<BookingDto> pendingBookings = bookingDao.getAll(BookingStatus.PENDING.toString());
+        List<BookingDto> depositBookings = bookingDao.getAll(BookingStatus.DEPOSIT_PAID.toString());
 
         for(BookingDto booking : pendingBookings){
             if (booking.getCreateAt().plusMinutes(30).isBefore(LocalDateTime.now())) {
@@ -292,6 +294,20 @@ public class BookingServiceImpl implements BookingService {
                 booking.setStatus(BookingStatus.CANCELLED.toString());
                 booking.setUpdateAt(LocalDateTime.now());
                 bookingDao.updateBooking(booking);
+            }
+        }
+
+        for(BookingDto booking : depositBookings){
+            if(booking.getBookingDate().isBefore(LocalDate.now())){
+                booking.setStatus(BookingStatus.NO_SHOW.toString());
+                bookingDao.updateBooking(booking);
+            }
+            else if(booking.getBookingDate().isEqual(LocalDate.now())){
+                TimeSlotDto timeSlotDto = timeSlotDao.getTimeSlotById(booking.getTimeSlotId());
+                if(timeSlotDto.getEndTime().plusMinutes(30).isBefore(LocalTime.now())){
+                    booking.setStatus(BookingStatus.NO_SHOW.toString());
+                    bookingDao.updateBooking(booking);
+                }
             }
         }
     }

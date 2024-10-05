@@ -1,7 +1,6 @@
 import axios from "axios";
 import axiosCustom from "../config/interceptor/interceptors";
 import { ApiUrlUtil } from "../util/ApiUrlUtil";
-import { HeadersUtil } from "../util/HeaderUtil";
 import { ParamUtil } from "../util/ParamUtil";
 
 export class BookingService {

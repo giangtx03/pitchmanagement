@@ -28,6 +28,8 @@ export const convertBookingStatus = (bookingStatus: string): string => {
       return "Đã hủy";
     case "REQUEST_CANCELLATION":
       return "Đang xử lý hủy";
+    case "NO_SHOW":
+      return "Không tới";
     default:
       return "";
   }
