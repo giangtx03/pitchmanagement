@@ -103,7 +103,7 @@ export default function Pitch() {
     }
   };
   return (
-    <div>
+    <div className="container">
       <div className="row">
         <div className="col-md-3 col-sm-12">
           <h4 className="mt-3">Bộ lọc tìm kiếm</h4>

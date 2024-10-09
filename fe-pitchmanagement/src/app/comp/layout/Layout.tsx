@@ -14,11 +14,9 @@ export default function Layout() {
       <div className="row" style={{ marginBottom: "100px" }}>
         <Header />
       </div>
-      <div className="container">
-        <div className="row my-3">
+      <div>
           <Outlet />
         </div>
-      </div>
       <div className="row">
         <Footer />
       </div>

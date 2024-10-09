@@ -67,7 +67,7 @@ export default function Login() {
 
   return (
     <div
-      className="m-auto shadow"
+      className="m-auto shadow p-3 rounded"
       style={{
         width: "500px",
         backgroundColor: "ghostwhite",

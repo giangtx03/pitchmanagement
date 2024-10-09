@@ -39,8 +39,7 @@ export default function BookingList() {
         position: "top-right",
         autoClose: 1500,
       });
-    }
-    else{
+    } else {
       toast.error(message, {
         position: "top-right",
         autoClose: 1500,
@@ -84,62 +83,75 @@ export default function BookingList() {
     data && (
       <div className="mx-2">
         <h4>Danh sách đơn đặt:</h4>
-        <div className="d-flex input-group w-50 m-3">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Tìm kiếm theo tên sân, địa chỉ..."
-            value={search.keyword}
-            onChange={(e) => {
-              setSearch({ ...search, keyword: e.target.value });
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
+        <div className="row">
+          <div className="d-flex input-group w-75 m-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Tìm kiếm theo tên sân, địa chỉ..."
+              value={search.keyword}
+              onChange={(e) => {
+                setSearch({ ...search, keyword: e.target.value });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setSearch({
+                    ...search,
+                    pageNumber: 1,
+                    timer: Date.now(),
+                  });
+                }
+              }}
+            />
+            <button
+              className="btn btn-primary rounded-end-2"
+              onClick={() => {
                 setSearch({
                   ...search,
-                  pageNumber: 1,
                   timer: Date.now(),
                 });
-              }
-            }}
-          />
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              setSearch({
-                ...search,
-                timer: Date.now(),
-              });
-            }}
-          >
-            Tìm kiếm
-          </button>
-        </div>
-        <div className="d-flex mx-2 mb-3">
-          {statuses.map((status) => (
-            <a
-              key={status.value}
-              onClick={() =>
-                setSearch({
-                  ...search,
-                  status: status.value,
-                  pageNumber: 1,
-                  timer: Date.now(),
-                })
-              }
-              className={`btn mx-2 ${status.color} ${
-                search.status === status.value ? "active" : ""
-              }`}
+              }}
             >
-              {status.label}
-            </a>
-          ))}
+              Tìm kiếm
+            </button>
+            <div>
+              <select
+                className="form-select rounded border border-primary ms-3"
+                aria-label="Chọn thời gian"
+                onChange={(e) => {
+                  setSearch({
+                    ...search,
+                    status: e.target.value,
+                    pageNumber: 1,
+                    timer: Date.now(),
+                  });
+                  console.log(e.target.value);
+                }}
+              >
+                {statuses.map((status) => (
+                  <option
+                    key={status.value}
+                    className={`btn mx-2 ${status.color} ${
+                      search.status === status.value ? "active" : ""
+                    }`}
+                    value={status.value}
+                  >
+                    {status.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
-
         <p>Tổng số đơn đặt: {data.total_items} </p>
         {data.items.map((booking: BookingResponse) => (
           <div className="row mt-2 border rounded shadow p-3" key={booking.id}>
-            <Booking booking={booking} handleChangeTimer={() => setSearch({...search, timer: Date.now()})} />
+            <Booking
+              booking={booking}
+              handleChangeTimer={() =>
+                setSearch({ ...search, timer: Date.now() })
+              }
+            />
           </div>
         ))}
         {data.items.length > 0 && (

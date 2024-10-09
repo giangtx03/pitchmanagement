@@ -67,7 +67,7 @@ export default function Register() {
 
   return (
     <div
-      className="m-auto"
+      className="m-auto shadow rounded p-3"
       style={{
         width: "500px",
         backgroundColor: "ghostwhite",

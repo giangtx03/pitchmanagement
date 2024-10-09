@@ -1,16 +1,18 @@
-import React from 'react'
-import SideBar from './comp/SideBar'
-import { Outlet } from 'react-router-dom'
+import React from "react";
+import SideBar from "./comp/SideBar";
+import { Outlet } from "react-router-dom";
 
 export default function User() {
   return (
-    <>
+    <div className="container">
+      <div className="row">
         <div className="col-2 p-0">
-            <SideBar/>
+          <SideBar />
         </div>
         <div className="col-10">
-            <Outlet/>
+          <Outlet />
         </div>
-    </>
-  )
+      </div>
+    </div>
+  );
 }

@@ -1,3 +1,7 @@
+body {
+  overflow-x: hidden; /* Tắt thanh trượt ngang */
+}
+
 a.active {
   background-color: rgb(179, 215, 255) !important;
   border: none;

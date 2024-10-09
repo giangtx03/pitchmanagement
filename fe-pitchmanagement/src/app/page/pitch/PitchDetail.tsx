@@ -73,7 +73,7 @@ export default function PitchDetail() {
   };
 
   return pitch ? (
-    <div>
+    <div className="container">
       <div className="row shadow p-3">
         <div className="col-md-5 col-sm-12 ">
           <div className="row py-3 ">
