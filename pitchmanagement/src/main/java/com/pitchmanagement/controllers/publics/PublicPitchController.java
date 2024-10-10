@@ -29,8 +29,8 @@ public class PublicPitchController {
             @RequestParam(value = "star_range", defaultValue = "0") @Nullable int starRange,
             @RequestParam(value = "pitch_types", defaultValue = "") long[] pitchTypes,
             @RequestParam(value = "request_query")@Nullable boolean requestQuery,
-            @RequestParam(value = "order_by", defaultValue = SortConstant.SORT_BY_ID) @Nullable String orderBy,
-            @RequestParam(value = "order_sort", defaultValue = SortConstant.SORT_ASC) @Nullable String orderSort
+            @RequestParam(value = "order_by", defaultValue = SortConstant.SORT_BY_AVG_STAR) @Nullable String orderBy,
+            @RequestParam(value = "order_sort", defaultValue = SortConstant.SORT_DESC) @Nullable String orderSort
     ){
         try {
 

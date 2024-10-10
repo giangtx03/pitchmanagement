@@ -77,109 +77,108 @@ export default function ChangePassword() {
   };
 
   return (
-    <div className="shadow p-5">
-      <div className="row mb-3">
-        <h4>Đổi mật khẩu</h4>
-      </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="d-flex flex-column">
-        <div
-          data-mdb-input-init
-          className="form-outline mb-2 d-flex justify-content-center align-items-center"
-        >
-          <div className="col-3">
-            <label className="form-label" htmlFor="registerPassword">
-              Mật khẩu hiện tại
-            </label>
-          </div>
-
-          <div className="col-9">
-            <input
-              type="password"
-              id="oldPassword"
-              {...register("oldPassword", {
-                required: "Mật khẩu hiện tại không được để trống",
-              })}
-              placeholder="Nhập mật khẩu hiện tại"
-              className="form-control w-75"
-            />
-            {touchedFields.oldPassword && errors.oldPassword && (
-              <p className="text-danger">{errors.oldPassword.message}</p>
-            )}
-          </div>
-        </div>
-
-        <div
-          data-mdb-input-init
-          className="form-outline mb-2 d-flex justify-content-center align-items-center"
-        >
-          <div className="col-3">
-            <label className="form-label" htmlFor="registerPassword">
-              Mật khẩu mới
-            </label>
-          </div>
-
-          <div className="col-9">
-            <input
-              type="password"
-              id="registerPassword"
-              {...register("newPassword", {
-                required: "Mật khẩu mới không được để trống",
-                minLength: {
-                  value: 8,
-                  message: "Mật khẩu mới tối thiểu 8 ký tự",
-                },
-              })}
-              onChange={(e) => {
-                const trimmedValue = e.target.value.trim();
-                setValue("newPassword", trimmedValue);
-              }}
-              placeholder="Nhập mật khẩu mới"
-              className="form-control w-75"
-            />
-            {touchedFields.newPassword && errors.newPassword && (
-              <p className="text-danger">{errors.newPassword.message}</p>
-            )}
-          </div>
-        </div>
-
-        <div
-          data-mdb-input-init
-          className="form-outline mb-2 d-flex justify-content-center align-items-center"
-        >
-          <div className="col-3">
-            <label className="form-label" htmlFor="registerRetypePassword">
-              Xác nhận mật khẩu
-            </label>
-          </div>
-
-          <div className="col-9">
-            <input
-              type="password"
-              id="registerRetypePassword"
-              className="form-control w-75"
-              {...register("retypePassword", {
-                required: "Xác nhận mật khẩu không được để trống",
-                validate: (value) =>
-                  value === watch("newPassword") || "Mật khẩu không khớp",
-              })}
-              placeholder="Xác nhận mật khẩu"
-            />
-            {touchedFields.retypePassword && errors.retypePassword && (
-              <p className="text-danger">{errors.retypePassword.message}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="d-flex justify-content-end mt-4">
-          <button
-            className="btn btn-success"
-            style={{ minWidth: "150px", fontSize: "16px" }}
-            type="submit"
+    <div className="row shadow d-flex justify-content-center mx-2 bg-body-secondary p-5">
+      <div className="col-8 bg-light p-3 rounded mb-3">
+        <h4 className="text-center mb-3">Đổi mật khẩu</h4>
+        <form onSubmit={handleSubmit(onSubmit)} className="d-flex flex-column">
+          <div
+            data-mdb-input-init
+            className="form-outline mb-2 d-flex justify-content-center align-items-center"
           >
-            Cập nhật
-          </button>
-        </div>
-      </form>
+            <div className="col-3">
+              <label className="form-label" htmlFor="registerPassword">
+                Mật khẩu hiện tại
+              </label>
+            </div>
+            <div className="col-9">
+              <input
+                type="password"
+                id="oldPassword"
+                {...register("oldPassword", {
+                  required: "Mật khẩu hiện tại không được để trống",
+                })}
+                placeholder="Nhập mật khẩu hiện tại"
+                className="form-control w-75 bg-body-secondary"
+              />
+              {touchedFields.oldPassword && errors.oldPassword && (
+                <p className="text-danger">{errors.oldPassword.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div
+            data-mdb-input-init
+            className="form-outline mb-2 d-flex justify-content-center align-items-center"
+          >
+            <div className="col-3">
+              <label className="form-label" htmlFor="registerPassword">
+                Mật khẩu mới
+              </label>
+            </div>
+
+            <div className="col-9">
+              <input
+                type="password"
+                id="registerPassword"
+                {...register("newPassword", {
+                  required: "Mật khẩu mới không được để trống",
+                  minLength: {
+                    value: 8,
+                    message: "Mật khẩu mới tối thiểu 8 ký tự",
+                  },
+                })}
+                onChange={(e) => {
+                  const trimmedValue = e.target.value.trim();
+                  setValue("newPassword", trimmedValue);
+                }}
+                placeholder="Nhập mật khẩu mới"
+                className="form-control w-75 bg-body-secondary"
+              />
+              {touchedFields.newPassword && errors.newPassword && (
+                <p className="text-danger">{errors.newPassword.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div
+            data-mdb-input-init
+            className="form-outline mb-2 d-flex justify-content-center align-items-center"
+          >
+            <div className="col-3">
+              <label className="form-label" htmlFor="registerRetypePassword">
+                Xác nhận mật khẩu
+              </label>
+            </div>
+
+            <div className="col-9">
+              <input
+                type="password"
+                id="registerRetypePassword"
+                className="form-control w-75 bg-body-secondary"
+                {...register("retypePassword", {
+                  required: "Xác nhận mật khẩu không được để trống",
+                  validate: (value) =>
+                    value === watch("newPassword") || "Mật khẩu không khớp",
+                })}
+                placeholder="Xác nhận mật khẩu"
+              />
+              {touchedFields.retypePassword && errors.retypePassword && (
+                <p className="text-danger">{errors.retypePassword.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="d-flex justify-content-end mt-3 me-5">
+            <button
+              className="btn btn-success"
+              style={{ minWidth: "150px", fontSize: "16px" }}
+              type="submit"
+            >
+              Cập nhật
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

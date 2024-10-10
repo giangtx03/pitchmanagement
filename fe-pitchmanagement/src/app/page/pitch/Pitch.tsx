@@ -104,8 +104,8 @@ export default function Pitch() {
   };
   return (
     <div className="container">
-      <div className="row">
-        <div className="col-md-3 col-sm-12">
+      <div className="row bg-body-secondary rounded py-2">
+        <div className="col-md-3 border-end ps-5 col-sm-12">
           <h4 className="mt-3">Bộ lọc tìm kiếm</h4>
           {/* {"Kiểu sân"} */}
           <div className="mt-2 ">

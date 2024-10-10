@@ -22,7 +22,8 @@ export default function Home() {
         .getAll({
           page_number: 1,
           limit: 8,
-          star_range: 0,
+          order_by: "avgStar",
+          order_sort: "DESC",
           request_query: true,
         })
         .then((response) => {
@@ -184,6 +185,7 @@ export default function Home() {
                   <input
                     type="text"
                     className="form-control bg-body-secondary"
+                    placeholder="Nguyen Van A"
                   />
                 </div>
                 <div className="d-flex mb-2">
@@ -193,6 +195,7 @@ export default function Home() {
                   <input
                     type="email"
                     className="form-control bg-body-secondary"
+                    placeholder="nva@gmail.com"
                   />
                 </div>
                 <div className="d-flex mb-2">
@@ -202,6 +205,7 @@ export default function Home() {
                   <input
                     type="text"
                     className="form-control bg-body-secondary"
+                    placeholder="0123456789"
                   />
                 </div>
                 <div className="d-flex justify-content-end">
