@@ -27,77 +27,29 @@ public class PitchTimeController {
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PostMapping
     public ResponseEntity<BaseResponse> createPitchTime(
-            @RequestBody @Valid CreatePitchTimeRequest request,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
+            @RequestBody @Valid CreatePitchTimeRequest request
+    ) throws Exception {
+        pitchTimeService.createPitchTime(request);
 
-        try{
-            pitchTimeService.createPitchTime(request);
-
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.CREATED.value())
-                    .message("Thêm khung thời gian thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .message("Thêm khung thời gian thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PutMapping
     public ResponseEntity<BaseResponse> updeatePitchTime(
-            @RequestBody @Valid UpdatePitchTimeRequest updatePitchTimeRequest,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
+            @RequestBody @Valid UpdatePitchTimeRequest updatePitchTimeRequest
+    ) throws Exception {
+        pitchTimeService.updatePitchTime(updatePitchTimeRequest);
 
-        try{
-            pitchTimeService.updatePitchTime(updatePitchTimeRequest);
-
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Cập nhật khung thời gian thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Cập nhật khung thời gian thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
 }

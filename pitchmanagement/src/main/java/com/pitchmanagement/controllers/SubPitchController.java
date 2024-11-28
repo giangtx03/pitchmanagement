@@ -26,77 +26,29 @@ public class SubPitchController {
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PostMapping
     public ResponseEntity<BaseResponse> createSubPitch(
-            @RequestBody @Valid CreateSubPitchRequest request,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
+            @RequestBody @Valid CreateSubPitchRequest request
+    ) throws Exception {
+        subPitchService.createSubPitch(request);
 
-        try{
-            subPitchService.createSubPitch(request);
-
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.CREATED.value())
-                    .message("Tạo sân con thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .message("Tạo sân con thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
 
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PutMapping
     public ResponseEntity<BaseResponse> updeateSubPitch(
-            @RequestBody @Valid UpdateSubPitchRequest updateSubPitchRequest,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
+            @RequestBody @Valid UpdateSubPitchRequest updateSubPitchRequest
+    ) throws Exception {
+        subPitchService.updateSubPitch(updateSubPitchRequest);
 
-        try{
-            subPitchService.updateSubPitch(updateSubPitchRequest);
-
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Cập nhật sân con thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Cập nhật sân con thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 }

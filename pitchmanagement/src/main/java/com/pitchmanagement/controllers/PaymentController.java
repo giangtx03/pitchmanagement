@@ -26,38 +26,17 @@ public class PaymentController {
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @PostMapping("/create-payment")
     public ResponseEntity<BaseResponse> createPayment(
-            @RequestBody @Valid VNPayRequest request,
-            BindingResult result
-    ) {
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
-        try{
-            String url = paymentService.createPayment(request);
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(url)
-                    .message("Tạo mẫu thanh toán thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+            @RequestBody @Valid VNPayRequest request
+    ) throws Exception {
+
+        String url = paymentService.createPayment(request);
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(url)
+                .message("Tạo mẫu thanh toán thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
+
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
@@ -68,22 +47,13 @@ public class PaymentController {
             @RequestParam(value = "payment_type", defaultValue = "") @Nullable String paymentType,
             @RequestParam(value = "page_number", defaultValue = "1") @Nullable int pageNumber,
             @RequestParam(value = "limit", defaultValue = "5") @Nullable int limit
-    ) {
-        try{
-            PageResponse pageResponse = paymentService.getAllPaymentByManagerId(managerId, keyword, paymentType, pageNumber, limit);
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(pageResponse)
-                    .message("Danh sách hóa đơn!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+    ) throws Exception {
+        PageResponse pageResponse = paymentService.getAllPaymentByManagerId(managerId, keyword, paymentType, pageNumber, limit);
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(pageResponse)
+                .message("Danh sách hóa đơn!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 }

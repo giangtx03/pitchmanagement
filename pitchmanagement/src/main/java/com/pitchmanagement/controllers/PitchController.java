@@ -29,117 +29,47 @@ public class PitchController {
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse> createPitch(
-            @ModelAttribute @Valid CreatePitchRequest request,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
+            @ModelAttribute @Valid CreatePitchRequest request
+    ) throws Exception {
+        PitchResponse pitchResponse = pitchService.createPitch(request);
 
-        try{
-            PitchResponse pitchResponse = pitchService.createPitch(request);
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .data(pitchResponse)
+                .message("Tạo sân thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.CREATED.value())
-                    .data(pitchResponse)
-                    .message("Tạo sân thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PutMapping
     public ResponseEntity<BaseResponse> updeatePitch(
-            @RequestBody @Valid UpdatePitchRequest updatePitchRequest,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
+            @RequestBody @Valid UpdatePitchRequest updatePitchRequest
+    ) throws Exception {
+        PitchResponse pitchResponse = pitchService.updatePitch(updatePitchRequest);
 
-        try{
-            PitchResponse pitchResponse = pitchService.updatePitch(updatePitchRequest);
-
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(pitchResponse)
-                    .message("Cập nhật sân thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(pitchResponse)
+                .message("Cập nhật sân thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
     @PostMapping(value = "/images",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse> addImages(
-            @ModelAttribute @Valid CreateImageRequest request,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
+            @ModelAttribute @Valid CreateImageRequest request
+    ) throws Exception {
 
-        try{
-            pitchService.addImages(request);
+        pitchService.addImages(request);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.CREATED.value())
-                    .message("Thêm hình ảnh thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .message("Thêm hình ảnh thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
@@ -147,21 +77,12 @@ public class PitchController {
     public ResponseEntity<BaseResponse> deleteImage(
             @PathVariable("name") String name
     ){
-        try{
-            pitchService.deleteImage(name);
+        pitchService.deleteImage(name);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Xóa hình ảnh thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Xóa hình ảnh thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 }

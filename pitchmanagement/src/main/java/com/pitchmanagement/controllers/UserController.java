@@ -29,95 +29,43 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(
             @PathVariable("id") Long id
-    ){
-        try {
-            UserResponse userResponse = userService.getUserById(id);
+    ) throws Exception {
+        UserResponse userResponse = userService.getUserById(id);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(userResponse)
-                    .message("Thông tin người dùng !")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(userResponse)
+                .message("Thông tin người dùng !")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER', 'ROLE_MANAGER')")
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateUser(
-            @ModelAttribute @Valid UpdateUserRequest updateUserRequest,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
-        try {
-            UserResponse userResponse = userService.updateUser(updateUserRequest);
+            @ModelAttribute @Valid UpdateUserRequest updateUserRequest
+    ) throws Exception {
+        UserResponse userResponse = userService.updateUser(updateUserRequest);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(userResponse)
-                    .message("Cập nhật thông tin người dùng thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(userResponse)
+                .message("Cập nhật thông tin người dùng thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER', 'ROLE_MANAGER')")
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(
-            @RequestBody @Valid ChangePasswordRequest changePasswordRequest,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
-        try {
-            userService.changePassword(changePasswordRequest);
+            @RequestBody @Valid ChangePasswordRequest changePasswordRequest
+    ) throws Exception {
+        userService.changePassword(changePasswordRequest);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Thay đổi mật khẩu thành công !")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Thay đổi mật khẩu thành công !")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 }

@@ -26,172 +26,82 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody @Valid LoginRequest loginRequest,
-            BindingResult result
-    ) {
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
-        try {
-            LoginResponse login = userService.login(loginRequest);
+            @RequestBody @Valid LoginRequest loginRequest
+    ) throws Exception {
+        LoginResponse login = userService.login(loginRequest);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(login)
-                    .message("Đăng nhập thành công")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(login)
+                .message("Đăng nhập thành công")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(
-            @RequestBody @Valid RegisterRequest registerRequest,
-            BindingResult result
-    ) {
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
-        try {
-            RegisterResponse register = userService.register(registerRequest);
+            @RequestBody @Valid RegisterRequest registerRequest
+    ) throws Exception {
+        RegisterResponse register = userService.register(registerRequest);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.CREATED.value())
-                    .data(register)
-                    .message("Đăng ký thành công")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .data(register)
+                .message("Đăng ký thành công")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/confirm-email/{token}")
     public ResponseEntity<?> confirmEmail(
             @PathVariable("token") String token
-    ) {
-        try {
-            userService.confirmEmail(token);
+    ) throws Exception {
+        userService.confirmEmail(token);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Xác nhận email thành công")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Xác nhận email thành công")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/resend-confirm-email/{email}")
     public ResponseEntity<?> resendConfirmEmail(
             @PathVariable("email") String email
-    ) {
-        try {
-            userService.resendConfirmEmail(email);
+    ) throws Exception {
+        userService.resendConfirmEmail(email);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Yêu cầu gửi lại xác nhận email thành công")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Yêu cầu gửi lại xác nhận email thành công")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/forgot-password/{email}")
     public ResponseEntity<?> forgotPassword(
             @PathVariable("email") String email
-    ) {
-        try {
-            userService.forgotPassword(email);
+    ) throws Exception {
+        userService.forgotPassword(email);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Quên mật khẩu thành công")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Quên mật khẩu thành công")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/renew-password/{token}")
     public ResponseEntity<?> renewPassword(
             @PathVariable("token") String token,
-            @RequestBody @Valid RenewPassword renewPassword,
-            BindingResult result
-    ) {
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
-        try {
-            userService.renewPassword(token, renewPassword);
+            @RequestBody @Valid RenewPassword renewPassword
+    ) throws Exception {
+        userService.renewPassword(token, renewPassword);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Làm mới mật khẩu thành công")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Làm mới mật khẩu thành công")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 }

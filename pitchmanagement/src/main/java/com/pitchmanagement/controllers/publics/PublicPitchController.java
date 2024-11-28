@@ -32,47 +32,27 @@ public class PublicPitchController {
             @RequestParam(value = "order_by", defaultValue = SortConstant.SORT_BY_AVG_STAR) @Nullable String orderBy,
             @RequestParam(value = "order_sort", defaultValue = SortConstant.SORT_DESC) @Nullable String orderSort
     ){
-        try {
+        PageResponse pageResponse = pitchService.getAll(keyword,
+                startPrice, endPrice,managerId,  starRange, pitchTypes, requestQuery,
+                pageNumber, limit, orderBy, orderSort);
 
-            PageResponse pageResponse = pitchService.getAll(keyword,
-                    startPrice, endPrice,managerId,  starRange, pitchTypes, requestQuery,
-                    pageNumber, limit, orderBy, orderSort);
-
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(pageResponse)
-                    .message("Lấy danh sách sân thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(pageResponse)
+                .message("Lấy danh sách sân thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse> getPitchById(@PathVariable Long id, @RequestParam(value = "request_query")@Nullable boolean requestQuery){
-        try {
+    public ResponseEntity<BaseResponse> getPitchById(@PathVariable Long id, @RequestParam(value = "request_query")@Nullable boolean requestQuery) throws Exception {
+        PitchResponse pitchResponse = pitchService.getPitchById(id, requestQuery);
 
-            PitchResponse pitchResponse = pitchService.getPitchById(id, requestQuery);
-
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(pitchResponse)
-                    .message("Lấy chi tiết sân thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(pitchResponse)
+                .message("Lấy chi tiết sân thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 }

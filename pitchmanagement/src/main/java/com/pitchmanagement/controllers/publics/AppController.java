@@ -35,20 +35,13 @@ public class AppController {
 
     @GetMapping("/images/{image_name}")
     public ResponseEntity<?> getImage(
-            @PathVariable("image_name") String imageName) {
-        try {
-            Resource source = imageService.download(imageName);
+            @PathVariable("image_name") String imageName
+    ) throws Exception {
+        Resource source = imageService.download(imageName);
 //            logger.info("Lấy hình ảnh : {}", imageName);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_PNG)
-                    .body(source);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(source);
     }
 
     @GetMapping("/reviews/{pitch_id}")
@@ -58,24 +51,16 @@ public class AppController {
             @RequestParam(value = "star", defaultValue = "0") @Nullable int star,
             @RequestParam(value = "page_number", defaultValue = "1") @Nullable int pageNumber,
             @RequestParam(value = "limit", defaultValue = "3") @Nullable int limit,
-            @RequestParam(value = "order_sort", defaultValue = SortConstant.SORT_ASC) @Nullable String orderSort) {
-        try {
+            @RequestParam(value = "order_sort", defaultValue = SortConstant.SORT_ASC) @Nullable String orderSort
+    ) {
+        PageResponse pageResponse = reviewService.getAllByPitchId(pitchId,userId,star,pageNumber,limit,orderSort);
 
-            PageResponse pageResponse = reviewService.getAllByPitchId(pitchId,userId,star,pageNumber,limit,orderSort);
-
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(pageResponse)
-                    .message("Lấy danh sách sân thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(pageResponse)
+                .message("Lấy danh sách sân thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/payments/vnpay-return")

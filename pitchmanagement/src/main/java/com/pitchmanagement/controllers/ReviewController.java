@@ -28,80 +28,33 @@ public class ReviewController {
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @PostMapping
     public ResponseEntity<BaseResponse> createReview(
-            @RequestBody @Valid CreateReviewRequest request,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
+            @RequestBody @Valid CreateReviewRequest request
+    ) throws Exception {
 
-        try{
-            ReviewResponse reviewResponse =  reviewService.createReview(request);
+        ReviewResponse reviewResponse =  reviewService.createReview(request);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.CREATED.value())
-                    .data(reviewResponse)
-                    .message("Đánh giá thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.CREATED.value())
+                .data(reviewResponse)
+                .message("Đánh giá thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_MANAGER')")
     @PutMapping
     public ResponseEntity<BaseResponse> updeateReview(
-            @RequestBody @Valid UpdateReviewRequest updateReviewRequest,
-            BindingResult result
-    ){
-        if (result.hasErrors()) {
-            // lấy ra danh sách lỗi
-            List<String> errorMessages = result.getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .toList();
-            // trả về danh sách lỗi
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST.value())
-                    .message(errorMessages.toString())
-                    .build();
-            return ResponseEntity.badRequest().body(response);
-        }
+            @RequestBody @Valid UpdateReviewRequest updateReviewRequest
+    ) throws Exception {
+        ReviewResponse reviewResponse =  reviewService.updateReview(updateReviewRequest);
 
-        try{
-            ReviewResponse reviewResponse =  reviewService.updateReview(updateReviewRequest);
-
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .data(reviewResponse)
-                    .message("Cập nhật đánh giá thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .data(reviewResponse)
+                .message("Cập nhật đánh giá thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 
 
@@ -110,21 +63,12 @@ public class ReviewController {
     public ResponseEntity<BaseResponse> deleteReview(
             @PathVariable("id") Long id
     ){
-        try{
-            reviewService.deleteReview(id);
+        reviewService.deleteReview(id);
 
-            BaseResponse response = BaseResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("Xóa đánh giá thành công!")
-                    .build();
-            return ResponseEntity.ok().body(response);
-        }
-        catch (Exception e){
-            return ResponseEntity.badRequest()
-                    .body(BaseResponse.builder()
-                            .status(HttpStatus.BAD_REQUEST.value())
-                            .message(e.getMessage())
-                            .build());
-        }
+        BaseResponse response = BaseResponse.builder()
+                .status(HttpStatus.OK.value())
+                .message("Xóa đánh giá thành công!")
+                .build();
+        return ResponseEntity.ok().body(response);
     }
 }
