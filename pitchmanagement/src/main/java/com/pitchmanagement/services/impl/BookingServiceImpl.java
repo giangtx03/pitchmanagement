@@ -42,7 +42,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BookingResponse createBooking(CreateBookingRequest request) throws Exception {
+    public BookingResponse createBooking(CreateBookingRequest request) throws NotFoundException {
         if(bookingDao.isExistingBooking(request.getSubPitchId(),
                 request.getTimeSlotId(),
                 request.getBookingDate(),

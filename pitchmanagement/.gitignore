@@ -5,8 +5,6 @@ target/
 !**/src/test/**/target/
 
 *.properties
-MailConfig.java
-VNPayConfig.java
 
 ### STS ###
 .apt_generated
