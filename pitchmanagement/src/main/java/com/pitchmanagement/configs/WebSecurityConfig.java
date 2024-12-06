@@ -47,7 +47,8 @@ public class WebSecurityConfig {
                 String.format("public/%s/images/**", apiPrefix),
                 String.format("public/%s/reviews/**", apiPrefix),
                 String.format("public/%s/pitches/**", apiPrefix),
-                String.format("public/%s/payments/**", apiPrefix)
+                String.format("public/%s/payments/**", apiPrefix),
+                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/webjars/swagger-ui/**"
         };
     }
 

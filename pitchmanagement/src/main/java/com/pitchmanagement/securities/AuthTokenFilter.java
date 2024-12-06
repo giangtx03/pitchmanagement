@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException
     {
         try{
-            if(request.getServletPath().contains("public")){
+            if(request.getServletPath().contains("public") || bypassRequest(request)){
                 filterChain.doFilter(request,response);
                 return;
             }
@@ -73,5 +74,20 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    private boolean bypassRequest(HttpServletRequest request){
+
+        List<String> whiteList = List.of(
+                "/v3/api-docs",
+                "/swagger-ui",
+                "/swagger-ui.html",
+                "/webjars/swagger-ui"
+        );
+        for (String item : whiteList){
+            if(request.getServletPath().contains(item))
+                return true;
+        }
+        return false;
     }
 }
