@@ -1,10 +1,10 @@
 package com.pitchmanagement.controllers;
 
-import com.pitchmanagement.models.requests.image.CreateImageRequest;
-import com.pitchmanagement.models.requests.pitch.CreatePitchRequest;
-import com.pitchmanagement.models.requests.pitch.UpdatePitchRequest;
-import com.pitchmanagement.models.responses.BaseResponse;
-import com.pitchmanagement.models.responses.pitch.PitchResponse;
+import com.pitchmanagement.dtos.requests.image.CreateImageRequest;
+import com.pitchmanagement.dtos.requests.pitch.CreatePitchRequest;
+import com.pitchmanagement.dtos.requests.pitch.UpdatePitchRequest;
+import com.pitchmanagement.dtos.responses.BaseResponse;
+import com.pitchmanagement.dtos.responses.pitch.PitchResponse;
 import com.pitchmanagement.services.PitchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

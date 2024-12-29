@@ -3,11 +3,11 @@
 
 <mapper namespace="com.pitchmanagement.daos.BookingDao">
 
-    <insert id="insertBooking" parameterType="com.pitchmanagement.dtos.BookingDto" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertBooking" parameterType="com.pitchmanagement.models.Booking" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO bookings(status, note, deposit, booking_date, user_id, sub_pitch_id, time_slot_id, create_at, update_at)
         VALUES (#{status},#{note}, #{deposit}, #{bookingDate}, #{userId}, #{subPitchId}, #{timeSlotId}, #{createAt}, #{updateAt})
     </insert>
-    <select id="getAll" parameterType="map" resultType="com.pitchmanagement.dtos.BookingDto">
+    <select id="getAll" parameterType="map" resultType="com.pitchmanagement.models.Booking">
         SELECT
             b.id,
             b.status,
@@ -24,7 +24,7 @@
     </select>
 
 
-    <select id="getAllByUserId" parameterType="map" resultType="com.pitchmanagement.dtos.BookingDto">
+    <select id="getAllByUserId" parameterType="map" resultType="com.pitchmanagement.models.Booking">
         SELECT
             b.id,
             b.status,
@@ -45,7 +45,7 @@
         LIKE CONCAT('%', #{keyword}, '%'))
     </select>
 
-    <select id="getAllByManagerId" parameterType="map" resultType="com.pitchmanagement.dtos.BookingDto">
+    <select id="getAllByManagerId" parameterType="map" resultType="com.pitchmanagement.models.Booking">
         SELECT
             b.id,
             b.status,
@@ -66,7 +66,7 @@
         LIKE CONCAT('%', #{keyword}, '%'))
     </select>
 
-    <select id="getBookingById" parameterType="Long" resultType="com.pitchmanagement.dtos.BookingDto">
+    <select id="getBookingById" parameterType="Long" resultType="com.pitchmanagement.models.Booking">
         SELECT
             id,
             status,
@@ -91,7 +91,7 @@
             AND status != #{status}
     </select>
 
-    <update id="updateBooking" parameterType="com.pitchmanagement.dtos.BookingDto">
+    <update id="updateBooking" parameterType="com.pitchmanagement.models.Booking">
         UPDATE bookings SET
             status = #{status},
             update_at = #{updateAt}

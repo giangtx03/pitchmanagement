@@ -3,27 +3,26 @@ package com.pitchmanagement.services.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pitchmanagement.constants.AuthConstant;
-import com.pitchmanagement.constants.BookingStatus;
-import com.pitchmanagement.constants.PitchTimeStatus;
+import com.pitchmanagement.enums.BookingStatus;
+import com.pitchmanagement.enums.PitchTimeStatus;
 import com.pitchmanagement.daos.*;
-import com.pitchmanagement.dtos.*;
+import com.pitchmanagement.models.*;
 import com.pitchmanagement.exceptions.InvalidDataException;
-import com.pitchmanagement.models.requests.image.CreateImageRequest;
-import com.pitchmanagement.models.requests.pitch.CreatePitchRequest;
-import com.pitchmanagement.models.requests.pitch.PitchTimeRequest;
-import com.pitchmanagement.models.requests.pitch.SubPitchRequest;
-import com.pitchmanagement.models.requests.pitch.UpdatePitchRequest;
-import com.pitchmanagement.models.responses.PageResponse;
-import com.pitchmanagement.models.responses.pitch.PitchResponse;
-import com.pitchmanagement.models.responses.pitch.PitchTimeResponse;
-import com.pitchmanagement.models.responses.pitch.SubPitchResponse;
-import com.pitchmanagement.models.responses.UserResponse;
+import com.pitchmanagement.dtos.requests.image.CreateImageRequest;
+import com.pitchmanagement.dtos.requests.pitch.CreatePitchRequest;
+import com.pitchmanagement.dtos.requests.pitch.PitchTimeRequest;
+import com.pitchmanagement.dtos.requests.pitch.SubPitchRequest;
+import com.pitchmanagement.dtos.requests.pitch.UpdatePitchRequest;
+import com.pitchmanagement.dtos.responses.PageResponse;
+import com.pitchmanagement.dtos.responses.pitch.PitchResponse;
+import com.pitchmanagement.dtos.responses.pitch.PitchTimeResponse;
+import com.pitchmanagement.dtos.responses.pitch.SubPitchResponse;
+import com.pitchmanagement.dtos.responses.UserResponse;
 import com.pitchmanagement.services.ImageService;
 import com.pitchmanagement.services.PitchService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.NotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +37,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PitchServiceImpl implements PitchService {
     private final PitchDao pitchDao;
     private final PitchTimeDao pitchTimeDao;
@@ -48,7 +48,6 @@ public class PitchServiceImpl implements PitchService {
     private final TimeSlotDao timeSlotDao;
     private final ImageService imageService;
     private final BookingDao bookingDao;
-    private static final Logger logger = LoggerFactory.getLogger(PitchServiceImpl.class);
     @Override
     @Transactional(rollbackFor =  Exception.class)
     public PitchResponse createPitch(CreatePitchRequest request) throws Exception {
@@ -57,14 +56,14 @@ public class PitchServiceImpl implements PitchService {
             throw new IllegalArgumentException("Chỉ cho phép mỗi sân tối đa 5 ảnh");
         }
 
-        UserDto managerDto = userDao.getUserById(request.getManagerId());
+        User managerDto = userDao.getUserById(request.getManagerId());
 
         if(managerDto == null || !managerDto.getRole().equals(AuthConstant.ROLE_MANAGER)){
-            logger.info("Không tìm thấy người chủ sân với id : {}", request.getManagerId());
+            log.info("Không tìm thấy người chủ sân với id : {}", request.getManagerId());
             throw new NotFoundException("Không tồn tại quản lý sân bóng!!!");
         }
 
-        PitchDto pitchDto = PitchDto.builder()
+        Pitch pitch = Pitch.builder()
                 .name(request.getName())
                 .location(request.getLocation())
                 .managerId(request.getManagerId())
@@ -72,20 +71,20 @@ public class PitchServiceImpl implements PitchService {
                 .updateAt(LocalDateTime.now())
                 .isActive(true)
                 .build();
-        pitchDao.insertPitch(pitchDto);
+        pitchDao.insertPitch(pitch);
         List<SubPitchResponse> subPitchResponses = new ArrayList<>();
         for(SubPitchRequest subPitchRequest : request.getSubPitches()){
-            PitchTypeDto pitchTypeDto = pitchTypeDao.getPitchTypeById(subPitchRequest.getPitchTypeId());
+            PitchType pitchType = pitchTypeDao.getPitchTypeById(subPitchRequest.getPitchTypeId());
 
-            if(pitchTypeDto == null){
-                logger.info("Không tìm thấy sân bóng với id : {}", subPitchRequest.getPitchTypeId());
+            if(pitchType == null){
+                log.info("Không tìm thấy sân bóng với id : {}", subPitchRequest.getPitchTypeId());
                 throw new NotFoundException("Không thấy loại sân bóng!!!");
             }
 
-            SubPitchDto subPitchDto = SubPitchDto.builder()
+            SubPitch subPitchDto = SubPitch.builder()
                     .name(subPitchRequest.getName())
                     .isActive(true)
-                    .pitchId(pitchDto.getId())
+                    .pitchId(pitch.getId())
                     .createAt(LocalDateTime.now())
                     .updateAt(LocalDateTime.now())
                     .pitchTypeId(subPitchRequest.getPitchTypeId())
@@ -93,22 +92,22 @@ public class PitchServiceImpl implements PitchService {
             subPitchDao.insertSubPitch(subPitchDto);
             List<PitchTimeResponse> pitchTimeResponses = new ArrayList<>();
             for(PitchTimeRequest pitchTimeRequest : subPitchRequest.getPitchTimes()){
-                TimeSlotDto timeSlotDto = timeSlotDao.getTimeSlotById(pitchTimeRequest.getTimeSlotId());
+                TimeSlot timeSlotDto = timeSlotDao.getTimeSlotById(pitchTimeRequest.getTimeSlotId());
                 if(timeSlotDto == null) {
-                    logger.info("Không tìm thấy khung giờ với id : {}", pitchTimeRequest.getTimeSlotId());
+                    log.info("Không tìm thấy khung giờ với id : {}", pitchTimeRequest.getTimeSlotId());
                     throw new NotFoundException("Không thấy khung giờ!!!");
                 }
-                PitchTimeDto pitchTimeDto = PitchTimeDto.builder()
+                PitchTime pitchTime = PitchTime.builder()
                         .price(pitchTimeRequest.getPrice())
                         .subPitchId(subPitchDto.getId())
                         .timeSlotId(timeSlotDto.getId())
                         .isActive(true)
                         .build();
-                pitchTimeDao.insertPitchTime(pitchTimeDto);
+                pitchTimeDao.insertPitchTime(pitchTime);
                 PitchTimeResponse pitchTimeResponse = PitchTimeResponse.builder()
                         .startTime(timeSlotDto.getStartTime())
                         .endTime(timeSlotDto.getEndTime())
-                        .price(pitchTimeDto.getPrice())
+                        .price(pitchTime.getPrice())
                         .build();
                 pitchTimeResponses.add(pitchTimeResponse);
             }
@@ -118,7 +117,7 @@ public class PitchServiceImpl implements PitchService {
                     .createAt(subPitchDto.getCreateAt())
                     .updateAt(subPitchDto.getUpdateAt())
                     .pitchTimes(pitchTimeResponses)
-                    .pitchType(pitchTypeDto.getName())
+                    .pitchType(pitchType.getName())
                     .build();
             subPitchResponses.add(subPitchResponse);
         }
@@ -126,8 +125,8 @@ public class PitchServiceImpl implements PitchService {
         List<String> imageResponse = new ArrayList<>();
         for(MultipartFile image : request.getImages()){
             String imageName = imageService.upload(image);
-            ImageDto imageDto = ImageDto.builder()
-                    .pitchId(pitchDto.getId())
+            Image imageDto = Image.builder()
+                    .pitchId(pitch.getId())
                     .name(imageName)
                     .build();
             imageDao.insertImage(imageDto);
@@ -137,14 +136,14 @@ public class PitchServiceImpl implements PitchService {
         UserResponse managerResponse = UserResponse.fromUserDto(managerDto);
 
         PitchResponse pitchResponse = PitchResponse.builder()
-                .id(pitchDto.getId())
-                .name(pitchDto.getName())
+                .id(pitch.getId())
+                .name(pitch.getName())
                 .manager(managerResponse)
-                .location(pitchDto.getLocation())
+                .location(pitch.getLocation())
                 .subPitches(subPitchResponses)
                 .images(imageResponse)
-                .createAt(pitchDto.getCreateAt())
-                .updateAt(pitchDto.getUpdateAt())
+                .createAt(pitch.getCreateAt())
+                .updateAt(pitch.getUpdateAt())
                 .build();
         return pitchResponse;
     }
@@ -157,13 +156,13 @@ public class PitchServiceImpl implements PitchService {
                                int pageNumber, int limit, String orderBy, String orderSort) {
         PageHelper.startPage(pageNumber, limit);
         PageHelper.orderBy(orderBy + " " + orderSort);
-        List<PitchDto> pitchDtoList = pitchDao.getAll(keyword, startPrice, endPrice,managerId,starRange, pitchTypes, requestQuery);
-        PageInfo<PitchDto> pageInfo = new PageInfo<>(pitchDtoList);
+        List<Pitch> pitchList = pitchDao.getAll(keyword, startPrice, endPrice,managerId,starRange, pitchTypes, requestQuery);
+        PageInfo<Pitch> pageInfo = new PageInfo<>(pitchList);
 
-        List<PitchResponse> pitchResponseList = pitchDtoList.stream()
+        List<PitchResponse> pitchResponseList = pitchList.stream()
                 .map(pitchDto -> {
                         List<String> imagesResponse = imageDao.getAllByPitchId(pitchDto.getId())
-                                .stream().map(ImageDto::getName)
+                                .stream().map(Image::getName)
                                 .toList();
                         return PitchResponse.builder()
                             .id(pitchDto.getId())
@@ -189,31 +188,31 @@ public class PitchServiceImpl implements PitchService {
 
     @Override
     public PitchResponse getPitchById(Long id, boolean requestQuery) throws Exception {
-        PitchDto pitchDto = pitchDao.getPitchById(id, requestQuery);
+        Pitch pitch = pitchDao.getPitchById(id, requestQuery);
 
-        if(pitchDto == null){
+        if(pitch == null){
             throw new NotFoundException("Không tìm thấy sân bóng!");
         }
 
-        UserDto managerDto = userDao.getUserById(pitchDto.getManagerId());
+        User managerDto = userDao.getUserById(pitch.getManagerId());
         UserResponse managerResponse = UserResponse.fromUserDto(managerDto);
-        List<SubPitchDto> subPitchDtos = subPitchDao.getAllByPitchId(pitchDto.getId(), requestQuery);
+        List<SubPitch> subPitchDtos = subPitchDao.getAllByPitchId(pitch.getId(), requestQuery);
         List<SubPitchResponse> subPitchResponses = subPitchDtos.stream()
                 .map(
                 subPitchDto -> {
                     List<PitchTimeResponse> pitchTimeResponses = pitchTimeDao.getPitchTimeBySubPitchId(subPitchDto.getId(), requestQuery)
                             .stream()
-                            .map(pitchTimeDto -> {
+                            .map(pitchTime -> {
                                 PitchTimeResponse pitchTimeResponse = PitchTimeResponse.builder()
-                                        .startTime(pitchTimeDto.getStartTime())
-                                        .endTime(pitchTimeDto.getEndTime())
-                                        .price(pitchTimeDto.getPrice())
-                                        .timeSlotId(pitchTimeDto.getTimeSlotId())
-                                        .isActive(pitchTimeDto.isActive())
+                                        .startTime(pitchTime.getStartTime())
+                                        .endTime(pitchTime.getEndTime())
+                                        .price(pitchTime.getPrice())
+                                        .timeSlotId(pitchTime.getTimeSlotId())
+                                        .isActive(pitchTime.isActive())
                                         .build();
                                 List<String> schedules = new ArrayList<>();
                                 for(long i = 0; i < 7; i++){
-                                    if(bookingDao.isExistingBooking(subPitchDto.getId(), pitchTimeDto.getTimeSlotId(),
+                                    if(bookingDao.isExistingBooking(subPitchDto.getId(), pitchTime.getTimeSlotId(),
                                             LocalDate.now().plusDays(i), BookingStatus.CANCELLED.toString())){
                                         schedules.add(PitchTimeStatus.ORDERED.toString());
                                     }
@@ -235,20 +234,20 @@ public class PitchServiceImpl implements PitchService {
                 }
         ).toList();
 
-        List<String> imageResponses = imageDao.getAllByPitchId(pitchDto.getId())
-                .stream().map(ImageDto::getName).toList();
+        List<String> imageResponses = imageDao.getAllByPitchId(pitch.getId())
+                .stream().map(Image::getName).toList();
 
         PitchResponse pitchResponse = PitchResponse.builder()
-                .id(pitchDto.getId())
-                .name(pitchDto.getName())
-                .location(pitchDto.getLocation())
+                .id(pitch.getId())
+                .name(pitch.getName())
+                .location(pitch.getLocation())
                 .subPitches(subPitchResponses)
                 .manager(managerResponse)
                 .images(imageResponses)
-                .createAt(pitchDto.getCreateAt())
-                .updateAt(pitchDto.getUpdateAt())
-                .isActive(pitchDto.isActive())
-                .avgStar(pitchDto.getAvgStar())
+                .createAt(pitch.getCreateAt())
+                .updateAt(pitch.getUpdateAt())
+                .isActive(pitch.isActive())
+                .avgStar(pitch.getAvgStar())
                 .build();
         return pitchResponse;
     }
@@ -256,39 +255,39 @@ public class PitchServiceImpl implements PitchService {
     @Override
     @Transactional(rollbackFor =  Exception.class)
     public PitchResponse updatePitch(UpdatePitchRequest updatePitchRequest) throws Exception {
-        PitchDto pitchDto = pitchDao.getPitchById(updatePitchRequest.getId(), false);
+        Pitch pitch = pitchDao.getPitchById(updatePitchRequest.getId(), false);
 
-        if(pitchDto == null) {
-            logger.warn("Không tìm thấy sân bóng với id : {}", updatePitchRequest.getId());
+        if(pitch == null) {
+            log.warn("Không tìm thấy sân bóng với id : {}", updatePitchRequest.getId());
             throw new NotFoundException("Không tìm thấy sân bóng!");
         }
 
-        if(!Objects.equals(updatePitchRequest.getManagerId(), pitchDto.getManagerId())){
-            logger.warn("Lỗi thông tin chủ sở hữu");
+        if(!Objects.equals(updatePitchRequest.getManagerId(), pitch.getManagerId())){
+            log.warn("Lỗi thông tin chủ sở hữu");
             throw new AccountException("Bạn không phải là chủ sân bóng này!");
         }
 
-        pitchDto.setName(updatePitchRequest.getName());
-        pitchDto.setLocation(updatePitchRequest.getLocation());
-        pitchDto.setActive(updatePitchRequest.isActive());
-        pitchDto.setUpdateAt(LocalDateTime.now());
+        pitch.setName(updatePitchRequest.getName());
+        pitch.setLocation(updatePitchRequest.getLocation());
+        pitch.setActive(updatePitchRequest.isActive());
+        pitch.setUpdateAt(LocalDateTime.now());
 
-        pitchDao.updatePitch(pitchDto);
-        logger.info("Cập nhật sân bóng thành công : {}", updatePitchRequest.getName());
+        pitchDao.updatePitch(pitch);
+        log.info("Cập nhật sân bóng thành công : {}", updatePitchRequest.getName());
         return getPitchById(updatePitchRequest.getId(), false);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addImages(CreateImageRequest imageRequest) throws Exception {
-        PitchDto pitchDto = pitchDao.getPitchById(imageRequest.getPitchId(), false);
+        Pitch pitch = pitchDao.getPitchById(imageRequest.getPitchId(), false);
 
-        if(pitchDto == null) {
-            logger.warn("Không tìm thấy sân bóng với id : {}", imageRequest.getPitchId());
+        if(pitch == null) {
+            log.warn("Không tìm thấy sân bóng với id : {}", imageRequest.getPitchId());
             throw new NotFoundException("Không tìm thấy sân bóng!");
         }
 
-        List<ImageDto> imageDtos = imageDao.getAllByPitchId(imageRequest.getPitchId());
+        List<Image> imageDtos = imageDao.getAllByPitchId(imageRequest.getPitchId());
 
         if(imageDtos.size() + imageRequest.getImages().size() > 5){
             throw new InvalidDataException("Tổng số ảnh cho sân bóng này vượt quá 5!");
@@ -296,8 +295,8 @@ public class PitchServiceImpl implements PitchService {
 
         for(MultipartFile image : imageRequest.getImages()){
             String imageName = imageService.upload(image);
-            ImageDto imageDto = ImageDto.builder()
-                    .pitchId(pitchDto.getId())
+            Image imageDto = Image.builder()
+                    .pitchId(pitch.getId())
                     .name(imageName)
                     .build();
             imageDao.insertImage(imageDto);

@@ -1,10 +1,10 @@
 package com.pitchmanagement.controllers;
 
-import com.pitchmanagement.models.requests.booking.CancelRequest;
-import com.pitchmanagement.models.requests.booking.CreateBookingRequest;
-import com.pitchmanagement.models.responses.BaseResponse;
-import com.pitchmanagement.models.responses.BookingResponse;
-import com.pitchmanagement.models.responses.PageResponse;
+import com.pitchmanagement.dtos.requests.booking.CancelRequest;
+import com.pitchmanagement.dtos.requests.booking.CreateBookingRequest;
+import com.pitchmanagement.dtos.responses.BaseResponse;
+import com.pitchmanagement.dtos.responses.BookingResponse;
+import com.pitchmanagement.dtos.responses.PageResponse;
 import com.pitchmanagement.services.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

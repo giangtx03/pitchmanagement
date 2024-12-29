@@ -1,8 +1,8 @@
 package com.pitchmanagement.controllers;
 
-import com.pitchmanagement.models.requests.payment.VNPayRequest;
-import com.pitchmanagement.models.responses.BaseResponse;
-import com.pitchmanagement.models.responses.PageResponse;
+import com.pitchmanagement.dtos.requests.payment.VNPayRequest;
+import com.pitchmanagement.dtos.responses.BaseResponse;
+import com.pitchmanagement.dtos.responses.PageResponse;
 import com.pitchmanagement.services.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

@@ -3,12 +3,12 @@
 
 <mapper namespace="com.pitchmanagement.daos.PaymentDao">
 
-    <insert id="insertPayment" parameterType="com.pitchmanagement.dtos.PaymentDto" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertPayment" parameterType="com.pitchmanagement.models.Payment" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO payments(amount, payment_method, note, booking_id,payment_type, create_at)
         VALUES (#{amount}, #{paymentMethod}, #{note}, #{bookingId},#{paymentType}, #{createAt});
     </insert>
 
-    <select id="getPaymentById" parameterType="Long" resultType="com.pitchmanagement.dtos.PaymentDto">
+    <select id="getPaymentById" parameterType="Long" resultType="com.pitchmanagement.models.Payment">
         SELECT
             id,
             amount,
@@ -21,7 +21,7 @@
         WHERE id = #{id}
     </select>
 
-    <select id="getPaymentByManagerId" parameterType="map" resultType="com.pitchmanagement.dtos.PaymentDto">
+    <select id="getPaymentByManagerId" parameterType="map" resultType="com.pitchmanagement.models.Payment">
         SELECT
             p.id,
             p.amount,

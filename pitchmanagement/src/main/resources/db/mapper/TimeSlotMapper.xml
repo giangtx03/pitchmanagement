@@ -3,13 +3,13 @@
 
 <mapper namespace="com.pitchmanagement.daos.TimeSlotDao">
 
-    <insert id="insertTimeSlot" parameterType="com.pitchmanagement.dtos.TimeSlotDto" keyProperty="id" useGeneratedKeys="true" >
+    <insert id="insertTimeSlot" parameterType="com.pitchmanagement.models.TimeSlot" keyProperty="id" useGeneratedKeys="true" >
         INSERT INTO
             time_slots(start_time, end_time)
         VALUES (#{startTime}, #{endTime})
     </insert>
 
-    <select id="getAll" resultType="com.pitchmanagement.dtos.TimeSlotDto" >
+    <select id="getAll" resultType="com.pitchmanagement.models.TimeSlot" >
         SELECT
             id,
             start_time AS startTime,
@@ -17,7 +17,7 @@
         FROM time_slots
     </select>
 
-    <select id="getTimeSlotById" parameterType="Long" resultType="com.pitchmanagement.dtos.TimeSlotDto" >
+    <select id="getTimeSlotById" parameterType="Long" resultType="com.pitchmanagement.models.TimeSlot" >
         SELECT
             id,
             start_time AS startTime,

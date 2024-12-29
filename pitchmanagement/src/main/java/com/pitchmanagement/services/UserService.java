@@ -1,9 +1,9 @@
 package com.pitchmanagement.services;
 
-import com.pitchmanagement.models.requests.user.*;
-import com.pitchmanagement.models.responses.LoginResponse;
-import com.pitchmanagement.models.responses.RegisterResponse;
-import com.pitchmanagement.models.responses.UserResponse;
+import com.pitchmanagement.dtos.requests.user.*;
+import com.pitchmanagement.dtos.responses.LoginResponse;
+import com.pitchmanagement.dtos.responses.RegisterResponse;
+import com.pitchmanagement.dtos.responses.UserResponse;
 
 public interface UserService {
     LoginResponse login(LoginRequest loginRequest) throws Exception;

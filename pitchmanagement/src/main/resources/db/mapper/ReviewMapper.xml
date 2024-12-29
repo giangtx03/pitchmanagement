@@ -3,12 +3,12 @@
 
 <mapper namespace="com.pitchmanagement.daos.ReviewDao">
 
-    <insert id="insertComment" parameterType="com.pitchmanagement.dtos.ReviewDto" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertComment" parameterType="com.pitchmanagement.models.Review" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO reviews(comment, star, pitch_id, user_id, create_at, update_at)
         VALUES (#{comment}, #{star}, #{pitchId}, #{userId}, #{createAt}, #{updateAt})
     </insert>
 
-    <select id="getAllByPitchId" parameterType="map" resultType="com.pitchmanagement.dtos.ReviewDto">
+    <select id="getAllByPitchId" parameterType="map" resultType="com.pitchmanagement.models.Review">
         SELECT
             id,
             comment,
@@ -22,7 +22,7 @@
         AND (#{star} IS NULL OR #{star} = 0 OR star = #{star})
     </select>
 
-    <select id="getReviewById" parameterType="map" resultType="com.pitchmanagement.dtos.ReviewDto">
+    <select id="getReviewById" parameterType="map" resultType="com.pitchmanagement.models.Review">
         SELECT
             id,
             comment,
@@ -36,7 +36,7 @@
     </select>
 
 
-    <update id="updateComment" parameterType="com.pitchmanagement.dtos.ReviewDto" >
+    <update id="updateComment" parameterType="com.pitchmanagement.models.Review" >
         UPDATE reviews SET
             comment = #{comment},
             star = #{star},

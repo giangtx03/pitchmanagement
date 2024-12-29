@@ -3,13 +3,13 @@
 
 <mapper namespace="com.pitchmanagement.daos.PitchTimeDao">
 
-    <insert id="insertPitchTime" parameterType="com.pitchmanagement.dtos.PitchTimeDto">
+    <insert id="insertPitchTime" parameterType="com.pitchmanagement.models.PitchTime">
         INSERT INTO
             pitch_times(sub_pitch_id, time_slot_id, price, is_active)
         VALUES (#{subPitchId}, #{timeSlotId}, #{price}, #{isActive})
     </insert>
 
-    <select id="getPitchTimeBySubPitchId" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchTimeDto">
+    <select id="getPitchTimeBySubPitchId" parameterType="Long" resultType="com.pitchmanagement.models.PitchTime">
         SELECT
             pt.price,
             pt.is_active AS isActive,
@@ -30,7 +30,7 @@
         WHERE sub_pitch_id = #{subPitchId} AND time_slot_id = #{timeSlotId}
     </select>
 
-    <select id="getBySubPitchIdAndTimeSlotId" parameterType="map" resultType="com.pitchmanagement.dtos.PitchTimeDto">
+    <select id="getBySubPitchIdAndTimeSlotId" parameterType="map" resultType="com.pitchmanagement.models.PitchTime">
         SELECT
             pt.price,
             pt.is_active AS isActive,
@@ -41,7 +41,7 @@
         WHERE pt.sub_pitch_id = #{subPitchId} AND pt.time_slot_id = #{timeSlotId}
     </select>
 
-    <update id="updatePitchTime" parameterType="com.pitchmanagement.dtos.PitchTimeDto">
+    <update id="updatePitchTime" parameterType="com.pitchmanagement.models.PitchTime">
         UPDATE pitch_times SET
             price = #{price},
             is_active = #{isActive}

@@ -3,13 +3,13 @@
 
 <mapper namespace="com.pitchmanagement.daos.TokenDao">
 
-    <insert id="insertToken" parameterType="com.pitchmanagement.dtos.TokenDto" >
+    <insert id="insertToken" parameterType="com.pitchmanagement.models.Token" >
         INSERT INTO
         tokens(token, user_id, expired_time)
         VALUES (#{token},#{userId}, #{expiredTime})
     </insert>
 
-    <select id="getToken" parameterType="String" resultType="com.pitchmanagement.dtos.TokenDto" >
+    <select id="getToken" parameterType="String" resultType="com.pitchmanagement.models.Token" >
         SELECT
             token,
             user_id AS userId,

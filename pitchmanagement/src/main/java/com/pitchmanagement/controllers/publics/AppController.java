@@ -1,9 +1,8 @@
 package com.pitchmanagement.controllers.publics;
 
 import com.pitchmanagement.constants.SortConstant;
-import com.pitchmanagement.models.responses.BaseResponse;
-import com.pitchmanagement.models.responses.PageResponse;
-import com.pitchmanagement.models.responses.pitch.PitchTimeResponse;
+import com.pitchmanagement.dtos.responses.BaseResponse;
+import com.pitchmanagement.dtos.responses.PageResponse;
 import com.pitchmanagement.services.*;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

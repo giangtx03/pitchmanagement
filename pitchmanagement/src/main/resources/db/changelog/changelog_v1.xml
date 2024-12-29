@@ -234,4 +234,38 @@
             <column name="payment_type" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="5" author="Truong Xuan Giang">
+        <createTable tableName="notifications">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sender_id" type="bigint" />
+            <column name="title" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="TEXT" />
+            <column name="type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="target_url" type="varchar(255)" />
+            <column name="is_read" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="read_at" type="timestamp" />
+            <column name="create_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="notifications" baseColumnNames="user_id"
+                                 constraintName="fk_notification_user" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="notifications" baseColumnNames="sender_id"
+                                 constraintName="fk_notification_sender" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>

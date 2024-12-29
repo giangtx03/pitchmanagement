@@ -3,15 +3,15 @@ package com.pitchmanagement.services.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pitchmanagement.configs.VNPayConfig;
-import com.pitchmanagement.constants.BookingStatus;
+import com.pitchmanagement.enums.BookingStatus;
 import com.pitchmanagement.daos.BookingDao;
 import com.pitchmanagement.daos.PaymentDao;
 import com.pitchmanagement.daos.UserDao;
-import com.pitchmanagement.dtos.BookingDto;
-import com.pitchmanagement.dtos.PaymentDto;
-import com.pitchmanagement.models.requests.payment.VNPayRequest;
-import com.pitchmanagement.models.responses.PageResponse;
-import com.pitchmanagement.models.responses.PaymentResponse;
+import com.pitchmanagement.models.Booking;
+import com.pitchmanagement.models.Payment;
+import com.pitchmanagement.dtos.requests.payment.VNPayRequest;
+import com.pitchmanagement.dtos.responses.PageResponse;
+import com.pitchmanagement.dtos.responses.PaymentResponse;
 import com.pitchmanagement.services.BookingService;
 import com.pitchmanagement.services.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
         String orderType = "order-type";
 
-        BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(request.getBookingId()))
+        Booking bookingDto = Optional.ofNullable(bookingDao.getBookingById(request.getBookingId()))
                 .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ"));
 
         String orderInfor = request.getPaymentType() + " id san: " + bookingDto.getSubPitchId() + " id khung gio: " + bookingDto.getSubPitchId();
@@ -127,7 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void vnpayReturn(Long bookingId, int amount, String note,String paymentType, String bankCode, String orderInfo, String responseCode, String transactionStatus) throws Exception {
-        BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(bookingId))
+        Booking bookingDto = Optional.ofNullable(bookingDao.getBookingById(bookingId))
                 .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ"));
 
         if(!"00".equals(responseCode)){
@@ -144,7 +144,7 @@ public class PaymentServiceImpl implements PaymentService {
             case "09" -> throw new RuntimeException("GD Hoàn trả bị từ chối!");
         }
 
-        PaymentDto paymentDto = PaymentDto.builder()
+        Payment payment = Payment.builder()
                 .paymentMethod("VNPAY")
                 .paymentType(paymentType)
                 .note(note)
@@ -153,7 +153,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .createAt(LocalDateTime.now())
                 .build();
 
-        paymentDao.insertPayment(paymentDto);
+        paymentDao.insertPayment(payment);
         bookingDto.setStatus(BookingStatus.DEPOSIT_PAID.toString());
         bookingDao.updateBooking(bookingDto);
     }
@@ -162,21 +162,21 @@ public class PaymentServiceImpl implements PaymentService {
     public PageResponse getAllPaymentByManagerId(Long managerId, String keyword, String paymentType, int pageNumber, int limit) {
         PageHelper.startPage(pageNumber,limit);
         PageHelper.orderBy("p.create_at DESC");
-        List<PaymentDto> paymentDtoList = paymentDao.getPaymentByManagerId(managerId, keyword, paymentType);
-        PageInfo<PaymentDto> pageInfo = new PageInfo<>(paymentDtoList);
+        List<Payment> paymentList = paymentDao.getPaymentByManagerId(managerId, keyword, paymentType);
+        PageInfo<Payment> pageInfo = new PageInfo<>(paymentList);
 
-        List<PaymentResponse> paymentResponseList = paymentDtoList.stream()
-                .map(paymentDto -> {
+        List<PaymentResponse> paymentResponseList = paymentList.stream()
+                .map(payment -> {
                     PaymentResponse paymentResponse = null;
                     try {
                         paymentResponse = PaymentResponse.builder()
-                                .id(paymentDto.getId())
-                                .paymentType(paymentDto.getPaymentType())
-                                .paymentMethod(paymentDto.getPaymentMethod())
-                                .note(paymentDto.getNote())
-                                .createAt(paymentDto.getCreateAt())
-                                .amount(paymentDto.getAmount())
-                                .bookingResponse(bookingService.getBookingById(paymentDto.getId()))
+                                .id(payment.getId())
+                                .paymentType(payment.getPaymentType())
+                                .paymentMethod(payment.getPaymentMethod())
+                                .note(payment.getNote())
+                                .createAt(payment.getCreateAt())
+                                .amount(payment.getAmount())
+                                .bookingResponse(bookingService.getBookingById(payment.getId()))
                                 .build();
                     } catch (Exception e) {
                         throw new RuntimeException(e);

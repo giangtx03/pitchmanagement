@@ -3,13 +3,13 @@
 
 <mapper namespace="com.pitchmanagement.daos.ImageDao">
 
-    <insert id="insertImage" parameterType="com.pitchmanagement.dtos.ImageDto" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertImage" parameterType="com.pitchmanagement.models.Image" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO
             images(name, pitch_id)
         VALUES (#{name}, #{pitchId});
     </insert>
 
-    <select id="getAllByPitchId" parameterType="Long" resultType="com.pitchmanagement.dtos.ImageDto" >
+    <select id="getAllByPitchId" parameterType="Long" resultType="com.pitchmanagement.models.Image" >
         SELECT
             id,
             name

@@ -1,9 +1,8 @@
 package com.pitchmanagement.exceptions;
 
-import static org.springframework.http.HttpStatus.*;
 import java.util.List;
 
-import com.pitchmanagement.models.responses.BaseResponse;
+import com.pitchmanagement.dtos.responses.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

@@ -3,13 +3,13 @@
 
 <mapper namespace="com.pitchmanagement.daos.SubPitchDao">
 
-    <insert id="insertSubPitch" parameterType="com.pitchmanagement.dtos.SubPitchDto" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertSubPitch" parameterType="com.pitchmanagement.models.SubPitch" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO
             sub_pitches(name, is_active, pitch_id, create_at, update_at, pitch_type_id)
         VALUES (#{name},#{isActive}, #{pitchId},#{createAt}, #{updateAt}, #{pitchTypeId})
     </insert>
 
-    <select id="getAllByPitchId" parameterType="Long" resultType="com.pitchmanagement.dtos.SubPitchDto" >
+    <select id="getAllByPitchId" parameterType="Long" resultType="com.pitchmanagement.models.SubPitch" >
         SELECT
             sp.id,
             sp.name,
@@ -35,7 +35,7 @@
         WHERE name = #{name} AND pitch_id = #{pitchId}
     </select>
 
-    <select id="getSubPitchById" parameterType="Long" resultType="com.pitchmanagement.dtos.SubPitchDto" >
+    <select id="getSubPitchById" parameterType="Long" resultType="com.pitchmanagement.models.SubPitch" >
         SELECT
             sp.id,
             sp.name,
@@ -50,7 +50,7 @@
         WHERE sp.id = #{id}
     </select>
 
-    <update id="updateSubPitch" parameterType="com.pitchmanagement.dtos.SubPitchDto" >
+    <update id="updateSubPitch" parameterType="com.pitchmanagement.models.SubPitch" >
         UPDATE sub_pitches SET
             name = #{name},
             update_at = #{updateAt},

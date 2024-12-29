@@ -1,10 +1,10 @@
 package com.pitchmanagement.services;
 
-import com.pitchmanagement.models.requests.image.CreateImageRequest;
-import com.pitchmanagement.models.requests.pitch.CreatePitchRequest;
-import com.pitchmanagement.models.requests.pitch.UpdatePitchRequest;
-import com.pitchmanagement.models.responses.PageResponse;
-import com.pitchmanagement.models.responses.pitch.PitchResponse;
+import com.pitchmanagement.dtos.requests.image.CreateImageRequest;
+import com.pitchmanagement.dtos.requests.pitch.CreatePitchRequest;
+import com.pitchmanagement.dtos.requests.pitch.UpdatePitchRequest;
+import com.pitchmanagement.dtos.responses.PageResponse;
+import com.pitchmanagement.dtos.responses.pitch.PitchResponse;
 
 public interface PitchService {
     PitchResponse createPitch(CreatePitchRequest request) throws Exception;

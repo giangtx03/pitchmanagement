@@ -3,7 +3,7 @@
 
 <mapper namespace="com.pitchmanagement.daos.PitchDao">
 
-    <insert id="insertPitch" parameterType="com.pitchmanagement.dtos.PitchDto" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertPitch" parameterType="com.pitchmanagement.models.Pitch" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO
             pitches(name, location, is_active, create_at, update_at, manager_id)
         VALUES( #{name},#{location},#{isActive},#{createAt}, #{updateAt}, #{managerId})
@@ -46,7 +46,7 @@
         HAVING (#{starRange} IS NULL OR #{starRange} = 0 OR AVG(IFNULL(r.star, 0)) >= #{starRange})
     </select>
 
-    <select id="getPitchById" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchDto">
+    <select id="getPitchById" parameterType="Long" resultType="com.pitchmanagement.models.Pitch">
         SELECT
             p.id,
             p.name,
@@ -69,7 +69,7 @@
         GROUP BY p.id, p.name, p.location, p.is_active, p.manager_id, p.create_at, p.update_at
     </select>
 
-    <update id="updatePitch" parameterType="com.pitchmanagement.dtos.PitchDto" >
+    <update id="updatePitch" parameterType="com.pitchmanagement.models.Pitch" >
         UPDATE pitches SET
             name = #{name},
             location = #{location},
@@ -78,7 +78,7 @@
         WHERE id = #{id}
     </update>
 
-    <resultMap id="PitchResultMap" type="com.pitchmanagement.dtos.PitchDto">
+    <resultMap id="PitchResultMap" type="com.pitchmanagement.models.Pitch">
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="location" property="location" />
@@ -88,7 +88,7 @@
         <result column="managerId" property="managerId" />
         <result column="avgStar" property="avgStar" />
 
-        <association property="managerDto" javaType="com.pitchmanagement.dtos.UserDto">
+        <association property="managerDto" javaType="com.pitchmanagement.models.User">
             <id column="managerId" property="id" />
             <result column="managerFullname" property="fullname" />
             <result column="managerAvatar" property="avatar" />

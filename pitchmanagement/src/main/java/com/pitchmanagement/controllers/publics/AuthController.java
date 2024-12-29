@@ -1,21 +1,17 @@
 package com.pitchmanagement.controllers.publics;
 
-import com.pitchmanagement.models.requests.user.LoginRequest;
-import com.pitchmanagement.models.requests.user.RegisterRequest;
-import com.pitchmanagement.models.requests.user.RenewPassword;
-import com.pitchmanagement.models.responses.BaseResponse;
-import com.pitchmanagement.models.responses.LoginResponse;
-import com.pitchmanagement.models.responses.RegisterResponse;
+import com.pitchmanagement.dtos.requests.user.LoginRequest;
+import com.pitchmanagement.dtos.requests.user.RegisterRequest;
+import com.pitchmanagement.dtos.requests.user.RenewPassword;
+import com.pitchmanagement.dtos.responses.BaseResponse;
+import com.pitchmanagement.dtos.responses.LoginResponse;
+import com.pitchmanagement.dtos.responses.RegisterResponse;
 import com.pitchmanagement.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

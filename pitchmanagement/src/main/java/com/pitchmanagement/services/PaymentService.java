@@ -1,7 +1,7 @@
 package com.pitchmanagement.services;
 
-import com.pitchmanagement.models.requests.payment.VNPayRequest;
-import com.pitchmanagement.models.responses.PageResponse;
+import com.pitchmanagement.dtos.requests.payment.VNPayRequest;
+import com.pitchmanagement.dtos.responses.PageResponse;
 
 public interface PaymentService {
 

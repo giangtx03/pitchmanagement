@@ -3,18 +3,17 @@ package com.pitchmanagement.services.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pitchmanagement.constants.AppConstant;
-import com.pitchmanagement.constants.BookingStatus;
+import com.pitchmanagement.enums.BookingStatus;
 import com.pitchmanagement.daos.*;
-import com.pitchmanagement.dtos.*;
-import com.pitchmanagement.models.requests.booking.CancelRequest;
-import com.pitchmanagement.models.requests.booking.CreateBookingRequest;
-import com.pitchmanagement.models.requests.booking.UpdateBookingRequest;
-import com.pitchmanagement.models.responses.BookingResponse;
-import com.pitchmanagement.models.responses.PageResponse;
-import com.pitchmanagement.models.responses.UserResponse;
-import com.pitchmanagement.models.responses.pitch.PitchResponse;
-import com.pitchmanagement.models.responses.pitch.PitchTimeResponse;
-import com.pitchmanagement.models.responses.pitch.SubPitchResponse;
+import com.pitchmanagement.models.*;
+import com.pitchmanagement.dtos.requests.booking.CancelRequest;
+import com.pitchmanagement.dtos.requests.booking.CreateBookingRequest;
+import com.pitchmanagement.dtos.responses.BookingResponse;
+import com.pitchmanagement.dtos.responses.PageResponse;
+import com.pitchmanagement.dtos.responses.UserResponse;
+import com.pitchmanagement.dtos.responses.pitch.PitchResponse;
+import com.pitchmanagement.dtos.responses.pitch.PitchTimeResponse;
+import com.pitchmanagement.dtos.responses.pitch.SubPitchResponse;
 import com.pitchmanagement.services.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
@@ -50,47 +49,47 @@ public class BookingServiceImpl implements BookingService {
             throw new RuntimeException("Sân trong khung giờ này đã hết!");
         }
 
-        UserDto userDto = Optional.ofNullable(userDao.getUserById(request.getUserId()))
+        User userDto = Optional.ofNullable(userDao.getUserById(request.getUserId()))
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Người đặt sân không hợp lệ!"));
-        PitchTimeDto pitchTimeDto = Optional.ofNullable(pitchTimeDao.getBySubPitchIdAndTimeSlotId(request.getSubPitchId(),request.getTimeSlotId()))
+        PitchTime pitchTime = Optional.ofNullable(pitchTimeDao.getBySubPitchIdAndTimeSlotId(request.getSubPitchId(),request.getTimeSlotId()))
                 .orElseThrow(() -> new NotFoundException("Sân và khung giờ không hợp lệ!"));
-        SubPitchDto subPitchDto = Optional.ofNullable(subPitchDao.getSubPitchById(request.getSubPitchId()))
+        SubPitch subPitchDto = Optional.ofNullable(subPitchDao.getSubPitchById(request.getSubPitchId()))
                 .orElseThrow(() -> new NotFoundException("Sân con không hợp lệ!"));
-        PitchDto pitchDto = Optional.ofNullable(pitchDao.getPitchById(subPitchDto.getPitchId(), true))
+        Pitch pitch = Optional.ofNullable(pitchDao.getPitchById(subPitchDto.getPitchId(), true))
                 .orElseThrow(() -> new NotFoundException("Sân không hợp lệ!"));
-        List<ImageDto> imageDtoList = imageDao.getAllByPitchId(pitchDto.getId());
-        UserDto managerDto = Optional.ofNullable(userDao.getUserById(pitchDto.getManagerId()))
+        List<Image> imageDtoList = imageDao.getAllByPitchId(pitch.getId());
+        User managerDto = Optional.ofNullable(userDao.getUserById(pitch.getManagerId()))
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Người quản lý không hợp lệ!"));
-        if(!pitchTimeDto.isActive() || !pitchDto.isActive() || !subPitchDto.isActive()){
+        if(!pitchTime.isActive() || !pitch.isActive() || !subPitchDto.isActive()){
             throw new RuntimeException("Sân và khung giờ không hoạt động!");
         }
 
         if(request.getBookingDate().isEqual(LocalDate.now())){
-            if(pitchTimeDto.getStartTime().isBefore(LocalTime.now())){
+            if(pitchTime.getStartTime().isBefore(LocalTime.now())){
                 throw new RuntimeException("Sân và khung giờ không hoạt động!");
             }
         }
 
-        BookingDto bookingDto = BookingDto.builder()
+        Booking bookingDto = Booking.builder()
                 .status(BookingStatus.PENDING.toString())
                 .subPitchId(request.getSubPitchId())
                 .timeSlotId(request.getTimeSlotId())
                 .userId(request.getUserId())
                 .bookingDate(request.getBookingDate())
                 .note(request.getNote())
-                .deposit((float) (pitchTimeDto.getPrice() * 0.5))
+                .deposit((float) (pitchTime.getPrice() * 0.5))
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
                 .build();
         bookingDao.insertBooking(bookingDto);
 
         PitchResponse pitchResponse = PitchResponse.builder()
-                .id(pitchDto.getId())
-                .name(pitchDto.getName())
-                .location(pitchDto.getLocation())
-                .images(imageDtoList.stream().map(ImageDto::getName).toList())
+                .id(pitch.getId())
+                .name(pitch.getName())
+                .location(pitch.getLocation())
+                .images(imageDtoList.stream().map(Image::getName).toList())
                 .manager(UserResponse.fromUserDto(managerDto))
-                .isActive(pitchDto.isActive())
+                .isActive(pitch.isActive())
                 .build();
 
         SubPitchResponse subPitchResponse = SubPitchResponse.builder()
@@ -100,10 +99,10 @@ public class BookingServiceImpl implements BookingService {
                 .build();
 
         PitchTimeResponse pitchTimeResponse = PitchTimeResponse.builder()
-                .startTime(pitchTimeDto.getStartTime())
-                .endTime(pitchTimeDto.getEndTime())
-                .price(pitchTimeDto.getPrice())
-                .isActive(pitchTimeDto.isActive())
+                .startTime(pitchTime.getStartTime())
+                .endTime(pitchTime.getEndTime())
+                .price(pitchTime.getPrice())
+                .isActive(pitchTime.isActive())
                 .build();
 
         BookingResponse bookingResponse = BookingResponse.toBookingResponse(
@@ -116,25 +115,25 @@ public class BookingServiceImpl implements BookingService {
     public PageResponse getAllByUserId(Long userId,String keyword, int pageNumber, int limit, String status) {
         PageHelper.startPage(pageNumber, limit);
         PageHelper.orderBy("b.update_at DESC");
-        List<BookingDto> bookingDtoList = bookingDao.getAllByUserId(userId,keyword, status);
-        PageInfo<BookingDto> pageInfo = new PageInfo<>(bookingDtoList);
+        List<Booking> bookingDtoList = bookingDao.getAllByUserId(userId,keyword, status);
+        PageInfo<Booking> pageInfo = new PageInfo<>(bookingDtoList);
 
         List<BookingResponse> bookingResponseList = bookingDtoList.stream().map(
                 bookingDto -> {
-                    PitchTimeDto pitchTimeDto = pitchTimeDao.getBySubPitchIdAndTimeSlotId(bookingDto.getSubPitchId(),bookingDto.getTimeSlotId());
-                    SubPitchDto subPitchDto = subPitchDao.getSubPitchById(bookingDto.getSubPitchId());
-                    PitchDto pitchDto = pitchDao.getPitchById(subPitchDto.getPitchId(), false);
-                    List<ImageDto> imageDtoList = imageDao.getAllByPitchId(pitchDto.getId());
-                    UserDto managerDto = userDao.getUserById(pitchDto.getManagerId());
+                    PitchTime pitchTime = pitchTimeDao.getBySubPitchIdAndTimeSlotId(bookingDto.getSubPitchId(),bookingDto.getTimeSlotId());
+                    SubPitch subPitchDto = subPitchDao.getSubPitchById(bookingDto.getSubPitchId());
+                    Pitch pitch = pitchDao.getPitchById(subPitchDto.getPitchId(), false);
+                    List<Image> imageDtoList = imageDao.getAllByPitchId(pitch.getId());
+                    User managerDto = userDao.getUserById(pitch.getManagerId());
 
                     PitchResponse pitchResponse = PitchResponse.builder()
-                            .id(pitchDto.getId())
-                            .name(pitchDto.getName())
-                            .location(pitchDto.getLocation())
-                            .images(imageDtoList.stream().map(ImageDto::getName).toList())
+                            .id(pitch.getId())
+                            .name(pitch.getName())
+                            .location(pitch.getLocation())
+                            .images(imageDtoList.stream().map(Image::getName).toList())
                             .manager(UserResponse.fromUserDto(managerDto))
-                            .isActive(pitchDto.isActive())
-                            .avgStar(pitchDto.getAvgStar())
+                            .isActive(pitch.isActive())
+                            .avgStar(pitch.getAvgStar())
                             .build();
 
                     SubPitchResponse subPitchResponse = SubPitchResponse.builder()
@@ -144,10 +143,10 @@ public class BookingServiceImpl implements BookingService {
                             .build();
 
                     PitchTimeResponse pitchTimeResponse = PitchTimeResponse.builder()
-                            .startTime(pitchTimeDto.getStartTime())
-                            .endTime(pitchTimeDto.getEndTime())
-                            .price(pitchTimeDto.getPrice())
-                            .isActive(pitchTimeDto.isActive())
+                            .startTime(pitchTime.getStartTime())
+                            .endTime(pitchTime.getEndTime())
+                            .price(pitchTime.getPrice())
+                            .isActive(pitchTime.isActive())
                             .build();
 
                     BookingResponse bookingResponse = BookingResponse.toBookingResponse(
@@ -174,23 +173,23 @@ public class BookingServiceImpl implements BookingService {
         else{
             PageHelper.orderBy("b.update_at DESC");
         }
-        List<BookingDto> bookingDtoList = bookingDao.getAllByManagerId(managerId,keyword, status);
-        PageInfo<BookingDto> pageInfo = new PageInfo<>(bookingDtoList);
+        List<Booking> bookingDtoList = bookingDao.getAllByManagerId(managerId,keyword, status);
+        PageInfo<Booking> pageInfo = new PageInfo<>(bookingDtoList);
 
         List<BookingResponse> bookingResponseList = bookingDtoList.stream().map(
                 bookingDto -> {
-                    PitchTimeDto pitchTimeDto = pitchTimeDao.getBySubPitchIdAndTimeSlotId(bookingDto.getSubPitchId(),bookingDto.getTimeSlotId());
-                    SubPitchDto subPitchDto = subPitchDao.getSubPitchById(bookingDto.getSubPitchId());
-                    PitchDto pitchDto = pitchDao.getPitchById(subPitchDto.getPitchId(), false);
-                    List<ImageDto> imageDtoList = imageDao.getAllByPitchId(pitchDto.getId());
-                    UserDto userDto = userDao.getUserById(bookingDto.getUserId());
+                    PitchTime pitchTime = pitchTimeDao.getBySubPitchIdAndTimeSlotId(bookingDto.getSubPitchId(),bookingDto.getTimeSlotId());
+                    SubPitch subPitchDto = subPitchDao.getSubPitchById(bookingDto.getSubPitchId());
+                    Pitch pitch = pitchDao.getPitchById(subPitchDto.getPitchId(), false);
+                    List<Image> imageDtoList = imageDao.getAllByPitchId(pitch.getId());
+                    User userDto = userDao.getUserById(bookingDto.getUserId());
 
                     PitchResponse pitchResponse = PitchResponse.builder()
-                            .id(pitchDto.getId())
-                            .name(pitchDto.getName())
-                            .location(pitchDto.getLocation())
-                            .images(imageDtoList.stream().map(ImageDto::getName).toList())
-                            .isActive(pitchDto.isActive())
+                            .id(pitch.getId())
+                            .name(pitch.getName())
+                            .location(pitch.getLocation())
+                            .images(imageDtoList.stream().map(Image::getName).toList())
+                            .isActive(pitch.isActive())
                             .build();
 
                     SubPitchResponse subPitchResponse = SubPitchResponse.builder()
@@ -200,10 +199,10 @@ public class BookingServiceImpl implements BookingService {
                             .build();
 
                     PitchTimeResponse pitchTimeResponse = PitchTimeResponse.builder()
-                            .startTime(pitchTimeDto.getStartTime())
-                            .endTime(pitchTimeDto.getEndTime())
-                            .price(pitchTimeDto.getPrice())
-                            .isActive(pitchTimeDto.isActive())
+                            .startTime(pitchTime.getStartTime())
+                            .endTime(pitchTime.getEndTime())
+                            .price(pitchTime.getPrice())
+                            .isActive(pitchTime.isActive())
                             .build();
 
                     BookingResponse bookingResponse = BookingResponse.toBookingResponse(
@@ -223,21 +222,21 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse getBookingById(Long id) throws Exception {
-        BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(id))
+        Booking bookingDto = Optional.ofNullable(bookingDao.getBookingById(id))
                 .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ!"));
 
-        PitchTimeDto pitchTimeDto = pitchTimeDao.getBySubPitchIdAndTimeSlotId(bookingDto.getSubPitchId(),bookingDto.getTimeSlotId());
-        SubPitchDto subPitchDto = subPitchDao.getSubPitchById(bookingDto.getSubPitchId());
-        PitchDto pitchDto = pitchDao.getPitchById(subPitchDto.getPitchId(), true);
-        List<ImageDto> imageDtoList = imageDao.getAllByPitchId(pitchDto.getId());
-        UserDto userDto = userDao.getUserById(bookingDto.getUserId());
-        UserDto managerDto = userDao.getUserById(pitchDto.getManagerId());
+        PitchTime pitchTime = pitchTimeDao.getBySubPitchIdAndTimeSlotId(bookingDto.getSubPitchId(),bookingDto.getTimeSlotId());
+        SubPitch subPitchDto = subPitchDao.getSubPitchById(bookingDto.getSubPitchId());
+        Pitch pitch = pitchDao.getPitchById(subPitchDto.getPitchId(), true);
+        List<Image> imageDtoList = imageDao.getAllByPitchId(pitch.getId());
+        User userDto = userDao.getUserById(bookingDto.getUserId());
+        User managerDto = userDao.getUserById(pitch.getManagerId());
 
         PitchResponse pitchResponse = PitchResponse.builder()
-                .id(pitchDto.getId())
-                .name(pitchDto.getName())
-                .location(pitchDto.getLocation())
-                .images(imageDtoList.stream().map(ImageDto::getName).toList())
+                .id(pitch.getId())
+                .name(pitch.getName())
+                .location(pitch.getLocation())
+                .images(imageDtoList.stream().map(Image::getName).toList())
                 .manager(UserResponse.fromUserDto(managerDto))
                 .build();
 
@@ -247,9 +246,9 @@ public class BookingServiceImpl implements BookingService {
                 .build();
 
         PitchTimeResponse pitchTimeResponse = PitchTimeResponse.builder()
-                .startTime(pitchTimeDto.getStartTime())
-                .endTime(pitchTimeDto.getEndTime())
-                .price(pitchTimeDto.getPrice())
+                .startTime(pitchTime.getStartTime())
+                .endTime(pitchTime.getEndTime())
+                .price(pitchTime.getPrice())
                 .build();
 
         BookingResponse bookingResponse = BookingResponse.toBookingResponse(
@@ -261,7 +260,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void requestCancelBooking(Long bookingId, CancelRequest cancelRequest) throws Exception {
-        BookingDto bookingDto = Optional.ofNullable(bookingDao.getBookingById(bookingId))
+        Booking bookingDto = Optional.ofNullable(bookingDao.getBookingById(bookingId))
                 .orElseThrow(() -> new NotFoundException("Đơn đặt không hợp lệ!"));
 
         if(cancelRequest.getCaseCancel().equals(AppConstant.CANCEL_NONE) ||
@@ -285,10 +284,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Scheduled(fixedDelay = 60000)
     public void checkPendingPayments(){
-        List<BookingDto> pendingBookings = bookingDao.getAll(BookingStatus.PENDING.toString());
-        List<BookingDto> depositBookings = bookingDao.getAll(BookingStatus.DEPOSIT_PAID.toString());
+        List<Booking> pendingBookings = bookingDao.getAll(BookingStatus.PENDING.toString());
+        List<Booking> depositBookings = bookingDao.getAll(BookingStatus.DEPOSIT_PAID.toString());
 
-        for(BookingDto booking : pendingBookings){
+        for(Booking booking : pendingBookings){
             if (booking.getCreateAt().plusMinutes(30).isBefore(LocalDateTime.now())) {
                 // Hủy đơn đặt hàng
                 booking.setStatus(BookingStatus.CANCELLED.toString());
@@ -297,13 +296,13 @@ public class BookingServiceImpl implements BookingService {
             }
         }
 
-        for(BookingDto booking : depositBookings){
+        for(Booking booking : depositBookings){
             if(booking.getBookingDate().isBefore(LocalDate.now())){
                 booking.setStatus(BookingStatus.NO_SHOW.toString());
                 bookingDao.updateBooking(booking);
             }
             else if(booking.getBookingDate().isEqual(LocalDate.now())){
-                TimeSlotDto timeSlotDto = timeSlotDao.getTimeSlotById(booking.getTimeSlotId());
+                TimeSlot timeSlotDto = timeSlotDao.getTimeSlotById(booking.getTimeSlotId());
                 if(timeSlotDto.getEndTime().plusMinutes(30).isBefore(LocalTime.now())){
                     booking.setStatus(BookingStatus.NO_SHOW.toString());
                     bookingDao.updateBooking(booking);

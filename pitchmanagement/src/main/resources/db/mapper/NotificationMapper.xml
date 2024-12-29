@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pitchmanagement.daos.NotificationDAO">
+
+    <insert id="insert" parameterType="com.pitchmanagement.models.Notification" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO notifications(user_id, sender_id, title, message, type, target_url)
+        VALUES (#{userId}, #{senderId}, #{title}, #{message}, #{type}, #{targetUrl});
+    </insert>
+
+    <select id="getAllByUserId" parameterType="Long" resultType="com.pitchmanagement.models.Notification" >
+        SELECT
+            id,
+            user_id AS userId,
+            sender_id AS senderId,
+            title,
+            message,
+            type,
+            target_url AS targetUrl,
+            create_at AS createAt,
+            read_at AS readAt,
+            is_read AS isRead
+        FROM notifications
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="countUnreadByUserId" parameterType="Long" resultType="int">
+        SELECT COUNT(*)
+        FROM notifications
+        WHERE user_id = #{userId} AND is_read = false;
+    </select>
+
+    <update id="readAllByUserId" parameterType="Long">
+        UPDATE notifications
+        SET
+            read_at = CURRENT_TIMESTAMP,
+            is_read = true
+        WHERE user_id = #{userId} AND is_read = false;
+    </update>
+
+    <delete id="deleteAllByUserId" parameterType="Long">
+        DELETE FROM notifications
+        WHERE user_id = #{userId};
+    </delete>
+</mapper>

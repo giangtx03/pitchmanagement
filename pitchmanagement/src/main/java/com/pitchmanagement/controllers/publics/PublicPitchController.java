@@ -1,9 +1,9 @@
 package com.pitchmanagement.controllers.publics;
 
 import com.pitchmanagement.constants.SortConstant;
-import com.pitchmanagement.models.responses.BaseResponse;
-import com.pitchmanagement.models.responses.PageResponse;
-import com.pitchmanagement.models.responses.pitch.PitchResponse;
+import com.pitchmanagement.dtos.responses.BaseResponse;
+import com.pitchmanagement.dtos.responses.PageResponse;
+import com.pitchmanagement.dtos.responses.pitch.PitchResponse;
 import com.pitchmanagement.services.PitchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

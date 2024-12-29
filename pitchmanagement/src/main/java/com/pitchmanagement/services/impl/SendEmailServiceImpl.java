@@ -5,6 +5,7 @@ import com.pitchmanagement.services.SendEmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,10 +14,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SendEmailServiceImpl implements SendEmailService {
 
     private final JavaMailSender javaMailSender;
-    private final Logger logger = LoggerFactory.getLogger(SendEmailServiceImpl.class);
     @Override
     public void sendEmail(String recipient, String subject, String body) {
 
@@ -29,9 +30,9 @@ public class SendEmailServiceImpl implements SendEmailService {
             helper.setText(body, true);
 
             javaMailSender.send(mimeMessage);
-            logger.info("Gửi email thành công tới email : {}", recipient );
+            log.info("Gửi email thành công tới email : {}", recipient );
         } catch (MessagingException e) {
-            logger.warn("Lỗi gửi email : {}", e.getMessage());
+            log.warn("Lỗi gửi email : {}", e.getMessage());
             e.printStackTrace();
         }
     }

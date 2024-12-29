@@ -82,7 +82,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 "/v3/api-docs",
                 "/swagger-ui",
                 "/swagger-ui.html",
-                "/webjars/swagger-ui"
+                "/webjars/swagger-ui",
+                "/ws"
         );
         for (String item : whiteList){
             if(request.getServletPath().contains(item))

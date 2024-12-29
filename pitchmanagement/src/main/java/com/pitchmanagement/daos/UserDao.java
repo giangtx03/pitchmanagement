@@ -1,17 +1,15 @@
 package com.pitchmanagement.daos;
 
-import com.pitchmanagement.dtos.UserDto;
+import com.pitchmanagement.models.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Map;
-
 @Mapper
 public interface UserDao {
-    UserDto getUserByEmail(String email);
-    void insert(UserDto userDto);
-    void update(UserDto userDto);
-    void changePassword(UserDto userDto);
+    User getUserByEmail(String email);
+    void insert(User userDto);
+    void update(User userDto);
+    void changePassword(User userDto);
     boolean existingByEmail(@Param("email") String email);
-    UserDto getUserById(@Param("id") Long id);
+    User getUserById(@Param("id") Long id);
 }

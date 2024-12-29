@@ -1,11 +1,9 @@
 package com.pitchmanagement.services;
 
-import com.pitchmanagement.models.requests.review.CreateReviewRequest;
-import com.pitchmanagement.models.requests.review.UpdateReviewRequest;
-import com.pitchmanagement.models.responses.PageResponse;
-import com.pitchmanagement.models.responses.ReviewResponse;
-
-import java.util.List;
+import com.pitchmanagement.dtos.requests.review.CreateReviewRequest;
+import com.pitchmanagement.dtos.requests.review.UpdateReviewRequest;
+import com.pitchmanagement.dtos.responses.PageResponse;
+import com.pitchmanagement.dtos.responses.ReviewResponse;
 
 public interface ReviewService {
     ReviewResponse createReview(CreateReviewRequest createReviewRequest) throws Exception;

@@ -3,7 +3,7 @@
 
 <mapper namespace="com.pitchmanagement.daos.PitchTypeDao">
 
-    <select id="getAll" resultType="com.pitchmanagement.dtos.PitchTypeDto" >
+    <select id="getAll" resultType="com.pitchmanagement.models.PitchType" >
         SELECT
             id,
             name,
@@ -12,7 +12,7 @@
         FROM pitch_types
     </select>
 
-    <select id="getPitchTypeById" parameterType="Long" resultType="com.pitchmanagement.dtos.PitchTypeDto" >
+    <select id="getPitchTypeById" parameterType="Long" resultType="com.pitchmanagement.models.PitchType" >
         SELECT
             id,
             name,

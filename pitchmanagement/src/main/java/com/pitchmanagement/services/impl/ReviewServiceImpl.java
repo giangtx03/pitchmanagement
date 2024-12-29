@@ -5,14 +5,13 @@ import com.github.pagehelper.PageInfo;
 import com.pitchmanagement.daos.PitchDao;
 import com.pitchmanagement.daos.ReviewDao;
 import com.pitchmanagement.daos.UserDao;
-import com.pitchmanagement.dtos.PitchDto;
-import com.pitchmanagement.dtos.ReviewDto;
-import com.pitchmanagement.dtos.UserDto;
-import com.pitchmanagement.models.requests.review.CreateReviewRequest;
-import com.pitchmanagement.models.requests.review.UpdateReviewRequest;
-import com.pitchmanagement.models.responses.PageResponse;
-import com.pitchmanagement.models.responses.ReviewResponse;
-import com.pitchmanagement.models.responses.UserResponse;
+import com.pitchmanagement.models.Pitch;
+import com.pitchmanagement.models.Review;
+import com.pitchmanagement.models.User;
+import com.pitchmanagement.dtos.requests.review.CreateReviewRequest;
+import com.pitchmanagement.dtos.requests.review.UpdateReviewRequest;
+import com.pitchmanagement.dtos.responses.PageResponse;
+import com.pitchmanagement.dtos.responses.ReviewResponse;
 import com.pitchmanagement.services.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.NotFoundException;
@@ -34,34 +33,34 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReviewResponse createReview(CreateReviewRequest createReviewRequest) throws Exception {
-        PitchDto pitchDto = Optional.ofNullable(pitchDao.getPitchById(createReviewRequest.getPitchId(),true))
+        Pitch pitch = Optional.ofNullable(pitchDao.getPitchById(createReviewRequest.getPitchId(),true))
                 .orElseThrow(() -> new NotFoundException("Sân bóng không tồn tại!"));
-        UserDto userDto = Optional.ofNullable(userDao.getUserById(createReviewRequest.getUserId()))
+        User userDto = Optional.ofNullable(userDao.getUserById(createReviewRequest.getUserId()))
                 .orElseThrow(() -> new NotFoundException("Người dùng không tồn tại!"));
 
-        ReviewDto reviewDto = ReviewDto.builder()
-                .pitchId(pitchDto.getId())
+        Review review = Review.builder()
+                .pitchId(pitch.getId())
                 .userId(userDto.getId())
                 .comment(createReviewRequest.getComment())
                 .star(createReviewRequest.getStar())
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
                 .build();
-        reviewDao.insertComment(reviewDto);
-        return ReviewResponse.fromReviewDtoAndUserResponse(reviewDto, userDto);
+        reviewDao.insertComment(review);
+        return ReviewResponse.fromReviewDtoAndUserResponse(review, userDto);
     }
 
     @Override
     public PageResponse getAllByPitchId(Long pitchId, Long userId,int star, int pageNumber, int limit, String orderSort) {
         PageHelper.startPage(pageNumber, limit);
         PageHelper.orderBy("create_at DESC, star " + orderSort);
-        List<ReviewDto> reviewDtoList = reviewDao.getAllByPitchId(pitchId, userId, star);
-        PageInfo<ReviewDto> pageInfo = new PageInfo<>(reviewDtoList);
+        List<Review> reviewList = reviewDao.getAllByPitchId(pitchId, userId, star);
+        PageInfo<Review> pageInfo = new PageInfo<>(reviewList);
 
-        List<ReviewResponse> reviewResponseList = reviewDtoList.stream().map(
-                reviewDto -> {
-                    UserDto userDto = userDao.getUserById(reviewDto.getUserId());
-                    return ReviewResponse.fromReviewDtoAndUserResponse(reviewDto, userDto);
+        List<ReviewResponse> reviewResponseList = reviewList.stream().map(
+                review -> {
+                    User userDto = userDao.getUserById(review.getUserId());
+                    return ReviewResponse.fromReviewDtoAndUserResponse(review, userDto);
                 }
         ).toList();
         PageResponse responses = PageResponse.builder()
@@ -75,22 +74,22 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReviewResponse updateReview(UpdateReviewRequest updateReviewRequest) throws Exception {
-        UserDto userDto = Optional.ofNullable(userDao.getUserById(updateReviewRequest.getUserId()))
+        User userDto = Optional.ofNullable(userDao.getUserById(updateReviewRequest.getUserId()))
                 .orElseThrow(() -> new NotFoundException("Người dùng không tồn tại!"));
-        ReviewDto reviewDto = Optional.ofNullable(reviewDao.getReviewById(updateReviewRequest.getId()))
+        Review review = Optional.ofNullable(reviewDao.getReviewById(updateReviewRequest.getId()))
                 .orElseThrow(() -> new NotFoundException("Đánh giá không tồn tại!"));
 
-        if(!userDto.getId().equals(reviewDto.getUserId())){
+        if(!userDto.getId().equals(review.getUserId())){
             throw new AuthenticationException("Lỗi chủ sở hữu!");
         }
 
-        reviewDto.setComment(updateReviewRequest.getComment());
-        reviewDto.setStar(updateReviewRequest.getStar());
-        reviewDto.setUpdateAt(LocalDateTime.now());
+        review.setComment(updateReviewRequest.getComment());
+        review.setStar(updateReviewRequest.getStar());
+        review.setUpdateAt(LocalDateTime.now());
 
-        reviewDao.updateComment(reviewDto);
+        reviewDao.updateComment(review);
 
-        return ReviewResponse.fromReviewDtoAndUserResponse(reviewDto, userDto);
+        return ReviewResponse.fromReviewDtoAndUserResponse(review, userDto);
     }
 
     @Override

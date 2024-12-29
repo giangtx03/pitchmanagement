@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.pitchmanagement.daos.UserDao">
-    <insert id="insert" parameterType="com.pitchmanagement.dtos.UserDto" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insert" parameterType="com.pitchmanagement.models.User" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO users(email, full_name, phone_number, password,role, create_at, update_at, is_active)
         VALUES( #{email},#{fullname},#{phoneNumber},#{password},#{role} ,#{createAt}, #{updateAt}, #{isActive});
     </insert>
 
-    <select id="getUserByEmail" parameterType="String" resultType="com.pitchmanagement.dtos.UserDto">
+    <select id="getUserByEmail" parameterType="String" resultType="com.pitchmanagement.models.User">
         SELECT
             id,
             email,
@@ -23,7 +23,7 @@
         FROM users WHERE email = #{email}
     </select>
 
-    <select id="getUserById" parameterType="Long" resultType="com.pitchmanagement.dtos.UserDto">
+    <select id="getUserById" parameterType="Long" resultType="com.pitchmanagement.models.User">
         SELECT
             id,
             email,
@@ -45,7 +45,7 @@
         WHERE email = #{email}
     </select>
 
-    <update id="update" parameterType="com.pitchmanagement.dtos.UserDto">
+    <update id="update" parameterType="com.pitchmanagement.models.User">
         UPDATE users SET
             full_name = #{fullname},
             address = #{address},
@@ -56,7 +56,7 @@
         WHERE id = #{id}
     </update>
 
-    <update id="changePassword" parameterType="com.pitchmanagement.dtos.UserDto">
+    <update id="changePassword" parameterType="com.pitchmanagement.models.User">
         UPDATE users SET
             password = #{password},
             update_at = #{updateAt}
