@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class Notification {
 
     private Long id;
-    private Long userId;
+    private Long recipientId;
     private Long senderId;
     private String title;
     private String message;

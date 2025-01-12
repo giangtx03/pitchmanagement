@@ -5,6 +5,7 @@ import com.pitchmanagement.constants.AuthConstant;
 import com.pitchmanagement.constants.MailConstant;
 import com.pitchmanagement.daos.TokenDao;
 import com.pitchmanagement.daos.UserDao;
+import com.pitchmanagement.mapper.UserMapper;
 import com.pitchmanagement.models.Token;
 import com.pitchmanagement.models.User;
 import com.pitchmanagement.dtos.requests.user.*;
@@ -46,6 +47,7 @@ public class UserServiceImpl implements UserService {
     private final ImageService imageService;
     private final TokenDao tokenDao;
     private final SendEmailService sendEmailService;
+    private final UserMapper userMapper;
 
     @Value("${api.prefix}")
     private String apiPrefix;
@@ -56,18 +58,13 @@ public class UserServiceImpl implements UserService {
 
         User user = userDao.getUserByEmail(loginRequest.getEmail());
 
-        if(user == null){
-            throw new UsernameNotFoundException("Sai thông tin đăng nhập!!!");
-        }
-
+        checkValidUser(user);
 
         if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())){
             throw new BadCredentialsException("Sai thông tin đăng nhập!!!");
         }
 
-        if(!user.isActive()){
-            throw new BadCredentialsException("Tài khoản chưa active!!!");
-        }
+        checkActiveUser(user);
 
         CustomUserDetails customUserDetails = CustomUserDetails.toCustomUser(user);
 
@@ -135,9 +132,7 @@ public class UserServiceImpl implements UserService {
 
         User userDto = userDao.getUserById(id);
 
-        if(userDto == null){
-            throw new UsernameNotFoundException("Người dùng không tồn tại!!!");
-        }
+        checkValidUser(userDto);
 
         return UserResponse.fromUserDto(userDto);
     }
@@ -148,9 +143,8 @@ public class UserServiceImpl implements UserService {
 
         User userDto = userDao.getUserById(updateUserRequest.getId());
 
-        if(userDto == null){
-            throw new UsernameNotFoundException("Người dùng không tồn tại!!!");
-        }
+        checkValidUser(userDto);
+        checkActiveUser(userDto);
 
         String image = "";
         if(updateUserRequest.getAvatar() != null && !updateUserRequest.getAvatar().isEmpty()){
@@ -160,12 +154,8 @@ public class UserServiceImpl implements UserService {
             image = imageService.upload(updateUserRequest.getAvatar());
         }
 
-
-        userDto.setAddress(updateUserRequest.getAddress() != null ? updateUserRequest.getAddress() : userDto.getAddress());
-        userDto.setFullname(updateUserRequest.getFullname() != null ? updateUserRequest.getFullname() : userDto.getFullname());
         userDto.setAvatar(updateUserRequest.getAvatar() != null ? image : userDto.getAvatar());
-        userDto.setPhoneNumber(updateUserRequest.getPhoneNumber() != null ? updateUserRequest.getPhoneNumber() : userDto.getPhoneNumber());
-        userDto.setUpdateAt(LocalDateTime.now());
+        userMapper.updateUser(userDto, updateUserRequest);
 
         userDao.update(userDto);
         return UserResponse.fromUserDto(userDto);
@@ -176,9 +166,7 @@ public class UserServiceImpl implements UserService {
     public void changePassword(ChangePasswordRequest request) throws Exception {
         User user = userDao.getUserById(request.getUserId());
 
-        if(user == null){
-            throw new UsernameNotFoundException("Người dùng không tồn tại!!!");
-        }
+        checkValidUser(user);
 
         if(!request.getNewPassword().trim().equals(request.getNewPassword())){
             throw new InvalidPropertiesFormatException("Mật khẩu chứa dấu cách ở đầu và cuối!!!");
@@ -223,8 +211,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor =  Exception.class)
     public void resendConfirmEmail(String email) throws Exception {
-        User userDto = Optional.ofNullable(userDao.getUserByEmail(email))
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy người dùng!"));
+        User userDto = userDao.getUserByEmail(email);
+
+        checkValidUser(userDto);
 
         tokenDao.deleteTokenByUserId(userDto.getId());
         generateTokenAndSendEmail(userDto, MailConstant.REGISTRATION_CONFIRMATION, MailConstant.SUBJECT_TYPE_CONFIRM_EMAIL, AppConstant.SUB_URL_CONFIRM_EMAIL);
@@ -233,12 +222,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor =  Exception.class)
     public void forgotPassword(String email) throws Exception {
-        User userDto = Optional.ofNullable(userDao.getUserByEmail(email))
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy người dùng!"));
+        User userDto = userDao.getUserByEmail(email);
 
-        if(!userDto.isActive()){
-            throw new RuntimeException("Tài khoản chưa active!!!");
-        }
+        checkValidUser(userDto);
+        checkActiveUser(userDto);
 
         tokenDao.deleteTokenByUserId(userDto.getId());
         generateTokenAndSendEmail(userDto, MailConstant.FORGOT_PASSWORD, MailConstant.SUBJECT_TYPE_FORGOT_PASSWORD, AppConstant.SUB_URL_RENEW_PASSWORD);
@@ -257,8 +244,8 @@ public class UserServiceImpl implements UserService {
             throw new InvalidPropertiesFormatException("Mật khẩu chứa dấu cách!!!");
         }
 
-        User userDto = Optional.ofNullable(userDao.getUserById(tokenDto.getUserId()))
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy người dùng!"));
+        User userDto = userDao.getUserById(tokenDto.getUserId());
+        checkValidUser(userDto);
 
         userDto.setPassword(passwordEncoder.encode(renewPassword.getNewPassword()));
         userDto.setUpdateAt(LocalDateTime.now());
@@ -284,4 +271,16 @@ public class UserServiceImpl implements UserService {
         sendEmailService.sendEmail(userDto.getEmail(), subject, body);
     }
 
+
+    private void checkValidUser(User user) {
+        if(user == null){
+            throw new UsernameNotFoundException("Người dùng không tồn tại!!!");
+        }
+    }
+
+    private void checkActiveUser(User user) {
+        if(!user.isActive()){
+            throw new BadCredentialsException("Tài khoản chưa active!!!");
+        }
+    }
 }
