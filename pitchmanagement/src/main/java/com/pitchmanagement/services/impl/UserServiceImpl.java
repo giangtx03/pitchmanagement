@@ -75,18 +75,10 @@ public class UserServiceImpl implements UserService {
         authenticationManager.authenticate(authenticationToken);
 
         String token = jwtUtil.generateToken(user);
-        return LoginResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .fullname(user.getFullname())
-                .avatar(user.getAvatar())
-                .phoneNumber(user.getPhoneNumber())
-                .address(user.getAddress())
-                .token(token)
-                .createAt(user.getCreateAt())
-                .updateAt(user.getUpdateAt())
-                .role(user.getRole())
-                .build();
+
+        LoginResponse loginResponse = userMapper.toLoginResponse(user);
+        loginResponse.setToken(token);
+        return loginResponse;
     }
 
     @Override
@@ -97,34 +89,18 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("Email đã tồn tại!!!");
         }
 
-        if(!request.getPassword().trim().equals(request.getPassword())){
-            throw new InvalidPropertiesFormatException("Mật khẩu chứa dấu cách ở đầu và cuối!!!");
-        }
+        checkValidPassword(request.getPassword());
 
-        User userDto = User.builder()
-                .email(request.getEmail())
-                .fullname(request.getFullname())
-                .phoneNumber(request.getPhoneNumber())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .createAt(LocalDateTime.now())
-                .updateAt(LocalDateTime.now())
-                .role(AuthConstant.ROLE_USER)
-                .isActive(false)
-                .build();
+        String passwordEncode = passwordEncoder.encode(request.getPassword());
+        request.setPassword(passwordEncode);
+
+        User userDto = userMapper.toUser(request);
         userDao.insert(userDto);
 
         generateTokenAndSendEmail(userDto, MailConstant.REGISTRATION_CONFIRMATION,
                 MailConstant.SUBJECT_TYPE_CONFIRM_EMAIL ,AppConstant.SUB_URL_CONFIRM_EMAIL);
 
-        return RegisterResponse.builder()
-                .id(userDto.getId())
-                .fullname(userDto.getFullname())
-                .email(userDto.getEmail())
-                .phoneNumber(userDto.getPhoneNumber())
-                .role(userDto.getRole())
-                .createAt(userDto.getCreateAt())
-                .updateAt(userDto.getUpdateAt())
-                .build();
+        return userMapper.toRegisterResponse(userDto);
     }
 
     @Override
@@ -158,7 +134,7 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(userDto, updateUserRequest);
 
         userDao.update(userDto);
-        return UserResponse.fromUserDto(userDto);
+        return userMapper.toUserResponse(userDto);
     }
 
     @Override
@@ -167,10 +143,7 @@ public class UserServiceImpl implements UserService {
         User user = userDao.getUserById(request.getUserId());
 
         checkValidUser(user);
-
-        if(!request.getNewPassword().trim().equals(request.getNewPassword())){
-            throw new InvalidPropertiesFormatException("Mật khẩu chứa dấu cách ở đầu và cuối!!!");
-        }
+        checkValidPassword(request.getNewPassword());
 
         if(!passwordEncoder.matches(request.getOldPassword(), user.getPassword())){
             throw new BadCredentialsException("Mật khẩu không chính xác!!!");
@@ -216,7 +189,8 @@ public class UserServiceImpl implements UserService {
         checkValidUser(userDto);
 
         tokenDao.deleteTokenByUserId(userDto.getId());
-        generateTokenAndSendEmail(userDto, MailConstant.REGISTRATION_CONFIRMATION, MailConstant.SUBJECT_TYPE_CONFIRM_EMAIL, AppConstant.SUB_URL_CONFIRM_EMAIL);
+        generateTokenAndSendEmail(userDto, MailConstant.REGISTRATION_CONFIRMATION,
+                MailConstant.SUBJECT_TYPE_CONFIRM_EMAIL, AppConstant.SUB_URL_CONFIRM_EMAIL);
     }
 
     @Override
@@ -228,7 +202,8 @@ public class UserServiceImpl implements UserService {
         checkActiveUser(userDto);
 
         tokenDao.deleteTokenByUserId(userDto.getId());
-        generateTokenAndSendEmail(userDto, MailConstant.FORGOT_PASSWORD, MailConstant.SUBJECT_TYPE_FORGOT_PASSWORD, AppConstant.SUB_URL_RENEW_PASSWORD);
+        generateTokenAndSendEmail(userDto, MailConstant.FORGOT_PASSWORD,
+                MailConstant.SUBJECT_TYPE_FORGOT_PASSWORD, AppConstant.SUB_URL_RENEW_PASSWORD);
     }
 
     @Override
@@ -240,9 +215,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Mã xác nhận đã hết hạn");
         }
 
-        if(!renewPassword.getNewPassword().trim().equals(renewPassword.getNewPassword())){
-            throw new InvalidPropertiesFormatException("Mật khẩu chứa dấu cách!!!");
-        }
+        checkValidPassword(renewPassword.getNewPassword());
 
         User userDto = userDao.getUserById(tokenDto.getUserId());
         checkValidUser(userDto);
@@ -268,7 +241,7 @@ public class UserServiceImpl implements UserService {
 
         String subject = subjectType + " cho người dùng " + userDto.getFullname();
 
-        sendEmailService.sendEmail(userDto.getEmail(), subject, body);
+//        sendEmailService.sendEmail(userDto.getEmail(), subject, body);
     }
 
 
@@ -281,6 +254,12 @@ public class UserServiceImpl implements UserService {
     private void checkActiveUser(User user) {
         if(!user.isActive()){
             throw new BadCredentialsException("Tài khoản chưa active!!!");
+        }
+    }
+
+    private void checkValidPassword(String password) throws InvalidPropertiesFormatException {
+        if(!password.trim().equals(password)){
+            throw new InvalidPropertiesFormatException("Mật khẩu chứa dấu cách!!!");
         }
     }
 }
