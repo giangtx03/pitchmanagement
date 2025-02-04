@@ -16,8 +16,8 @@ public class Pitch {
     private String location;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
-    private boolean isActive;
     private Long managerId;
     private User managerDto;
     private float avgStar;
+    private boolean isActive;
 }

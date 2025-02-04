@@ -27,6 +27,11 @@ public class PitchController {
     public ResponseEntity<BaseResponse> createPitch(
             @ModelAttribute @Valid CreatePitchRequest request
     ) throws Exception {
+
+        if (request.getImages() != null && request.getImages().size() > 5) {
+            throw new IllegalArgumentException("Chỉ cho phép mỗi sân tối đa 5 ảnh");
+        }
+
         PitchResponse pitchResponse = pitchService.createPitch(request);
 
         BaseResponse response = BaseResponse.builder()
