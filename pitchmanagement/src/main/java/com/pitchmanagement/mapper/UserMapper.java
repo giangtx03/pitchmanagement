@@ -14,7 +14,7 @@ import org.mapstruct.MappingTarget;
 public interface UserMapper {
     @Mapping(target = "createAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "updateAt", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "role", constant = "ROLE_USER")
+    @Mapping(target = "role", constant = "USER")
     @Mapping(target = "isActive", constant = "false")
     User toUser(RegisterRequest request);
     UserResponse toUserResponse(User user);
